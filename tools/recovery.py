@@ -22,7 +22,7 @@ at the best RT60 point (ESS out of 128). ``--summary`` prints, per setting
 and sigma, how often the truth falls in the 90% interval and the median
 interval width (ratio of the 95% to the 5% quantile).
 
-    python tools/recovery.py --out runs.jsonl [--shard 0 --shards 1]
+    python tools/recovery.py --out runs.jsonl [--shard 0 --shards 1] [--runs 3 7]
     python tools/recovery.py --summary runs.jsonl
 """
 
@@ -76,6 +76,8 @@ def observe(power: BlockPower, run: int, theta, rt60: float) -> torch.Tensor:
 def run_all(args):
     power = BlockPower()
     todo = [r for r in runs() if r[0] % args.shards == args.shard]
+    if args.runs:
+        todo = [r for r in todo if r[0] in args.runs]
     generator = torch.Generator().manual_seed(args.shard)
     with open(args.out, "a") as out:
         for run, name, rt60, seed in todo:
@@ -113,6 +115,10 @@ def run_all(args):
 
 def summary(path):
     records = [json.loads(line) for line in open(path)]
+    broken = [r for r in records if not all(0 < v < math.inf for row in r["quantiles"] for v in row)]
+    for r in broken:
+        print(f"left out: run {r['run']} sigma {r['sigma_db']} (an interval is degenerate: 0 or inf)")
+    records = [r for r in records if r not in broken]
     groups = defaultdict(list)
     for r in records:
         groups[(r["setting"], r["truth"][0], r["sigma_db"])].append(r)
@@ -130,6 +136,16 @@ def summary(path):
         label = f"{name:18s} {rt60:4.1f} {sigma:5.1f} {len(group):2d}  "
         print(label + "  ".join(f"{c:>22s}" for c in cells))
     print("each cell: coverage, interval width, median of posterior median / truth")
+    for sigma in sorted({r["sigma_db"] for r in records}):
+        group = [r for r in records if r["sigma_db"] == sigma]
+        shares = [
+            np.mean([r["quantiles"][i][0] <= r["truth"][i] <= r["quantiles"][i][2] for r in group])
+            for i in range(4)
+        ]
+        print(
+            f"all settings, sigma {sigma}: "
+            + ", ".join(f"{n} {s:.0%}" for n, s in zip(NAMES, shares, strict=True))
+        )
     gap = np.array([r["importance_at_best"] - r["laplace_at_best"] for r in records])
     ess = np.array([r["ess"] for r in records])
     print(
@@ -145,6 +161,7 @@ def main():
     parser.add_argument("--shard", type=int, default=0)
     parser.add_argument("--shards", type=int, default=1)
     parser.add_argument("--threads", type=int, default=None)
+    parser.add_argument("--runs", type=int, nargs="*", help="only these run indices")
     parser.add_argument("--summary", default=None, help="summarize this JSON-lines file instead")
     args = parser.parse_args()
     if args.summary:

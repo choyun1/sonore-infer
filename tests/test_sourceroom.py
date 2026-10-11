@@ -107,3 +107,15 @@ def test_laplace_at_the_mode_equals_log_evidence(model):
     reference = log_evidence(log_joint, {"z": z}, n_samples=4, generator=torch.Generator().manual_seed(3))
     assert reference.floored_eigenvalues == 0
     assert expansion.log_evidence(log_theta()).item() == pytest.approx(reference.laplace, abs=1e-2)
+
+
+def test_mode_of_a_loud_sound_follows_its_level(model):
+    # 60 dB louder: at the prior mean the whole prediction would sit below
+    # the floor, where the likelihood is flat, so the fit starts at the
+    # observation's level.
+    gain = model.gain(RT60)
+    prior = Prior(log_theta(), *model.shape)
+    quiet = fit_mode(model, gain, prior)
+    loud = fit_mode(Model(model.observed * 1e6, model.power), gain, prior)
+    shift = (loud - quiet).mean().item()
+    assert shift == pytest.approx(60.0, abs=3.0)
