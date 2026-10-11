@@ -184,17 +184,22 @@ def fit_mode(
     model: Model, gain: torch.Tensor, prior: Prior, start: torch.Tensor | None = None
 ) -> torch.Tensor:
     """Posterior mode of the levels at one (r, theta), by L-BFGS on the
-    whitened coordinates; ``start`` is a level grid to start from."""
+    whitened coordinates; ``start`` is a level grid to start from (by default
+    the prior mean at the observation's overall level)."""
     nb, nt = model.shape
     lb = ar1_cholesky(prior.rho_band.detach(), nb)
     lt = ar1_cholesky(prior.rho_time.detach(), nt)
     sd = prior.sd.detach()
     if start is None:
-        z0 = torch.zeros(nb, nt, dtype=torch.float64)
-    else:
-        deviation = (start - model.mean) / sd
-        z0 = torch.linalg.solve_triangular(lb, deviation, upper=False)
-        z0 = torch.linalg.solve_triangular(lt, z0.T, upper=False).T
+        # the prior mean shifted to the observation's overall level: at the
+        # prior mean itself a loud sound can sit wholly above the prediction's
+        # floor, where the likelihood is flat in every level
+        expected = model.power.reverberant(model.power.source_energy(model.mean.expand(nb, nt)), gain)
+        offset = DB * math.log(model.observed.sum().item() / expected.sum().item())
+        start = (model.mean + offset).expand(nb, nt)
+    deviation = (start - model.mean) / sd
+    z0 = torch.linalg.solve_triangular(lb, deviation, upper=False)
+    z0 = torch.linalg.solve_triangular(lt, z0.T, upper=False).T
     z = z0.clone().requires_grad_(True)
     optimizer = torch.optim.LBFGS(
         [z],

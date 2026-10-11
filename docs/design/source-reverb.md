@@ -195,6 +195,20 @@ sampling checks each Laplace estimate (ESS reported). A sampler is added only
 if the grid shows multimodality. Before any fit, likelihood slices through
 the truth are plotted, as the handoff asks.
 
+**Update (step 5, 2026-10-11).** The fixed grid was replaced, for two
+measured reasons. (1) `log_evidence`'s autograd Hessian takes 58 s for the
+1,599 levels, so the Hessian is now exact and analytic (under 1 s; a test
+checks it against autograd and the Laplace value against `log_evidence`).
+(2) On one sound at 0.4 s the posterior sd is about 0.015 in log RT60,
+0.12 in log sd and 0.2 in log correlation length, against 0.21 between
+this grid's RT60s and 0.58 between its hyperparameter points, so the grid
+would put all the mass on one point. Now a, b and s are integrated at each
+RT60 by a second-order expansion of the likelihood in the levels (a
+closed-form Gaussian integral for any a, b, s) and Laplace in log
+coordinates, and RT60 starts on the 15 points and is refined around the
+posterior's bulk (`sonore_inference.sourceroom`). About 5 minutes per
+sound per sigma on 2 cores.
+
 ### R6. Framework and placement
 
 PyTorch, per design-v1 D1. The numpy probes are ported, not reused. New
@@ -257,7 +271,17 @@ Two things are open:
    (median 0.329 s, sigma 0.80) by 18 AIC, so the prior is gamma (Cho chose
    it 2026-10-10); 11% of spaces are below 0.1 s. Median DRR 9.9 dB, which confirms
    R2's typical 10 dB.)*
-5. Laplace grid (R5); experiment (a).
+5. Laplace grid (R5); experiment (a). *(Done, with R5 changed: see the
+   update there. 90 sounds (10 seeds x RT60 0.2/0.4/0.8 s x three source
+   settings), floor 60 dB. RT60 posterior medians are within 3% of the
+   truth (median over each setting), with 90% intervals 2-8% wide at the
+   measured sigma, but the truth falls inside only 66% of them; at twice
+   the sigma, 90%. Correlation lengths and sd are covered 74-86%, except
+   the time correlation at twice the sigma (56%), which reads 1.7-1.8 times
+   long. The large-sd corner's sd reads 0.8-0.95 times the truth. Two of
+   the 180 inferences had a degenerate interval and are left out.
+   Importance sampling cannot check Laplace at 1,599 dimensions (median
+   ESS 1.9 of 128). Results: `source-reverb/results/recovery_summary.txt`.)*
 6. Experiment (b).
 
 Each step is one PR and one row in the step record.
