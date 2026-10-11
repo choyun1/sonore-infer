@@ -1,7 +1,8 @@
 """One stream or two for ABA sequences, by marginal likelihood (paper App. C.10; design C8).
 
-For each stimulus, two hypotheses, each fitted from the stimulus's own tones
-(frequencies, onsets and durations), as the paper did:
+The tones start 50 ms into the 3.1 s (``LEAD``). For each stimulus, two
+hypotheses, each fitted from the stimulus's own tones (frequencies, onsets
+and durations), as the paper did:
 
 - ``one``: one whistle source with all 12 tones as its events;
 - ``two``: one whistle source with the 8 A tones and one with the 4 B tones.
@@ -23,12 +24,15 @@ from sonore_inference.stimuli import bistability as ab
 
 TIMING = SceneTiming(fs=ab.FS, total_duration=ab.TOTAL_DURATION, ramp=ab.RAMP)
 DTYPE = torch.float64
+# silence before the first tone, out of the 3.1 s: the onset prior starts at 0,
+# and a fit cannot move an onset that starts exactly there
+LEAD = 0.05
 
 
 def hypotheses(semitones, onset_interval, infer_kernel=False):
     """(label, scene, starts) for the two hypotheses of one stimulus."""
     freqs = {"A": ab.A_FREQ, "B": ab.A_FREQ * 2 ** (semitones / 12)}
-    tones = ab.tone_onsets(onset_interval)
+    tones = ab.tone_onsets(onset_interval, lead=LEAD)
 
     def whistle(name, selected):
         source = Whistle(name, n_events=len(selected), infer_kernel=infer_kernel)
@@ -93,7 +97,7 @@ def main():
     for semitones in args.semitones:
         for interval in args.intervals:
             name = f"{semitones:g} st {1000 * interval:g} ms"
-            sound = ab.bistability_stimulus(interval, semitones)
+            sound = ab.bistability_stimulus(interval, semitones, lead=LEAD)
             observed = cochleagram(torch.tensor(sound.data[:, 0], dtype=DTYPE))
             results = {}
             for hypothesis, scene, starts in hypotheses(semitones, interval, args.infer_kernel):

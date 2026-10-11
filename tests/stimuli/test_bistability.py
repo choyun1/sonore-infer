@@ -45,3 +45,12 @@ def test_steady_level_is_70_db():
     steady = sound.data[200:800, 0]  # inside the first tone, past its ramp
     # 600 samples is 30 periods of 1000 Hz, so the RMS is exact
     assert 20 * np.log10(np.sqrt(np.mean(steady**2)) / 1e-6) == pytest.approx(70, abs=1e-9)
+
+
+def test_lead_moves_the_sequence_later():
+    plain = ab.bistability_stimulus(0.1, 6).data[:, 0]
+    led = ab.bistability_stimulus(0.1, 6, lead=0.05).data[:, 0]
+    shift = round(0.05 * ab.FS)
+    assert led.shape == plain.shape
+    np.testing.assert_allclose(led[shift:], plain[:-shift])
+    assert not led[:shift].any()
