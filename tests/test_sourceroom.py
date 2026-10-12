@@ -19,6 +19,7 @@ from sonore_inference.sourceroom import (
     Prior,
     ar1_cholesky,
     fit_mode,
+    initial_levels,
     newton_mode,
 )
 from sonore_inference.spectrotemporal import SpectrogramPrior
@@ -119,3 +120,15 @@ def test_mode_of_a_loud_sound_follows_its_level(model):
     loud = fit_mode(Model(model.observed * 1e6, model.power), gain, prior)
     shift = (loud - quiet).mean().item()
     assert shift == pytest.approx(60.0, abs=3.0)
+
+
+def test_fits_start_with_audible_cells_raised(model):
+    # Cells over blocks observed above the floor start at the observed over the
+    # predicted energy (never below the prior mean); the rest at the prior mean.
+    gain = model.gain(RT60)
+    nb, nt = model.shape
+    start = initial_levels(model, gain)
+    audible = model.observed_db[:, :nt] > model.floor
+    mean = model.mean.expand(nb, nt)
+    assert torch.equal(start[~audible], mean[~audible])
+    assert (start[audible] >= mean[audible]).all()
