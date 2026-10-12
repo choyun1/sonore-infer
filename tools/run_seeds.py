@@ -2,7 +2,9 @@
 
 Each job is one stimulus at one seed: (a) one mistuning of one condition
 (``scene_mistuned_harmonic.py``), (b) one two-note stimulus or control
-(``compare_two_notes.py``), both with the variational evidence. Jobs run in
+(``compare_two_notes.py``), both with the variational evidence. With ``--only
+aba``, the jobs are instead milestone (c)'s ABA map (``compare_aba.py``), one
+stimulus per job, GP sigma and lengthscale inferred. Jobs run in
 parallel, one CPU thread each. A job's output is written to a temporary file
 and renamed when the job succeeds, so finished jobs are the checkpoint: run the
 same command again to continue where it stopped, and stop at any time with
@@ -15,6 +17,7 @@ only the sampling in the evidence estimates. Seed 0 is the runs already made.
     python tools/run_seeds.py --out seeds_out             # seeds 1-9, half the CPU's threads
     python tools/run_seeds.py --out seeds_out --list      # print the jobs and stop
     python tools/run_seeds.py --out seeds_out --jobs 6 --only a
+    python tools/run_seeds.py --out aba_out --only aba --seeds 0   # the ABA map, 30 stimuli
 """
 
 import argparse
@@ -39,6 +42,9 @@ B_INTERVALS = ["tritone_different_spectra", "tritone", "just_fifth", "octave"]
 B_ASYNCHRONIES = [0, 0.01, 0.02, 0.04, 0.08]
 B_OCTAVE_EXTRA = [0.12, 0.16, 0.24]
 B_CONTROLS = [200.0, 200.0 * 2**0.5, 300.0, 400.0]
+# milestone (c) step 4: the ABA map, semitones x onset-to-onset intervals [s] (stimuli.bistability)
+ABA_SEMITONES = [1, 3, 6, 9, 12]
+ABA_INTERVALS = [0.067, 0.083, 0.1, 0.117, 0.134, 0.15]
 
 
 def jobs(seeds, only):
@@ -46,6 +52,17 @@ def jobs(seeds, only):
     out = []
     for seed in seeds:
         common = ["--variational-steps", VARIATIONAL_STEPS, "--seed", str(seed)]
+        if only == "aba":
+            for semitones in ABA_SEMITONES:
+                for interval in ABA_INTERVALS:
+                    out.append(
+                        (
+                            f"aba/st{semitones}_dt{interval}_seed{seed}",
+                            ["compare_aba.py", "--semitones", str(semitones), "--intervals", str(interval)]
+                            + ["--infer-kernel"]
+                            + common,
+                        )
+                    )
         if only in (None, "a"):
             for f0, harmonic in A_CONDITIONS:
                 for percent in A_PERCENTS:
@@ -201,11 +218,13 @@ def main():
     parser.add_argument("--out", type=Path, required=True, help="output folder (created; reused to resume)")
     parser.add_argument("--seeds", type=int, nargs="+", default=list(range(1, 10)))
     parser.add_argument("--jobs", type=int, default=max(1, (os.cpu_count() or 2) // 2), help="parallel jobs")
-    parser.add_argument("--only", choices=["a", "b"], help="run only milestone (a) or (b)")
+    parser.add_argument(
+        "--only", choices=["a", "b", "aba"], help="run only milestone (a) or (b), or the ABA map"
+    )
     parser.add_argument("--heartbeat", type=float, default=5.0, help="minutes between 'still running' lines")
     parser.add_argument("--list", action="store_true", help="print the jobs and their state, then stop")
     args = parser.parse_args()
-    for sub in ("a", "b"):
+    for sub in ("a", "b", "aba"):
         (args.out / sub).mkdir(parents=True, exist_ok=True)
     for stale in args.out.glob("*/*.partial"):
         stale.unlink()
