@@ -180,23 +180,36 @@ class Prior:
         )
 
 
+def initial_levels(model: Model, gain: torch.Tensor, limit_db: float = 60.0) -> torch.Tensor:
+    """Levels to start a fit from: the prior mean, raised (by up to
+    ``limit_db``) in cells whose block is observed above the floor, by the
+    observed over the predicted energy at the prior mean. A cell predicted
+    below the floor where the observation is above it gets no gradient (the
+    floor is flat), so from the prior mean alone a fit can stay silent where
+    a sound is loud; lowering the other cells only costs prior density."""
+    nb, nt = model.shape
+    mean = model.mean.expand(nb, nt)
+    expected = model.power.reverberant(model.power.source_energy(mean), gain)[:, :nt]
+    shift = DB * torch.log(model.observed[:, :nt].clamp_min(1e-300) / expected.clamp_min(1e-300))
+    audible = model.observed_db[:, :nt] > model.floor
+    return mean + torch.where(audible, shift.clamp(0.0, limit_db), 0.0)
+
+
 def fit_mode(
-    model: Model, gain: torch.Tensor, prior: Prior, start: torch.Tensor | None = None
+    model: Model,
+    gain: torch.Tensor,
+    prior: Prior,
+    start: torch.Tensor | None = None,
 ) -> torch.Tensor:
     """Posterior mode of the levels at one (r, theta), by L-BFGS on the
     whitened coordinates; ``start`` is a level grid to start from (by default
-    the prior mean at the observation's overall level)."""
+    :func:`initial_levels`)."""
     nb, nt = model.shape
     lb = ar1_cholesky(prior.rho_band.detach(), nb)
     lt = ar1_cholesky(prior.rho_time.detach(), nt)
     sd = prior.sd.detach()
     if start is None:
-        # the prior mean shifted to the observation's overall level: at the
-        # prior mean itself a loud sound can sit wholly above the prediction's
-        # floor, where the likelihood is flat in every level
-        expected = model.power.reverberant(model.power.source_energy(model.mean.expand(nb, nt)), gain)
-        offset = DB * math.log(model.observed.sum().item() / expected.sum().item())
-        start = (model.mean + offset).expand(nb, nt)
+        start = initial_levels(model, gain)
     deviation = (start - model.mean) / sd
     z0 = torch.linalg.solve_triangular(lb, deviation, upper=False)
     z0 = torch.linalg.solve_triangular(lt, z0.T, upper=False).T
