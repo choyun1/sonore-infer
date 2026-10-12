@@ -282,7 +282,21 @@ Two things are open:
    the 180 inferences had a degenerate interval and are left out.
    Importance sampling cannot check Laplace at 1,599 dimensions (median
    ESS 1.9 of 128). Results: `source-reverb/results/recovery_summary.txt`.)*
-6. Experiment (b).
+6. Experiment (b). *(Done: the default source in each atypical room and
+   the normal one, 5 seeds x RT60 0.4/0.8 s, floors 60/40/20 dB, sigma
+   3.6 dB. Posterior median RT60 / true, median over seeds, at floors 60
+   and 40 (T20 x 3 of the same IR in brackets): control 0.95-1.04
+   (1.03-1.11); exaggerated 1.02-1.07 (1.05-1.12); reduced 0.87-1.08
+   (1.04-1.07); linear_matched_end 1.7-2.6 (1.8); linear_matched_start
+   0.43-0.60 (0.37-0.39); inverted 0.35-0.41 (0.35-0.47); time_reversed
+   2.5-2.9, or 0.13 at 0.8 s and floor 40 (0.14), with a log marginal
+   likelihood 2,100-34,000 nats below the control's, a model-fit failure.
+   The other conditions' marginal likelihoods differ from the control's
+   by -1,750 to +370 nats, but those are different sounds, so this is not
+   a model comparison. At a 20 dB floor one sound leaves about 70 cells
+   audible and the posterior stays near the prior (median 0.39 s whatever
+   the room); 4 of its 70 fits failed and are left out. Results:
+   `source-reverb/results/atypical_rooms_summary.txt`.)*
 
 Each step is one PR and one row in the step record.
 
