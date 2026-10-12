@@ -30,7 +30,8 @@ from pathlib import Path
 TOOLS = Path(__file__).resolve().parent
 VARIATIONAL_STEPS = "2000"
 
-# milestone (a): conditions of variational_a, the paper's 7 mistunings
+# milestone (a): conditions of variational_a, mistunings 0-30% in steps of 5 (not the paper's grid,
+# 0, 5, 10, 20, 30, 40, 50, which seed 0 used; every threshold so far lies below 30%)
 A_CONDITIONS = [(100, 1), (200, 2), (200, 3), (400, 3)]
 A_PERCENTS = [0, 5, 10, 15, 20, 25, 30]
 # milestone (b): the intervals at ASYNCHRONIES, the octave also at 120-240 ms, and the four controls
