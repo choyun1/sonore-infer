@@ -1,6 +1,7 @@
 # Online inference — design
 
 Status: **draft for Cho, 2026-10-12.** Nothing here is accepted yet.
+O9 and the later items in §8 added the same day at Cho's request.
 AI-assisted (Claude), from the survey and discussion in the project's
 real-time thread (`realtime/realtime-inference-survey.md` in the project
 files), milestone (c)'s design and code, and the paper.
@@ -236,6 +237,28 @@ free parts (each trajectory's deviations are now one vector over the whole
 grid [code: `scene.py` `_trajectory`, line 273]). Pyro's `SMCFilter` is not
 used: it expects Markov `init`/`step` models, which our kernel is not.
 
+### O9. Spending effort where the sound is surprising
+
+Listeners and animals work online, and one thing that buys them is that
+most of the time the next moment is predicted by the current scene. The
+predictive term of O5 (B), log p(xₖ | x₁:ₖ₋₁), measures exactly that: how
+surprising the new window is under the current belief. This is the
+predictive-processing view of auditory scene analysis (Winkler, Denham and
+colleagues; reviewed in Szabó, Denham & Winkler, 2016, Front. Neurosci.).
+
+**Options.**
+
+- **(A) A fixed number of Adam steps per window** (O6).
+- **(B) Steps scaled by surprise**: a few steps when the window is well
+  predicted (its per-frame predictive log likelihood within some margin of
+  its running average), the full number when it is not, for example at a
+  tone onset.
+
+**Recommendation: (A) as the default, (B) run on one stimulus beside it.**
+(B) costs little once O5 (B) exists, and if it matches (A)'s curve with
+fewer steps, it is a measured saving that carries over to real time. The
+margin is set on that one stimulus and reported with the result.
+
 ## 5. What counts as success
 
 - **Agreement:** at every triplet boundary, the online log odds lies within
@@ -283,8 +306,32 @@ Each step is one PR; nothing past step 1 starts before Cho accepts this.
   time course (averaging over about 2.4–2.8 s, selective, with completion
   behind maskers), and sonore already computes the statistics and their
   gradients. A natural second test of an online model.
-- **Structure search online** (O1 (C)).
+- **Structure search online** (O1 (C)), with structure moves (a new
+  source, a new event, a tone joining a source) tried **only at detected
+  onsets**. Sources and events begin when something starts, and common
+  onset is among the strongest grouping cues (Bregman, 1990, from memory),
+  so the search over structures need not run in every window. O7 already
+  does this with given onsets; the search would detect them.
 - **Real time** on long input (O4 (C)).
+- **Order effects as tests.** A batch model gives the same answer whatever
+  order the sound arrived in; an online one need not, which is where it
+  can say something the batch model cannot. Candidates, each to be checked
+  against its literature before it is run:
+  - buildup of streaming (this design's test);
+  - buildup resetting after a pause or a shift of attention (Cusack et
+    al., 2004, from memory);
+  - hysteresis: staying with an interpretation once chosen as Δf or Δt is
+    swept up and then down;
+  - switching between interpretations in long bistable sequences (Mill et
+    al., 2013, PLoS Comput. Biol. 9:e1002925).
+- **Attention as a budget**: refine one source in detail and keep the
+  others coarse, as the paper suggests for attention [paper §4.3.7].
+- **Proposals learned without labels.** Predicting the next window is a
+  training signal that needs no labelled data: a proposal network could
+  learn from how sounds actually continue, rather than from 100,000
+  sampled scenes [paper App. B.2.1]. That would remove the reason given in
+  milestone (c)'s C1 for leaving a learned network out, and bears on the
+  long-term goal of separating parts in real recordings without labels.
 
 ## 9. Roadmap: a phone app
 
@@ -326,3 +373,5 @@ None of these is addressed here.
    B source born with the first B tone? (recommended: yes)
 8. **O8** New `online.py` and `tools/online_buildup.py`, existing modules
    changed only to split latents? (recommended: yes)
+9. **O9** Fixed steps per window by default, with surprise-scaled steps
+   run beside it on one stimulus? (recommended: yes)
