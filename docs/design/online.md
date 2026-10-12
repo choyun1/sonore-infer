@@ -286,7 +286,30 @@ Each step is one PR; nothing past step 1 starts before Cho accepts this.
 - **Structure search online** (O1 (C)).
 - **Real time** on long input (O4 (C)).
 
-## 9. Questions for Cho, short form
+## 9. Roadmap: a phone app
+
+The eventual goal (Cho, 2026-10-12) is a phone app that runs live
+inference on the phone's microphone: the scene hypotheses update as the
+sound arrives and are shown as they change. This design is the first step
+towards it. The steps after it, each its own design:
+
+1. **Real time on a computer**: the update for each window finishes within
+   the window, on long input. Needs O4 (C) (a kernel with a state-space
+   form) and O1 (C) (structure search online), and a measured real-time
+   factor below 1 on the laptop's CPU.
+2. **Live input**: the same loop fed from a microphone instead of a file,
+   with the cochleagram computed frame by frame as samples arrive.
+3. **On the phone**: the model and the update loop on a phone's processor,
+   or the phone streaming audio to a computer that runs them. Which one is
+   open; it depends on the cost measured in step 1.
+
+What a phone adds that the lab does not: an uncalibrated microphone (so the
+level in dB SPL that the priors assume is unknown), room reverberation and
+background noise in every recording (the source-and-room work in
+`docs/design/source-reverb.md` is related), and limited power and memory.
+None of these is addressed here.
+
+## 10. Questions for Cho, short form
 
 1. **O1** Reference plus an online approximation for the same hypotheses;
    online structure search later? (recommended: yes)
