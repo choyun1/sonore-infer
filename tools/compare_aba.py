@@ -14,6 +14,7 @@ over ``one`` (positive favours two streams) by each evidence estimate.
 """
 
 import argparse
+import sys
 import time
 
 import torch
@@ -53,6 +54,11 @@ def hypotheses(semitones, onset_interval, infer_kernel=False):
         ("one", Scene((one,), TIMING), [one_start]),
         ("two", Scene((a, b), TIMING), [a_start | b_start]),
     ]
+
+
+def status(prefix):
+    """A ``report`` for ``evaluate`` that writes progress to stderr (read by tools/run_seeds.py)."""
+    return lambda message: print(f"status: {prefix}: {message}", file=sys.stderr, flush=True)
 
 
 def log_odds(results, estimate):
@@ -111,6 +117,7 @@ def main():
                     n_samples=args.samples,
                     generator=torch.Generator().manual_seed(args.seed),
                     variational_steps=args.variational_steps,
+                    report=status(hypothesis),
                 )
                 results[hypothesis] = result
                 e = result.evidence
