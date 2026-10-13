@@ -2,7 +2,7 @@
 
 Each observation is a 400 ms ``sonore.gaussian_spectrogram`` (sonore's
 defaults) on a Gaussian noise carrier, ramped by 10 ms, optionally convolved
-with a ``synth_ir`` room, analysed into 39 bands and 10 ms blocks over 1 s.
+with a ``synth_ir`` room, analyzed into 39 bands and 10 ms blocks over 1 s.
 The model is :meth:`BlockPower.source_energy` from the drawn cell levels,
 convolved with :class:`RoomGain`. Every draw of carrier and room is new; the
 spectrogram is redrawn every ``--draws`` observations. Spectrogram, carrier
@@ -13,7 +13,7 @@ Printed, over cells the model puts within 60 dB of its peak, separately for
 blocks while the source plays and after it ends:
 
 - the mean of the draws against the model [dB]: how well the expected
-  energy is modelled;
+  energy is modeled;
 - single draws against the model [dB]: the mean is the log bias and the sd
   the noise the likelihood has to allow (design R4), also pooled over all
   cells (the defaults ``BIAS_DB`` and ``SIGMA_DB`` in blockpower.py are the
@@ -63,7 +63,7 @@ def main():
     playing = np.arange(power.n_blocks) < round(power.duration / power.block)
     print(
         f"sonore {so.__version__}; {args.sources} spectrograms x {args.draws} draws; "
-        "39 bands 20-4000 Hz, 10 ms blocks, 400 ms source, 1 s analysed"
+        "39 bands 20-4000 Hz, 10 ms blocks, 400 ms source, 1 s analyzed"
     )
     print("               while playing               after the offset            all cells")
     print("               draws-mean    single        draws-mean    single        single")

@@ -47,7 +47,7 @@ def test_n_windows_matches_sonore(short):
     levels = drawn_levels(short, 0)
     centers = np.asarray(env.data).reshape(env.data.shape[0], -1)[:: short.block_samples, 1:-1].T
     np.testing.assert_allclose(20 * np.log10(centers), levels[:, : centers.shape[1]], atol=1e-9)
-    assert short.n_windows == centers.shape[1] + 1  # the last window is centred on the end
+    assert short.n_windows == centers.shape[1] + 1  # the last window is centered on the end
 
 
 def test_fast_source_energy_equals_the_direct_one(short):

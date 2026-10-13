@@ -48,7 +48,7 @@ class SpectrogramPrior:
 
     @property
     def band_spacing_erb(self) -> float:
-        """ERB distance between neighbouring band centers; the bands sit at
+        """ERB distance between neighboring band centers; the bands sit at
         equally spaced points strictly between ``f_lo`` and ``f_hi``."""
         return float(freq_to_erb(self.f_hi) - freq_to_erb(self.f_lo)) / (self.n_bands + 1)
 

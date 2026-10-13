@@ -1,7 +1,7 @@
 """Likelihood slices through the truth (docs/design/source-reverb.md, R4-R5).
 
 One observation: a 400 ms ``sonore.gaussian_spectrogram`` on a noise
-carrier in a ``synth_ir`` room (RT60 0.4 s, DRR 10 dB), analysed into 39
+carrier in a ``synth_ir`` room (RT60 0.4 s, DRR 10 dB), analyzed into 39
 bands and 10 ms blocks over 1.2 s. The model is :class:`BlockPower` at the
 drawn cell levels and :class:`RoomGain`. One thing at a time is moved off the
 truth, the rest held there:

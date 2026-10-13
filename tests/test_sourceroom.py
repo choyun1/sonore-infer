@@ -30,7 +30,7 @@ RT60 = 0.3
 
 @pytest.fixture(scope="module")
 def model():
-    """A 200 ms source in a 0.3 s room, 400 ms analysed, to keep it quick."""
+    """A 200 ms source in a 0.3 s room, 400 ms analyzed, to keep it quick."""
     power = BlockPower(n_blocks=40, duration=0.2)
     env = so.gaussian_spectrogram(power.duration, FS, rng=0)
     x = env.to_sound(so.gaussian_noise(power.duration, FS, rng=1000)).ramp(power.ramp).data.ravel()

@@ -565,8 +565,8 @@ def importance_check(
 def infer(model: Model, *, refine_to: float = 0.5, max_points: int = 36, verbose: bool = False) -> Posterior:
     """Posterior over RT60 and theta for ``model``'s observation.
 
-    R5's coarse grid first, each point warm-started from its neighbour; then
-    points are added in log r where the posterior mass is, until neighbouring
+    R5's coarse grid first, each point warm-started from its neighbor; then
+    points are added in log r where the posterior mass is, until neighboring
     points with mass in between are less than ``refine_to`` posterior
     standard deviations (of log r) apart.
     """

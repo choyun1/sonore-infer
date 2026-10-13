@@ -4,7 +4,7 @@ model could have made (docs/design/source-reverb.md, R7).
 Each run is a 400 ms ``sonore.gaussian_spectrogram`` with given band and
 time correlation lengths and level sd, on a Gaussian noise carrier, ramped
 by 10 ms, in a ``synth_ir`` room of given RT60 at the typical DRR (9.9 dB),
-analysed into 39 bands and 10 ms blocks over 1.2 s. Spectrogram, carrier
+analyzed into 39 bands and 10 ms blocks over 1.2 s. Spectrogram, carrier
 and room each get their own seed from ``SeedSequence(run)`` (a shared seed
 would make them the same noise). The posterior is
 :func:`sonore_infer.sourceroom.infer`, at a floor of 60 dB and at the

@@ -97,9 +97,9 @@ def log_prior_structure(source_types: list[str], duration: float, n_events: list
     ``n_events`` the number of events of each (one each by default), each
     Geometric(0.5) on 1, 2, ... [Table A.1].
     The number of sources is zero-truncated Poisson(rate * duration). A fitted
-    hypothesis is one mode with labelled sources; every permutation of the
+    hypothesis is one mode with labeled sources; every permutation of the
     labels is another mode of equal mass that the same hypothesis includes,
-    so the prior counts all n! labellings (design C6). For sources of the same
+    so the prior counts all n! labelings (design C6). For sources of the same
     type this is more than the number of type orders.
     """
     n = len(source_types)
@@ -314,7 +314,7 @@ class TrajectoryPrior:
         point lies inside each event (the event's gate, between 0 and 1). The
         within-event term of the kernel [App. A.2, Eqn A.17] is then
         ``beta^2 sum_j w_j(t1) w_j(t2)`` instead of a hard 0 or 1, so the
-        prior moves smoothly with the events' timing (design C4, a labelled
+        prior moves smoothly with the events' timing (design C4, a labeled
         departure from the paper and from BASS's hard mask).
         """
         n_grid = memberships.shape[-1]

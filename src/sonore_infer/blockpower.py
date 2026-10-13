@@ -22,7 +22,7 @@ where ``S_cc'`` is the cross-spectrum of the fine structures of bands ``c``
 and ``c'``. For Gaussian noise it is exact: the phases of two jointly
 Gaussian analytic signals with complex correlation ``rho`` have
 ``E[cos phi cos phi'] = pi/8 Re[rho 2F1(1/2, 1/2; 2; |rho|^2)]``. Only
-neighbouring ``c, c'`` overlap. Two time smearings are added: each
+neighboring ``c, c'`` overlap. Two time smearings are added: each
 synthesis filter's energy impulse response before the cut to the sound's
 length, and the analysis filter's after it. In the lowest bands both last
 tens of ms.
@@ -160,7 +160,7 @@ class BlockPower:
     def _kernels(self) -> tuple[int, torch.Tensor, torch.Tensor, torch.Tensor]:
         """Energy impulse responses of the filters, zero phase, centered,
         cut where less than ``kernel_tail`` of the energy lies beyond:
-        ``(half, synthesis (n_bands, 2 half + 1), synthesis of neighbouring
+        ``(half, synthesis (n_bands, 2 half + 1), synthesis of neighboring
         pairs (n_bands - 1, ...), analysis)``. Synthesis and analysis use the
         same filters, so the first and last are equal."""
         n_fft = 1 << int(math.ceil(math.log2(2 * self.fs)))

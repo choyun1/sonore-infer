@@ -325,7 +325,7 @@ Each step is one PR; nothing past step 1 starts before Cho accepts this.
 - **Attention as a budget**: refine one source in detail and keep the
   others coarse, as the paper suggests for attention [paper §4.3.7].
 - **Proposals learned without labels.** Predicting the next window is a
-  training signal that needs no labelled data: a proposal network could
+  training signal that needs no labeled data: a proposal network could
   learn from how sounds actually continue, rather than from 100,000
   sampled scenes [paper App. B.2.1]. That would remove the reason given in
   milestone (c)'s C1 for leaving a learned network out, and bears on the

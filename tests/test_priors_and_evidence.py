@@ -67,7 +67,7 @@ def test_structure_prior():
     )
     assert log_prior_structure(["harmonic"], 0.5) == pytest.approx(one)
     assert log_prior_structure(["harmonic", "whistle"], 0.5) == pytest.approx(two)
-    # two sources of the same type count both labellings too (design C6)
+    # two sources of the same type count both labelings too (design C6)
     assert log_prior_structure(["whistle", "whistle"], 0.5) == pytest.approx(two)
 
 
@@ -76,7 +76,7 @@ def test_structure_prior_matches_sampling_from_the_generative_model():
     # each source a uniform type, a Geometric(0.5) number of events and one position
     # x ~ U(0, 2). The hypothesis "two whistles of one event each, one with x in [0, 1)
     # and one in [1, 2)" has probability exp(structure prior) * (1/2) * (1/2): the
-    # structure prior times the mass of one labelled mode.
+    # structure prior times the mass of one labeled mode.
     rng = np.random.default_rng(0)
     duration, draws = 2.0, 1_000_000
     n = rng.poisson(duration, draws)
