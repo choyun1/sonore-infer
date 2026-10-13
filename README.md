@@ -12,11 +12,11 @@ This project is developed with AI assistance (Claude).
 
 ## Install and test
 
-    pip install -e ".[dev]"     # numpy, torch, plus sonore, pyro, pytest, ruff
+    pip install -e ".[dev]"     # numpy, scipy, torch, plus sonore, pyro, pytest, ruff
     ruff check .
     python -m pytest -q
 
-`pip install -e .` alone gives the differentiable core (numpy and torch). The
+`pip install -e .` alone gives the differentiable core (numpy, scipy and torch). The
 `stimuli` extra adds sonore, which makes the stimuli and serves as the test
 oracle; the core never imports it (`tests/test_layers.py` checks this). CI
 runs the same commands on Linux and Windows, Python 3.10 and 3.14.
@@ -40,7 +40,8 @@ online inference; and inferring a source together with its room.
 | `tools/` | Standalone scripts: experiment runners, checks of the model against sonore renders, and measurements. Every number in the design documents comes from one of them or is marked as an estimate. Index: [tools/README.md](tools/README.md). |
 | `notebooks/` | `appendix_c_stimuli.ipynb`: listen to and plot the stimuli. |
 
-The package holds two models that share no code beyond ERB conversions:
+The package holds two models that share no code beyond the ERB scale
+(`erb.py`, sonore's conversions written for torch too):
 
 **Harmonic and whistle sources heard through a cochleagram** (milestones (a)
 to (c): mistuned harmonic, two notes, ABA streaming)

@@ -31,7 +31,6 @@ import sonore as so
 import torch
 from scipy.signal import fftconvolve
 from sonore.core.utils import as_rng
-from sonore.sources.gaussian_spectrogram import _correlated_field
 
 from sonore_infer.blockpower import BlockPower
 from sonore_infer.cochleagram import erb_to_freq, freq_to_erb
@@ -43,9 +42,11 @@ SETTINGS = [(None, None), (0.2, 10.0), (0.4, 10.0), (0.8, 10.0), (0.4, 0.0), (0.
 
 
 def drawn_levels(prior: SpectrogramPrior, n_windows: int, seed: int) -> np.ndarray:
-    """The cell levels [dB] ``gaussian_spectrogram(rng=seed)`` draws."""
-    field = _correlated_field(prior.n_bands, n_windows, prior.rho_band, prior.rho_time, as_rng(seed))
-    return prior.mean_db()[:, None] + prior.sd_db * field
+    """The cell levels [dB] ``gaussian_spectrogram(rng=seed)`` draws: the
+    same standard normals, through :meth:`SpectrogramPrior.color`, which runs
+    sonore's recursion."""
+    innovations = as_rng(seed).standard_normal((prior.n_bands, n_windows))
+    return prior.mean_db()[:, None] + prior.color(torch.from_numpy(innovations)).numpy()
 
 
 def summary(errors: np.ndarray) -> str:
