@@ -37,6 +37,12 @@ not import the package.
 | `recovery.py` | Experiment (a) of R7: recover RT60 and the source's statistics |
 | `atypical_rooms.py` | Experiment (b) of R7: the model heard through atypical rooms |
 
+## Online inference (docs/design/online.md)
+
+| Script | What it does |
+|---|---|
+| `online_buildup.py` | Buildup of streaming (App. C.11) in one online pass, against batch fits at each triplet's end |
+
 ## Measurements of the cochleagram, and readings of the paper
 
 | Script | What it does |
