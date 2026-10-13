@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from sonore_inference.stimuli import mistuned_harmonic as mh
+from sonore_infer.stimuli import mistuned_harmonic as mh
 
 FS = 20_000
 

@@ -5,8 +5,8 @@ import math
 import pytest
 import torch
 
-from sonore_inference.cochleagram import FFTCochleagram, gaussian_log_likelihood
-from sonore_inference.priors import (
+from sonore_infer.cochleagram import FFTCochleagram, gaussian_log_likelihood
+from sonore_infer.priors import (
     F0_KERNEL,
     F0_TRAJECTORY,
     HARMONIC_LEVEL_KERNEL,
@@ -16,7 +16,7 @@ from sonore_inference.priors import (
     inverse_softplus,
     softplus,
 )
-from sonore_inference.scene import Harmonic, Scene, SceneTiming, Whistle
+from sonore_infer.scene import Harmonic, Scene, SceneTiming, Whistle
 
 TIMING = SceneTiming(fs=20_000, total_duration=0.5, ramp=0.01)
 F64 = torch.float64

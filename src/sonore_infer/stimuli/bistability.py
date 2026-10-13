@@ -15,7 +15,7 @@ Assumed, because the text does not say:
 
 import sonore as so
 
-from sonore_inference.stimuli.levels import FS, sinusoid
+from sonore_infer.stimuli.levels import FS, sinusoid
 
 ONSET_INTERVALS = (0.067, 0.083, 0.100, 0.117, 0.134, 0.150)
 SEMITONES = (1, 3, 6, 9, 12)

@@ -32,9 +32,9 @@ import time
 
 import torch
 
-from sonore_inference.cochleagram import FFTCochleagram
-from sonore_inference.scene import Harmonic, Scene, SceneTiming, Whistle, evaluate
-from sonore_inference.stimuli import two_notes as tn
+from sonore_infer.cochleagram import FFTCochleagram
+from sonore_infer.scene import Harmonic, Scene, SceneTiming, Whistle, evaluate
+from sonore_infer.stimuli import two_notes as tn
 
 TIMING = SceneTiming(fs=tn.FS, total_duration=tn.DURATION + 2 * tn.PADDING, ramp=tn.RAMP)
 ABSENT_DB = 30.0

@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from sonore_inference.stimuli import bistability as ab
+from sonore_infer.stimuli import bistability as ab
 
 FS = 20_000
 

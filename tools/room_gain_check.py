@@ -30,7 +30,7 @@ import sonore as so
 import torch
 from scipy.signal import fftconvolve
 
-from sonore_inference.room import RoomGain
+from sonore_infer.room import RoomGain
 
 FS = 20_000.0
 BLOCK = round(0.010 * FS)

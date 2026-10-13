@@ -15,7 +15,7 @@ import time
 
 import torch
 
-from sonore_inference.cochleagram import Cochleagram, gaussian_log_likelihood
+from sonore_infer.cochleagram import Cochleagram, gaussian_log_likelihood
 
 
 def time_step(cochleagram, n_samples, dtype, device, repeats):

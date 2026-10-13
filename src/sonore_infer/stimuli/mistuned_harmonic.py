@@ -19,7 +19,7 @@ Assumed, because the text does not say:
 import numpy as np
 import sonore as so
 
-from sonore_inference.stimuli.levels import FS, sinusoid
+from sonore_infer.stimuli.levels import FS, sinusoid
 
 DURATION = 0.400
 F0S = (100.0, 200.0, 400.0)

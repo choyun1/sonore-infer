@@ -12,7 +12,7 @@ filtering) with :class:`FFTCochleagram` (BASS's FFT approximation).
 import numpy as np
 import torch
 
-from sonore_inference.cochleagram import Cochleagram, FFTCochleagram, erb_bandwidth
+from sonore_infer.cochleagram import Cochleagram, FFTCochleagram, erb_bandwidth
 
 FS = 20_000
 TARGETS = (100, 200, 300, 400, 600, 800, 1200, 2400)

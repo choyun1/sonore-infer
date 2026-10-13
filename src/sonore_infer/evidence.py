@@ -3,7 +3,7 @@
 Comparing hypotheses with different numbers of parameters needs the
 marginal likelihood ``p(sound | H) = integral of p(sound | theta, H) p(theta | H)``,
 not the best fit [App. B.1.1 of Cusimano et al., 2024]. Two estimates are
-given, from the posterior mode ``theta*`` found by :func:`sonore_inference.fit.fit`
+given, from the posterior mode ``theta*`` found by :func:`sonore_infer.fit.fit`
 with the prior included:
 
 - **Laplace**: a Gaussian fitted at the mode, ``log p(sound, theta*) +

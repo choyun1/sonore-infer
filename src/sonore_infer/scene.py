@@ -2,8 +2,8 @@
 
 A hypothesis in enumerative inference [App. C.6 of Cusimano et al., 2024]
 is a list of sources, each with one event. :class:`Scene` holds such a list
-and gives what :func:`sonore_inference.fit.fit` and
-:func:`sonore_inference.evidence.log_evidence` need: a renderer from named
+and gives what :func:`sonore_infer.fit.fit` and
+:func:`sonore_infer.evidence.log_evidence` need: a renderer from named
 parameters to a waveform, the log prior of those parameters, their step
 sizes, and the log prior of the scene's discrete structure.
 
@@ -18,14 +18,14 @@ inferred --whistle-timing inferred``):
 - :class:`Whistle`: frequency and level follow trajectories.
 
 Both infer their onset and log duration under
-:func:`~sonore_inference.priors.log_prior_event_timing`. Parameter names
+:func:`~sonore_infer.priors.log_prior_event_timing`. Parameter names
 are ``"<source name>.<parameter>"``, e.g. ``"h0.f0_mean"``.
 
 The sigma and lengthscale of each Gaussian process are fixed at the
 Table A.2 medians unless a source has ``infer_kernel=True`` (design C3 (B)).
 Then each is a latent too, named e.g. ``"h0.f0_sigma_free"``: the value
 mapped to the whole real line, under the paper's truncated normal prior
-(see :class:`~sonore_inference.priors.KernelParameterPrior`).
+(see :class:`~sonore_infer.priors.KernelParameterPrior`).
 """
 
 from __future__ import annotations
@@ -39,10 +39,10 @@ from typing import ClassVar
 
 import torch
 
-from sonore_inference.cochleagram import Cochleagram, gaussian_log_likelihood
-from sonore_inference.evidence import Evidence, VariationalEvidence, log_evidence, variational_evidence
-from sonore_inference.fit import FitResult, fit
-from sonore_inference.priors import (
+from sonore_infer.cochleagram import Cochleagram, gaussian_log_likelihood
+from sonore_infer.evidence import Evidence, VariationalEvidence, log_evidence, variational_evidence
+from sonore_infer.fit import FitResult, fit
+from sonore_infer.priors import (
     F0_KERNEL,
     F0_TRAJECTORY,
     GRID_STEP,
@@ -61,7 +61,7 @@ from sonore_inference.priors import (
     sample_structure,
     spectrum_distribution,
 )
-from sonore_inference.sources import _gate, trajectory_event
+from sonore_infer.sources import _gate, trajectory_event
 
 Params = dict[str, torch.Tensor]
 

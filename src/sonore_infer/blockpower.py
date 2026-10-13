@@ -5,7 +5,7 @@ The representation is the energy of each band of sonore's half-cosine ERB
 filterbank (by default the source's 39 bands, 20 to 4000 Hz) summed over
 10 ms blocks, in dB. It is linear in power before the log, so the expected
 energy of a reverberant sound is the source's expected energy convolved,
-band by band, with the room's expected gain (:class:`~sonore_inference.room.RoomGain`).
+band by band, with the room's expected gain (:class:`~sonore_infer.room.RoomGain`).
 
 The source is ``sonore.gaussian_spectrogram`` on a Gaussian noise carrier
 (``env.to_sound(noise).ramp(0.01)``). In band ``c`` the envelope
