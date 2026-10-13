@@ -35,6 +35,8 @@ from typing import ClassVar
 
 import torch
 
+from sonore_infer.erb import freq_to_erb
+
 ERB_RANGE = (3.0, 33.0)
 LEVEL_RANGE_DB = (0.0, 120.0)
 SPECTRUM_SIGMA_DB = 11.8
@@ -45,17 +47,13 @@ EVENTS_GEOMETRIC_P = 0.5
 N_SOURCE_TYPES = 3
 
 
-def _freq_to_erb(freq: torch.Tensor) -> torch.Tensor:
-    return 9.265 * torch.log1p(freq / (24.7 * 9.265))
-
-
 def log_prior_log_frequency(log_freq: torch.Tensor) -> torch.Tensor:
     """Log density of ``log f`` when f is uniform in ERB number on ``ERB_RANGE``; -inf outside."""
     freq = log_freq.exp()
-    erb = _freq_to_erb(freq)
+    erb = freq_to_erb(freq)
     low, high = ERB_RANGE
     inside = (erb >= low) & (erb <= high)
-    # d(ERB number)/d(log f) = f * 9.265 / (24.7 * 9.265 + f), the exact derivative of _freq_to_erb
+    # d(ERB number)/d(log f) = f * 9.265 / (24.7 * 9.265 + f), the exact derivative of freq_to_erb
     density = -math.log(high - low) + log_freq + math.log(9.265) - torch.log(24.7 * 9.265 + freq)
     return torch.where(inside, density, torch.full_like(density, -math.inf))
 
@@ -78,7 +76,7 @@ def spectrum_distribution(
     with the kernel evaluated at the ERB numbers of the harmonics of ``f0``.
     ``sigma`` and ``lengthscale`` default to the Table A.2 medians."""
     numbers = torch.arange(1, n_harmonics + 1, dtype=f0.dtype, device=f0.device)
-    erbs = _freq_to_erb(numbers * f0)
+    erbs = freq_to_erb(numbers * f0)
     distance = erbs[:, None] - erbs[None, :]
     covariance = sigma**2 * torch.exp(-0.5 * (distance / lengthscale) ** 2)
     covariance = covariance + SPECTRUM_JITTER_DB**2 * torch.eye(n_harmonics, dtype=f0.dtype, device=f0.device)
@@ -99,9 +97,9 @@ def log_prior_structure(source_types: list[str], duration: float, n_events: list
     ``n_events`` the number of events of each (one each by default), each
     Geometric(0.5) on 1, 2, ... [Table A.1].
     The number of sources is zero-truncated Poisson(rate * duration). A fitted
-    hypothesis is one mode with labelled sources; every permutation of the
+    hypothesis is one mode with labeled sources; every permutation of the
     labels is another mode of equal mass that the same hypothesis includes,
-    so the prior counts all n! labellings (design C6). For sources of the same
+    so the prior counts all n! labelings (design C6). For sources of the same
     type this is more than the number of type orders.
     """
     n = len(source_types)
@@ -316,7 +314,7 @@ class TrajectoryPrior:
         point lies inside each event (the event's gate, between 0 and 1). The
         within-event term of the kernel [App. A.2, Eqn A.17] is then
         ``beta^2 sum_j w_j(t1) w_j(t2)`` instead of a hard 0 or 1, so the
-        prior moves smoothly with the events' timing (design C4, a labelled
+        prior moves smoothly with the events' timing (design C4, a labeled
         departure from the paper and from BASS's hard mask).
         """
         n_grid = memberships.shape[-1]

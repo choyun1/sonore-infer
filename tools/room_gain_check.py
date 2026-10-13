@@ -5,13 +5,13 @@ A 400 ms white-noise burst (a new draw each time) is convolved with a
 bands (sonore's cosine filterbank, 39 bands from 20 to 4000 Hz) and their
 energy summed over 10 ms blocks. The model predicts the reverberant energy
 as the burst's own block energies convolved, block by block, with
-:class:`RoomGain`. The burst's energies are measured, not modelled, so what
+:class:`RoomGain`. The burst's energies are measured, not modeled, so what
 is compared is the room alone.
 
 Printed, over cells within 60 dB of each band's peak:
 
 - the mean over draws against the model, in dB: how well the expected
-  energy is modelled;
+  energy is modeled;
 - single draws against the model, in dB: the residual one observation
   leaves, whose mean is the log bias and whose sd sets the likelihood's
   noise for the room (the source's own carrier adds more, step 3).

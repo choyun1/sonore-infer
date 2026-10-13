@@ -22,6 +22,7 @@ classifiers = [
 ]
 dependencies = [
     "numpy>=1.26",
+    "scipy>=1.11",  # sourceroom.Posterior.theta_quantiles (scipy.stats.norm)
     "torch>=2.4",
 ]
 
