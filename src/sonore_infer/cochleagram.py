@@ -32,22 +32,10 @@ from functools import lru_cache
 import numpy as np
 import torch
 
+# room.py, spectrotemporal.py and some tools import these from here too.
+from sonore_infer.erb import erb_bandwidth, erb_to_freq, freq_to_erb
+
 REFERENCE_RMS = 1e-6
-
-
-def erb_bandwidth(freq):
-    """Equivalent rectangular bandwidth [Hz] at ``freq`` (Glasberg & Moore, 1990)."""
-    return 24.7 * (4.37 * np.asarray(freq, float) / 1000 + 1)
-
-
-def freq_to_erb(freq):
-    """Frequency [Hz] to ERB number [Cams]: the exact integral of ``1 / erb_bandwidth``."""
-    return 9.265 * np.log1p(np.asarray(freq, float) / (24.7 * 9.265))
-
-
-def erb_to_freq(erb):
-    """ERB number [Cams] to frequency [Hz]; inverse of :func:`freq_to_erb`."""
-    return 24.7 * 9.265 * np.expm1(np.asarray(erb, float) / 9.265)
 
 
 def gammatone_response(freqs, cfs, order: int = 4, bandwidth_factor: float = 1.019) -> np.ndarray:

@@ -35,6 +35,8 @@ from typing import ClassVar
 
 import torch
 
+from sonore_infer.erb import freq_to_erb
+
 ERB_RANGE = (3.0, 33.0)
 LEVEL_RANGE_DB = (0.0, 120.0)
 SPECTRUM_SIGMA_DB = 11.8
@@ -45,17 +47,13 @@ EVENTS_GEOMETRIC_P = 0.5
 N_SOURCE_TYPES = 3
 
 
-def _freq_to_erb(freq: torch.Tensor) -> torch.Tensor:
-    return 9.265 * torch.log1p(freq / (24.7 * 9.265))
-
-
 def log_prior_log_frequency(log_freq: torch.Tensor) -> torch.Tensor:
     """Log density of ``log f`` when f is uniform in ERB number on ``ERB_RANGE``; -inf outside."""
     freq = log_freq.exp()
-    erb = _freq_to_erb(freq)
+    erb = freq_to_erb(freq)
     low, high = ERB_RANGE
     inside = (erb >= low) & (erb <= high)
-    # d(ERB number)/d(log f) = f * 9.265 / (24.7 * 9.265 + f), the exact derivative of _freq_to_erb
+    # d(ERB number)/d(log f) = f * 9.265 / (24.7 * 9.265 + f), the exact derivative of freq_to_erb
     density = -math.log(high - low) + log_freq + math.log(9.265) - torch.log(24.7 * 9.265 + freq)
     return torch.where(inside, density, torch.full_like(density, -math.inf))
 
@@ -78,7 +76,7 @@ def spectrum_distribution(
     with the kernel evaluated at the ERB numbers of the harmonics of ``f0``.
     ``sigma`` and ``lengthscale`` default to the Table A.2 medians."""
     numbers = torch.arange(1, n_harmonics + 1, dtype=f0.dtype, device=f0.device)
-    erbs = _freq_to_erb(numbers * f0)
+    erbs = freq_to_erb(numbers * f0)
     distance = erbs[:, None] - erbs[None, :]
     covariance = sigma**2 * torch.exp(-0.5 * (distance / lengthscale) ** 2)
     covariance = covariance + SPECTRUM_JITTER_DB**2 * torch.eye(n_harmonics, dtype=f0.dtype, device=f0.device)
