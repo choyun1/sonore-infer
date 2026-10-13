@@ -1,4 +1,4 @@
-# sonore-inference: design document, version 1
+# sonore-infer: design document, version 1
 
 Status: **accepted by Cho on 2026-10-05** (D1 to D8 as recommended; see §5 for
 the answers to D3 and D6).
@@ -144,6 +144,10 @@ items are marked "check in code".
 ---
 
 ## 2. Name check (sonore-inference)
+
+Renamed on 2026-10-13 to `sonore-infer` (import name `sonore_infer`), to
+match `sonore-sketch` / `sonore_sketch`. `sonore-infer` returned 404 on PyPI
+that day. The table below is the original check, left as it was.
 
 | Where | Result | How |
 |---|---|---|

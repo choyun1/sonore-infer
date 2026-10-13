@@ -7,8 +7,8 @@ import numpy as np
 import pytest
 import torch
 
-from sonore_inference.cochleagram import FFTCochleagram, gaussian_log_likelihood
-from sonore_inference.priors import (
+from sonore_infer.cochleagram import FFTCochleagram, gaussian_log_likelihood
+from sonore_infer.priors import (
     F0_TRAJECTORY,
     NormalGammaMarginal,
     ZeroTruncatedPoisson,
@@ -16,8 +16,8 @@ from sonore_inference.priors import (
     log_prior_structure,
     sample_structure,
 )
-from sonore_inference.scene import Harmonic, Scene, SceneTiming, Whistle
-from sonore_inference.sources import whistle_event
+from sonore_infer.scene import Harmonic, Scene, SceneTiming, Whistle
+from sonore_infer.sources import whistle_event
 
 FS = 20_000
 TIMING = SceneTiming(fs=FS, total_duration=0.5, ramp=0.01)

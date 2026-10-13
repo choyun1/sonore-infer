@@ -33,10 +33,10 @@ from scipy.signal import fftconvolve
 from sonore.core.utils import as_rng
 from sonore.sources.gaussian_spectrogram import _correlated_field
 
-from sonore_inference.blockpower import BlockPower
-from sonore_inference.cochleagram import erb_to_freq, freq_to_erb
-from sonore_inference.room import RoomGain
-from sonore_inference.spectrotemporal import SpectrogramPrior
+from sonore_infer.blockpower import BlockPower
+from sonore_infer.cochleagram import erb_to_freq, freq_to_erb
+from sonore_infer.room import RoomGain
+from sonore_infer.spectrotemporal import SpectrogramPrior
 
 FS = 20_000.0
 SETTINGS = [(None, None), (0.2, 10.0), (0.4, 10.0), (0.8, 10.0), (0.4, 0.0), (0.4, "tail")]

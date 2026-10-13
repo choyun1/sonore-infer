@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from sonore_inference.stimuli import two_notes as tn
+from sonore_infer.stimuli import two_notes as tn
 
 FS = 20_000
 AMPLITUDE_60_DB = np.sqrt(2) * 1e-6 * 10 ** (60 / 20)

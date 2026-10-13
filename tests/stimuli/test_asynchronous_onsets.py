@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 import sonore as so
 
-from sonore_inference.stimuli import asynchronous_onsets as ao
+from sonore_infer.stimuli import asynchronous_onsets as ao
 
 FS = 20_000
 VOWEL_ONSET = 1000 + 4800  # 50 ms of silence, then the 240 ms lead

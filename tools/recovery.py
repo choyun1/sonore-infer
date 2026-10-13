@@ -7,7 +7,7 @@ by 10 ms, in a ``synth_ir`` room of given RT60 at the typical DRR (9.9 dB),
 analysed into 39 bands and 10 ms blocks over 1.2 s. Spectrogram, carrier
 and room each get their own seed from ``SeedSequence(run)`` (a shared seed
 would make them the same noise). The posterior is
-:func:`sonore_inference.sourceroom.infer`, at a floor of 60 dB and at the
+:func:`sonore_infer.sourceroom.infer`, at a floor of 60 dB and at the
 measured noise sigma and twice it (design R4).
 
 Runs: 10 seeds x RT60 {0.2, 0.4, 0.8} s x three source settings (sonore's
@@ -37,9 +37,9 @@ import sonore as so
 import torch
 from scipy.signal import fftconvolve
 
-from sonore_inference.blockpower import SIGMA_DB, BlockPower
-from sonore_inference.room import TYPICAL_DRR_DB
-from sonore_inference.sourceroom import THETA_DEFAULT, Model, importance_check, infer
+from sonore_infer.blockpower import SIGMA_DB, BlockPower
+from sonore_infer.room import TYPICAL_DRR_DB
+from sonore_infer.sourceroom import THETA_DEFAULT, Model, importance_check, infer
 
 FS = 20_000.0
 RT60S = (0.2, 0.4, 0.8)

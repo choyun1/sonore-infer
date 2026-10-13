@@ -7,9 +7,9 @@ For each mistuning, as the paper's enumerative inference does [App. C.6]:
   paper's two initializations, keeping the better.
 
 Each hypothesis is fitted to its posterior mode under the priors in
-``sonore_inference.priors``, then its log marginal likelihood
+``sonore_infer.priors``, then its log marginal likelihood
 ``log p(sound | H)`` is estimated by the Laplace approximation and by
-importance sampling (``sonore_inference.evidence``). Adding the log prior of
+importance sampling (``sonore_infer.evidence``). Adding the log prior of
 each hypothesis's structure (number and types of sources) gives the log
 posterior odds of two sources over one. Positive means two sources.
 
@@ -28,10 +28,10 @@ import time
 
 import torch
 
-from sonore_inference.cochleagram import Cochleagram, FFTCochleagram, gaussian_log_likelihood
-from sonore_inference.evidence import log_evidence
-from sonore_inference.fit import fit
-from sonore_inference.priors import (
+from sonore_infer.cochleagram import Cochleagram, FFTCochleagram, gaussian_log_likelihood
+from sonore_infer.evidence import log_evidence
+from sonore_infer.fit import fit
+from sonore_infer.priors import (
     F0_TRAJECTORY,
     GRID_STEP,
     HARMONIC_LEVEL_TRAJECTORY,
@@ -42,8 +42,8 @@ from sonore_inference.priors import (
     log_prior_spectrum,
     log_prior_structure,
 )
-from sonore_inference.sources import harmonic_tone, trajectory_event, whistle, whistle_event
-from sonore_inference.stimuli import mistuned_harmonic as mh
+from sonore_infer.sources import harmonic_tone, trajectory_event, whistle, whistle_event
+from sonore_infer.stimuli import mistuned_harmonic as mh
 
 TOTAL = mh.DURATION + 2 * mh.PADDING
 TIMING = dict(fs=mh.FS, onset=mh.PADDING, duration=mh.DURATION, total_duration=TOTAL, ramp=mh.RAMP)

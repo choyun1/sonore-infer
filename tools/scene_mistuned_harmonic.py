@@ -1,4 +1,4 @@
-"""Milestone (a)'s full model re-run through ``sonore_inference.scene``, as its test.
+"""Milestone (a)'s full model re-run through ``sonore_infer.scene``, as its test.
 
 Does what ``tools/compare_mistuned_harmonic.py --trajectories
 --harmonic-timing inferred --whistle-timing inferred`` does (same
@@ -14,9 +14,9 @@ import time
 
 import torch
 
-from sonore_inference.cochleagram import FFTCochleagram
-from sonore_inference.scene import Harmonic, Scene, SceneTiming, Whistle, evaluate
-from sonore_inference.stimuli import mistuned_harmonic as mh
+from sonore_infer.cochleagram import FFTCochleagram
+from sonore_infer.scene import Harmonic, Scene, SceneTiming, Whistle, evaluate
+from sonore_infer.stimuli import mistuned_harmonic as mh
 
 TIMING = SceneTiming(fs=mh.FS, total_duration=mh.DURATION + 2 * mh.PADDING, ramp=mh.RAMP)
 
@@ -69,7 +69,7 @@ def main():
         f"f0 {args.f0:g} Hz, harmonic {args.harmonic} mistuned; "
         f"{args.steps} Adam steps, {args.samples} samples, seed {args.seed}, "
         "fft-bass-gain cochleagram, cosine phases, whistle timing inferred, trajectories, "
-        "harmonic timing inferred (through sonore_inference.scene)"
+        "harmonic timing inferred (through sonore_infer.scene)"
         + (", GP sigma and lengthscale inferred" if args.infer_kernel else "")
     )
     print(

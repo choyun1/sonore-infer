@@ -206,13 +206,13 @@ would put all the mass on one point. Now a, b and s are integrated at each
 RT60 by a second-order expansion of the likelihood in the levels (a
 closed-form Gaussian integral for any a, b, s) and Laplace in log
 coordinates, and RT60 starts on the 15 points and is refined around the
-posterior's bulk (`sonore_inference.sourceroom`). About 5 minutes per
+posterior's bulk (`sonore_infer.sourceroom`). About 5 minutes per
 sound per sigma on 2 cores.
 
 ### R6. Framework and placement
 
 PyTorch, per design-v1 D1. The numpy probes are ported, not reused. New
-modules go under `src/sonore_inference/`: `spectrotemporal.py` (R1 source
+modules go under `src/sonore_infer/`: `spectrotemporal.py` (R1 source
 prior), `room.py` (R2/R3 expected energy) and `blockpower.py` (R4). Tools go
 in `tools/`. The milestone (b) modules (`scene.py`, `cochleagram.py`,
 `evidence.py`) are reused without edits, so the two lines of work do not

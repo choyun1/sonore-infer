@@ -9,8 +9,8 @@ from scipy.special import hyp2f1
 from sonore.core.utils import as_rng
 from sonore.sources.gaussian_spectrogram import _correlated_field
 
-from sonore_inference.blockpower import BlockPower, log_likelihood, phase_correlation
-from sonore_inference.spectrotemporal import SpectrogramPrior
+from sonore_infer.blockpower import BlockPower, log_likelihood, phase_correlation
+from sonore_infer.spectrotemporal import SpectrogramPrior
 
 FS = 20_000.0
 

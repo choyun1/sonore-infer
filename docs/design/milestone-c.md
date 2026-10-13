@@ -3,7 +3,7 @@
 Status: **accepted by Cho on 2026-10-11** (C1 to C10 as recommended, C7 as
 revised for Pyro; see §7). Written 2026-10-10. AI-assisted (Claude),
 from design v1 (D3, D5, D8), milestone (b)'s design and results, the scene
-module (`src/sonore_inference/scene.py`, `priors.py`) and Appendices A–C of
+module (`src/sonore_infer/scene.py`, `priors.py`) and Appendices A–C of
 the paper.
 
 **How numbers are marked.**

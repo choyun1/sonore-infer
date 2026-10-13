@@ -1,4 +1,4 @@
-# sonore-inference
+# sonore-infer
 
 Inferring what is in an auditory scene by inverting a generative model of
 sound (analysis by synthesis), building on Cusimano, Hewitt & McDermott (2024),

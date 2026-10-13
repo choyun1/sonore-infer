@@ -30,7 +30,7 @@ Assumed, because the text does not say:
 import numpy as np
 import sonore as so
 
-from sonore_inference.stimuli.levels import FS, rms_from_db
+from sonore_infer.stimuli.levels import FS, rms_from_db
 
 VOWEL_DURATION = 0.060
 VOWEL_F0 = 125.0

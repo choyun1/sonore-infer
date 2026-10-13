@@ -9,15 +9,15 @@ import pkgutil
 import subprocess
 import sys
 
-import sonore_inference
+import sonore_infer
 
 # Modules allowed to import sonore, by dotted name prefix.
-SONORE_ALLOWED = ("sonore_inference.stimuli",)
+SONORE_ALLOWED = ("sonore_infer.stimuli",)
 
 
 def _core_modules() -> list[str]:
-    names = [sonore_inference.__name__]
-    for module in pkgutil.walk_packages(sonore_inference.__path__, prefix="sonore_inference."):
+    names = [sonore_infer.__name__]
+    for module in pkgutil.walk_packages(sonore_infer.__path__, prefix="sonore_infer."):
         if not module.name.startswith(SONORE_ALLOWED):
             names.append(module.name)
     return names

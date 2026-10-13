@@ -32,7 +32,7 @@ Assumed (the design gives the note length and that both end together):
 import numpy as np
 import sonore as so
 
-from sonore_inference.stimuli.levels import FS, sinusoid
+from sonore_infer.stimuli.levels import FS, sinusoid
 
 DURATION = 0.400
 LOWER_F0 = 200.0

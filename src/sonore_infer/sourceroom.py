@@ -13,7 +13,7 @@ mode to start from), and
                           + d/2 log 2 pi - 1/2 log det P,
 
 with ``P`` the Hessian of the negative log joint density at the mode. This
-is what :func:`sonore_inference.evidence.log_evidence` computes, but its
+is what :func:`sonore_infer.evidence.log_evidence` computes, but its
 autograd Hessian takes about a minute at this size, so the Hessian here is
 exact and analytic (:meth:`BlockPower.source_energy_jacobian` and
 ``source_energy_curvature``) and takes under a second; a test checks the two

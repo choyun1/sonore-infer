@@ -6,7 +6,7 @@ Adam, from a given initialization, optionally plus a log prior (then the
 result is the posterior mode). The best log likelihoods of hypotheses with
 different numbers of parameters are not comparable as evidence: the larger
 hypothesis can only do as well or better (App. B.1.1 of Cusimano et al.,
-2024). :mod:`sonore_inference.evidence` turns the posterior modes into
+2024). :mod:`sonore_infer.evidence` turns the posterior modes into
 marginal likelihoods, which are.
 """
 
@@ -17,7 +17,7 @@ from dataclasses import dataclass, field
 
 import torch
 
-from sonore_inference.cochleagram import Cochleagram, gaussian_log_likelihood
+from sonore_infer.cochleagram import Cochleagram, gaussian_log_likelihood
 
 
 @dataclass

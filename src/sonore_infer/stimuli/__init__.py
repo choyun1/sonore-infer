@@ -10,11 +10,11 @@ This subpackage needs the ``stimuli`` extra (``pip install
 sonore-inference[stimuli]``); the rest of the package never imports it.
 """
 
-from sonore_inference.stimuli.asynchronous_onsets import asynchronous_onsets_set, asynchronous_onsets_stimulus
-from sonore_inference.stimuli.bistability import bistability_set, bistability_stimulus
-from sonore_inference.stimuli.levels import FS, REFERENCE_RMS, rms_from_db
-from sonore_inference.stimuli.mistuned_harmonic import mistuned_harmonic_set, mistuned_harmonic_stimulus
-from sonore_inference.stimuli.two_notes import single_note_control, two_notes_set, two_notes_stimulus
+from sonore_infer.stimuli.asynchronous_onsets import asynchronous_onsets_set, asynchronous_onsets_stimulus
+from sonore_infer.stimuli.bistability import bistability_set, bistability_stimulus
+from sonore_infer.stimuli.levels import FS, REFERENCE_RMS, rms_from_db
+from sonore_infer.stimuli.mistuned_harmonic import mistuned_harmonic_set, mistuned_harmonic_stimulus
+from sonore_infer.stimuli.two_notes import single_note_control, two_notes_set, two_notes_stimulus
 
 __all__ = [
     "FS",

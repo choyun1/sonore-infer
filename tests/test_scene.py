@@ -6,11 +6,11 @@ import numpy as np
 import pytest
 import torch
 
-from sonore_inference.cochleagram import FFTCochleagram
-from sonore_inference.priors import log_prior_structure
-from sonore_inference.scene import Harmonic, Scene, SceneTiming, Whistle, erb_to_hz, evaluate, hz_to_erb
-from sonore_inference.sources import whistle_event
-from sonore_inference.stimuli import mistuned_harmonic_stimulus
+from sonore_infer.cochleagram import FFTCochleagram
+from sonore_infer.priors import log_prior_structure
+from sonore_infer.scene import Harmonic, Scene, SceneTiming, Whistle, erb_to_hz, evaluate, hz_to_erb
+from sonore_infer.sources import whistle_event
+from sonore_infer.stimuli import mistuned_harmonic_stimulus
 
 FS = 20_000
 TIMING = SceneTiming(fs=FS, total_duration=0.5, ramp=0.01)

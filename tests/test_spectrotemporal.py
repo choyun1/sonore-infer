@@ -6,7 +6,7 @@ import pytest
 import sonore as so
 import torch
 
-from sonore_inference.spectrotemporal import SpectrogramPrior
+from sonore_infer.spectrotemporal import SpectrogramPrior
 
 FS = 20000.0
 
