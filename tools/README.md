@@ -1,8 +1,13 @@
 # tools
 
-Standalone scripts. All of them run this package, so they measure what it does rather than check it independently (sonore's distinction, docs/design/philosophy.md there). Each one's docstring says what it does, how to run it
+Standalone scripts. Each one's docstring says what it does, how to run it
 and what it prints; numbers in the design documents cite the script that
 measured them. Most need the `stimuli` extra (sonore).
+
+In sonore's terms (its docs/design/philosophy.md), the scripts that import
+`sonore_infer` measure what this package does; none of them is an
+independent check of it. `table_a2_quartiles.py` and `rt60_prior_fit.py` do
+not import the package.
 
 ## Milestone (a): the mistuned harmonic (App. C.6)
 
