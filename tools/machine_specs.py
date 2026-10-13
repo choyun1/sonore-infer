@@ -48,9 +48,15 @@ def ram_gb():
         class MemoryStatus(ctypes.Structure):
             _fields_ = [("length", ctypes.c_ulong), ("memory_load", ctypes.c_ulong)] + [
                 (name, ctypes.c_ulonglong)
-                for name in ("total_physical", "available_physical", "total_page_file",
-                             "available_page_file", "total_virtual", "available_virtual",
-                             "available_extended_virtual")
+                for name in (
+                    "total_physical",
+                    "available_physical",
+                    "total_page_file",
+                    "available_page_file",
+                    "total_virtual",
+                    "available_virtual",
+                    "available_extended_virtual",
+                )
             ]
 
         status = MemoryStatus()
@@ -74,13 +80,17 @@ def main():
     except ImportError:
         print("torch:   not installed")
     else:
-        print(f"torch:   {torch.__version__}, {torch.get_num_threads()} CPU threads, "
-              f"built for CUDA {torch.version.cuda or 'none (CPU-only build)'}")
+        print(
+            f"torch:   {torch.__version__}, {torch.get_num_threads()} CPU threads, "
+            f"built for CUDA {torch.version.cuda or 'none (CPU-only build)'}"
+        )
         if torch.cuda.is_available():
             for index in range(torch.cuda.device_count()):
                 properties = torch.cuda.get_device_properties(index)
-                print(f"GPU {index}:   {properties.name}, {properties.total_memory / 1e9:.1f} GB, "
-                      f"compute capability {properties.major}.{properties.minor}")
+                print(
+                    f"GPU {index}:   {properties.name}, {properties.total_memory / 1e9:.1f} GB, "
+                    f"compute capability {properties.major}.{properties.minor}"
+                )
         else:
             print("GPU:     torch sees no CUDA device")
 

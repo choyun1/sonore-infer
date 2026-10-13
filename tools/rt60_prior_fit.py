@@ -177,5 +177,6 @@ def main():
                 values = ",".join(f"{v:.4f}" for v in band)
                 f.write(f"{name},{rt60:.4f},{drr:.2f},{int(np.isfinite(band).sum())},{values}\n")
 
+
 if __name__ == "__main__":
     main()
