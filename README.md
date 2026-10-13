@@ -68,8 +68,9 @@ to (c): mistuned harmonic, two notes, ABA streaming)
 
 ## Results
 
-Raw outputs of the experiments are not in this repository yet; the design
-documents cite them by path (`results/...`).
+[`results/`](results/README.md) has one page per experiment, with the
+committed outputs each number comes from. These pages are under review by
+Adrian Cho and may change.
 
 ## License
 

@@ -1,0 +1,16 @@
+300 Adam steps, 128 samples, sigma 10 dB, seed 3, fft-bass-gain cochleagram, trajectories, all timing inferred
+stimulus  hypothesis  n_params  structure  laplace  importance  ess  floored  log_joint_at_mode  seconds  elbo  vi_importance  vi_ess
+just_fifth 10 ms                    one@200      118    -2.05   -10072.7   -10132.7     1    1   -10029.6    259.8   -10080.2   -10077.5     2
+just_fifth 10 ms                    one@100      130    -2.05   -10068.5   -10071.4     2    0   -10021.4    333.1   -10068.1   -10062.7     2
+just_fifth 10 ms                    whistles     542   -15.17   -10037.7       -inf   nan    4    -9506.1    471.7   -10057.5   -10050.7     2
+just_fifth 10 ms                    log odds vs best one (laplace): whistles 17.6
+just_fifth 10 ms                    log odds vs best one (importance): whistles -inf
+just_fifth 10 ms                    log odds vs best one (elbo): whistles -2.5
+just_fifth 10 ms                    log odds vs best one (variational): whistles -1.1
+just_fifth 80 ms                    one@200      118    -2.05   -10060.3   -11090.7     1    1   -10012.5    262.0   -10064.7   -10063.0     5
+just_fifth 80 ms                    one@100      130    -2.05   -10093.3   -10093.0     3    0   -10044.8    323.9   -10090.5   -10086.2     2
+just_fifth 80 ms                    whistles     542   -15.17   -10038.6  -243125.8     1    3    -9511.4    441.1   -10051.2   -10049.5     1
+just_fifth 80 ms                    log odds vs best one (laplace): whistles 8.6
+just_fifth 80 ms                    log odds vs best one (importance): whistles -233045.9
+just_fifth 80 ms                    log odds vs best one (elbo): whistles 0.4
+just_fifth 80 ms                    log odds vs best one (variational): whistles 0.4

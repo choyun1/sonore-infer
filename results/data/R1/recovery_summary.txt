@@ -1,0 +1,27 @@
+left out: run 62 sigma 3.6 (an interval is degenerate: 0 or inf)
+left out: run 73 sigma 3.6 (an interval is degenerate: 0 or inf)
+178 records; 90% intervals: share containing the truth, median width (q95/q5)
+setting            rt60 sigma  n                    rt60    band_correlation_erb        time_correlation                   sd_db
+coarse-fast-large   0.2   3.6  9        67% x1.066 0.988        78% x2.056 0.793        89% x1.901 1.030        44% x1.455 0.827
+coarse-fast-large   0.2   7.2 10        90% x1.136 1.025       100% x2.417 1.161        80% x2.197 1.323        40% x1.573 0.773
+coarse-fast-large   0.4   3.6  9       100% x1.066 0.994        56% x2.120 0.689        78% x1.924 1.198        44% x1.466 0.804
+coarse-fast-large   0.4   7.2 10        70% x1.092 1.029        90% x2.537 1.228        10% x2.350 1.689        50% x1.598 0.853
+coarse-fast-large   0.8   3.6 10        50% x1.035 1.017        80% x2.312 0.944        60% x2.084 1.333        80% x1.516 0.909
+coarse-fast-large   0.8   7.2 10        70% x1.064 1.031        70% x2.749 1.455        30% x2.637 1.816        70% x1.638 0.956
+default             0.2   3.6 10        80% x1.084 0.981        90% x1.995 0.997        50% x1.946 1.330        80% x1.472 1.043
+default             0.2   7.2 10       100% x1.175 0.999        60% x2.480 1.312        30% x2.337 1.694        90% x1.623 0.973
+default             0.4   3.6 10        70% x1.053 0.991        90% x2.006 0.809        90% x1.932 1.144       100% x1.436 0.991
+default             0.4   7.2 10       100% x1.093 1.004        80% x2.502 1.315        40% x2.369 1.662        90% x1.623 1.000
+default             0.8   3.6 10        70% x1.028 0.999       100% x2.069 0.943        60% x2.061 1.235        90% x1.477 1.018
+default             0.8   7.2 10        90% x1.054 1.007        90% x2.674 1.351        40% x2.481 1.799        90% x1.623 1.006
+fine-slow-small     0.2   3.6 10        70% x1.053 1.001        70% x2.284 0.888        60% x2.406 1.337        60% x1.527 1.100
+fine-slow-small     0.2   7.2 10       100% x1.090 1.011        80% x3.298 1.383        90% x3.547 1.761        80% x1.784 0.945
+fine-slow-small     0.4   3.6 10        50% x1.033 0.999        70% x2.325 0.801        80% x2.387 1.072       100% x1.519 1.080
+fine-slow-small     0.4   7.2 10       100% x1.060 1.003       100% x3.127 1.180        90% x3.371 1.655       100% x1.711 0.985
+fine-slow-small     0.8   3.6 10        40% x1.020 1.007        70% x2.302 0.707       100% x2.363 1.115       100% x1.489 1.007
+fine-slow-small     0.8   7.2 10        90% x1.040 1.009       100% x3.265 1.115        90% x3.461 1.778       100% x1.781 0.969
+each cell: coverage, interval width, median of posterior median / truth
+all settings, sigma 3.6: rt60 66%, band_correlation_erb 78%, time_correlation 74%, sd_db 78%
+all settings, sigma 7.2: rt60 90%, band_correlation_erb 86%, time_correlation 56%, sd_db 79%
+importance sampling minus Laplace at the best RT60 [nats]: median -3.5, range -96.6 to 5.6; ESS median 1.9 of 128
+seconds per inference: median 305
