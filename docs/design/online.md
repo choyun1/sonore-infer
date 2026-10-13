@@ -1,10 +1,8 @@
 # Online inference — design
 
-Status: **draft for Cho, 2026-10-12.** Nothing here is accepted yet.
-O9 and the later items in §8 added the same day at Cho's request.
-AI-assisted (Claude), from the survey and discussion in the project's
-real-time thread (`realtime/realtime-inference-survey.md` in the project
-files), milestone (c)'s design and code, and the paper.
+Status: **accepted by Cho on 2026-10-13** (O1 to O9 as recommended; see §11).
+Written 2026-10-12; O9 and the later items in §8 added the same day at Cho's
+request.
 
 **How numbers are marked** (as in milestone (c)).
 
@@ -375,3 +373,8 @@ None of these is addressed here.
    changed only to split latents? (recommended: yes)
 9. **O9** Fixed steps per window by default, with surprise-scaled steps
    run beside it on one stimulus? (recommended: yes)
+
+## 11. Decisions as accepted (2026-10-13)
+
+Cho accepted O1 to O9 as recommended, and the phone-app roadmap (§9) as the
+long-term goal.
