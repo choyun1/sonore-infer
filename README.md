@@ -21,6 +21,14 @@ This project is developed with AI assistance (Claude).
 oracle; the core never imports it (`tests/test_layers.py` checks this). CI
 runs the same commands on Linux and Windows, Python 3.10 and 3.14.
 
+## Directions
+
+The work runs in four directions, each with its own design document in
+`docs/design/`: reproducing the paper's model (BASS) and testing it on new
+stimuli (milestones (a) and (b)); our own scene grammar (milestone (c));
+online inference; and inferring a source together with its room.
+[docs/README.md](docs/README.md) lists the documents by direction.
+
 ## Where things are
 
 | Path | What it holds |
@@ -62,6 +70,6 @@ to (c): mistuned harmonic, two notes, ABA streaming)
 Raw outputs of the experiments are not in this repository yet; the design
 documents cite them by path (`results/...`).
 
-## Licence
+## License
 
 MIT.

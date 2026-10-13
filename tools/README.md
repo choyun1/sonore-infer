@@ -1,6 +1,6 @@
 # tools
 
-Standalone scripts. Each one's docstring says what it does, how to run it
+Standalone scripts. All of them run this package, so they measure what it does rather than check it independently (sonore's distinction, docs/design/philosophy.md there). Each one's docstring says what it does, how to run it
 and what it prints; numbers in the design documents cite the script that
 measured them. Most need the `stimuli` extra (sonore).
 
@@ -25,17 +25,17 @@ measured them. Most need the `stimuli` extra (sonore).
 | Script | What it does |
 |---|---|
 | `rt60_prior_fit.py` | RT60 prior and typical DRR from Traer & McDermott's IR survey (R2, R8) |
-| `room_gain_check.py` | `RoomGain` against `synth_ir` renders (R3) |
-| `block_power_check.py` | `BlockPower`'s expected energies against sonore renders (R3-R4) |
+| `room_gain_check.py` | Measures `RoomGain` against `synth_ir` renders (R3) |
+| `block_power_check.py` | Measures `BlockPower`'s expected energies against sonore renders (R3-R4) |
 | `likelihood_slices.py` | Likelihood along one parameter at a time through the truth (R4-R5) |
 | `recovery.py` | Experiment (a) of R7: recover RT60 and the source's statistics |
 | `atypical_rooms.py` | Experiment (b) of R7: the model heard through atypical rooms |
 
-## Checks of the cochleagram and of readings of the paper
+## Measurements of the cochleagram, and readings of the paper
 
 | Script | What it does |
 |---|---|
-| `channel_bandwidths.py` | Effective bandwidth of the cochleagram's channels, gammatone against FFT |
+| `channel_bandwidths.py` | Measures the effective bandwidth of the cochleagram's channels, gammatone against FFT |
 | `table_a2_quartiles.py` | Which reading of Table A.2's parameters reproduces its quartiles (C3) |
 
 ## Machine and timing
