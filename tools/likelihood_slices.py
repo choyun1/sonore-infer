@@ -1,7 +1,7 @@
 """Likelihood slices through the truth (docs/design/source-reverb.md, R4-R5).
 
 One observation: a 400 ms ``sonore.gaussian_spectrogram`` on a noise
-carrier in a ``synth_ir`` room (RT60 0.4 s, DRR 10 dB), analysed into 39
+carrier in a ``synth_ir`` room (RT60 0.4 s, DRR 10 dB), analyzed into 39
 bands and 10 ms blocks over 1.2 s. The model is :class:`BlockPower` at the
 drawn cell levels and :class:`RoomGain`. One thing at a time is moved off the
 truth, the rest held there:
@@ -26,7 +26,6 @@ import sonore as so
 import torch
 from scipy.signal import fftconvolve
 from sonore.core.utils import as_rng
-from sonore.sources.gaussian_spectrogram import _correlated_field
 
 from sonore_infer.blockpower import BIAS_DB, SIGMA_DB, BlockPower, log_likelihood
 from sonore_infer.room import RoomGain
@@ -44,8 +43,9 @@ def main():
     args = parser.parse_args()
     power, prior = BlockPower(), SpectrogramPrior()
     rng = as_rng(args.seed)
-    field = _correlated_field(prior.n_bands, power.n_windows, prior.rho_band, prior.rho_time, rng)
-    levels = torch.from_numpy(prior.mean_db()[:, None] + prior.sd_db * field)
+    # the cell levels gaussian_spectrogram(rng=seed) draws (SpectrogramPrior.color runs sonore's recursion)
+    innovations = torch.from_numpy(rng.standard_normal((prior.n_bands, power.n_windows)))
+    levels = torch.from_numpy(prior.mean_db()[:, None]) + prior.color(innovations)
     env = so.gaussian_spectrogram(power.duration, FS, rng=args.seed)
     carrier = so.gaussian_noise(power.duration, FS, rng=1000 + args.seed)
     x = env.to_sound(carrier).ramp(power.ramp).data.ravel()

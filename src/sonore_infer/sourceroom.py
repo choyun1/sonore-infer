@@ -60,22 +60,22 @@ LOG_PRIOR_THETA = -sum(math.log(math.log(h / lo)) for lo, h in zip(THETA_LOW, TH
 RT60_GRID = tuple(np.geomspace(0.1, 2.0, 15))
 
 
-def ar1_cholesky(rho: torch.Tensor, n: int) -> torch.Tensor:
-    """Cholesky factor of the correlation ``rho^|i - j|`` of size ``n``."""
-    i = torch.arange(n, dtype=torch.float64)
-    lag = i[:, None] - i[None, :]
+def ar1_cholesky(rho: torch.Tensor, size: int) -> torch.Tensor:
+    """Cholesky factor of the correlation ``rho^|i - j|``, ``size`` by ``size``."""
+    index = torch.arange(size, dtype=torch.float64)
+    lag = index[:, None] - index[None, :]
     first = rho ** lag.clamp_min(0)
     rest = torch.sqrt(1 - rho**2) * rho ** lag.clamp_min(0)
-    out = torch.where(lag >= 0, torch.where(i[None, :] == 0, first, rest), torch.zeros_like(lag))
-    return out
+    factor = torch.where(lag >= 0, torch.where(index[None, :] == 0, first, rest), torch.zeros_like(lag))
+    return factor
 
 
-def ar1_precision(rho: torch.Tensor, n: int) -> torch.Tensor:
+def ar1_precision(rho: torch.Tensor, size: int) -> torch.Tensor:
     """Inverse of the correlation ``rho^|i - j|``: tridiagonal."""
-    one = torch.ones(1, dtype=torch.float64)
-    diagonal = torch.cat([one, (1 + rho**2) * torch.ones(n - 2, dtype=torch.float64), one])
-    off = -rho * torch.ones(n - 1, dtype=torch.float64)
-    return (torch.diag(diagonal) + torch.diag(off, 1) + torch.diag(off, -1)) / (1 - rho**2)
+    end = torch.ones(1, dtype=torch.float64)
+    diagonal = torch.cat([end, (1 + rho**2) * torch.ones(size - 2, dtype=torch.float64), end])
+    off_diagonal = -rho * torch.ones(size - 1, dtype=torch.float64)
+    return (torch.diag(diagonal) + torch.diag(off_diagonal, 1) + torch.diag(off_diagonal, -1)) / (1 - rho**2)
 
 
 @dataclass
@@ -109,8 +109,8 @@ class Model:
         expected = self.power.reverberant(self.power.source_energy(levels), gain)
         predicted = DB * torch.log(expected.clamp_min(1e-300)) + self.bias_db
         residual = self.target - torch.maximum(predicted, self.floor)
-        n = residual.numel()
-        return -0.5 * (residual**2).sum() / self.sigma_db**2 - n * (
+        n_cells = residual.numel()
+        return -0.5 * (residual**2).sum() / self.sigma_db**2 - n_cells * (
             math.log(self.sigma_db) + 0.5 * math.log(2 * math.pi)
         )
 
@@ -126,18 +126,18 @@ class Model:
         value = -0.5 * (residual**2).sum() / self.sigma_db**2 - residual.numel() * (
             math.log(self.sigma_db) + 0.5 * math.log(2 * math.pi)
         )
-        s2 = self.sigma_db**2
-        # loss = sum residual^2 / (2 s2); derivatives in the expected energy E
-        first = torch.where(active, -residual * DB / (s2 * expected), 0.0)
-        second = torch.where(active, (DB**2 + residual * DB) / (s2 * expected**2), 0.0)
+        variance = self.sigma_db**2
+        # loss = sum residual^2 / (2 variance); derivatives in the expected energy E
+        first = torch.where(active, -residual * DB / (variance * expected), 0.0)
+        second = torch.where(active, (DB**2 + residual * DB) / (variance * expected**2), 0.0)
         # gradient through the room's convolution: its transpose applied to `first`
-        source_ = source.clone().requires_grad_(True)
-        (back,) = torch.autograd.grad((power.reverberant(source_, gain) * first).sum(), source_)
-        jac_source = power.source_energy_jacobian(levels)  # (bands, blocks, cells)
-        jac = power.reverberant(jac_source.permute(2, 0, 1), gain).permute(1, 2, 0)
-        jac = jac.reshape(-1, jac.shape[-1])
+        source_leaf = source.clone().requires_grad_(True)
+        (back,) = torch.autograd.grad((power.reverberant(source_leaf, gain) * first).sum(), source_leaf)
+        source_jacobian = power.source_energy_jacobian(levels)  # (bands, blocks, cells)
+        jacobian = power.reverberant(source_jacobian.permute(2, 0, 1), gain).permute(1, 2, 0)
+        jacobian = jacobian.reshape(-1, jacobian.shape[-1])
         keep = active.reshape(-1)
-        rows = jac[keep]
+        rows = jacobian[keep]
         gradient = -(rows.T @ first.reshape(-1)[keep])
         hessian = rows.T @ (second.reshape(-1)[keep, None] * rows)
         hessian = hessian + power.source_energy_curvature(levels, back)
@@ -154,29 +154,29 @@ class Prior:
 
     def __post_init__(self):
         base = SpectrogramPrior()
-        a, b, s = torch.exp(self.log_theta)
-        self.rho_band = torch.exp(-base.band_spacing_erb / a)
-        self.rho_time = torch.exp(-base.step / b)
-        self.sd = s
+        band_correlation, time_correlation, sd = torch.exp(self.log_theta)
+        self.rho_band = torch.exp(-base.band_spacing_erb / band_correlation)
+        self.rho_time = torch.exp(-base.step / time_correlation)
+        self.sd = sd
 
-    def color(self, z: torch.Tensor) -> torch.Tensor:
+    def color(self, whitened: torch.Tensor) -> torch.Tensor:
         """Deviations [dB] from whitened coordinates ``(n_bands, n_windows)``."""
-        lb = ar1_cholesky(self.rho_band, self.n_bands)
-        lt = ar1_cholesky(self.rho_time, self.n_windows)
-        return self.sd * lb @ z @ lt.T
+        band_factor = ar1_cholesky(self.rho_band, self.n_bands)
+        time_factor = ar1_cholesky(self.rho_time, self.n_windows)
+        return self.sd * band_factor @ whitened @ time_factor.T
 
     def precision(self) -> torch.Tensor:
         """Inverse covariance of the flattened (band-major) levels."""
-        qb = ar1_precision(self.rho_band, self.n_bands)
-        qt = ar1_precision(self.rho_time, self.n_windows)
-        return torch.kron(qb, qt) / self.sd**2
+        band_precision = ar1_precision(self.rho_band, self.n_bands)
+        time_precision = ar1_precision(self.rho_time, self.n_windows)
+        return torch.kron(band_precision, time_precision) / self.sd**2
 
     def log_det_covariance(self) -> torch.Tensor:
-        nb, nt = self.n_bands, self.n_windows
+        n_bands, n_windows = self.n_bands, self.n_windows
         return (
-            2 * nb * nt * torch.log(self.sd)
-            + nt * (nb - 1) * torch.log(1 - self.rho_band**2)
-            + nb * (nt - 1) * torch.log(1 - self.rho_time**2)
+            2 * n_bands * n_windows * torch.log(self.sd)
+            + n_windows * (n_bands - 1) * torch.log(1 - self.rho_band**2)
+            + n_bands * (n_windows - 1) * torch.log(1 - self.rho_time**2)
         )
 
 
@@ -187,11 +187,11 @@ def initial_levels(model: Model, gain: torch.Tensor, limit_db: float = 60.0) -> 
     below the floor where the observation is above it gets no gradient (the
     floor is flat), so from the prior mean alone a fit can stay silent where
     a sound is loud; lowering the other cells only costs prior density."""
-    nb, nt = model.shape
-    mean = model.mean.expand(nb, nt)
-    expected = model.power.reverberant(model.power.source_energy(mean), gain)[:, :nt]
-    shift = DB * torch.log(model.observed[:, :nt].clamp_min(1e-300) / expected.clamp_min(1e-300))
-    audible = model.observed_db[:, :nt] > model.floor
+    n_bands, n_windows = model.shape
+    mean = model.mean.expand(n_bands, n_windows)
+    expected = model.power.reverberant(model.power.source_energy(mean), gain)[:, :n_windows]
+    shift = DB * torch.log(model.observed[:, :n_windows].clamp_min(1e-300) / expected.clamp_min(1e-300))
+    audible = model.observed_db[:, :n_windows] > model.floor
     return mean + torch.where(audible, shift.clamp(0.0, limit_db), 0.0)
 
 
@@ -204,18 +204,18 @@ def fit_mode(
     """Posterior mode of the levels at one (r, theta), by L-BFGS on the
     whitened coordinates; ``start`` is a level grid to start from (by default
     :func:`initial_levels`)."""
-    nb, nt = model.shape
-    lb = ar1_cholesky(prior.rho_band.detach(), nb)
-    lt = ar1_cholesky(prior.rho_time.detach(), nt)
+    n_bands, n_windows = model.shape
+    band_factor = ar1_cholesky(prior.rho_band.detach(), n_bands)
+    time_factor = ar1_cholesky(prior.rho_time.detach(), n_windows)
     sd = prior.sd.detach()
     if start is None:
         start = initial_levels(model, gain)
     deviation = (start - model.mean) / sd
-    z0 = torch.linalg.solve_triangular(lb, deviation, upper=False)
-    z0 = torch.linalg.solve_triangular(lt, z0.T, upper=False).T
-    z = z0.clone().requires_grad_(True)
+    start_whitened = torch.linalg.solve_triangular(band_factor, deviation, upper=False)
+    start_whitened = torch.linalg.solve_triangular(time_factor, start_whitened.T, upper=False).T
+    whitened = start_whitened.clone().requires_grad_(True)
     optimizer = torch.optim.LBFGS(
-        [z],
+        [whitened],
         lr=1,
         max_iter=2000,
         history_size=20,
@@ -226,13 +226,13 @@ def fit_mode(
 
     def closure():
         optimizer.zero_grad()
-        levels = model.mean + sd * lb @ z @ lt.T
-        loss = -model.log_likelihood(levels, gain) + 0.5 * (z**2).sum()
+        levels = model.mean + sd * band_factor @ whitened @ time_factor.T
+        loss = -model.log_likelihood(levels, gain) + 0.5 * (whitened**2).sum()
         loss.backward()
         return loss
 
     optimizer.step(closure)
-    return (model.mean + sd * lb @ z.detach() @ lt.T).detach()
+    return (model.mean + sd * band_factor @ whitened.detach() @ time_factor.T).detach()
 
 
 @dataclass
@@ -256,8 +256,8 @@ class Expansion:
         differentiable in ``log_theta``. At the theta whose mode is
         ``levels`` this is the Laplace approximation. ``-inf`` where the
         quadratic is not concave enough to integrate."""
-        nb, nt = self.levels.shape
-        prior = Prior(log_theta, nb, nt)
+        n_bands, n_windows = self.levels.shape
+        prior = Prior(log_theta, n_bands, n_windows)
         precision = prior.precision()
         offset = self.mean - self.levels.reshape(-1)  # prior mean minus expansion point
         linear = self.gradient + precision @ offset
@@ -280,23 +280,23 @@ class Expansion:
         the Cholesky factor is several times slower):
         ``dG = -1/2 (m - v)' dQ (m - v) - 1/2 tr(P^-1 dQ) - 1/2 d log det Sigma``,
         with ``m`` the prior mean minus the expansion point and ``v = P^-1 h``."""
-        nb, nt = self.levels.shape
-        t = torch.tensor(log_theta, dtype=torch.float64)
+        n_bands, n_windows = self.levels.shape
+        log_theta_tensor = torch.tensor(log_theta, dtype=torch.float64)
 
-        def factors(t):
-            prior = Prior(t, nb, nt)
-            return ar1_precision(prior.rho_band, nb), ar1_precision(prior.rho_time, nt), prior.sd
+        def factors(log_theta_tensor):
+            prior = Prior(log_theta_tensor, n_bands, n_windows)
+            return ar1_precision(prior.rho_band, n_bands), ar1_precision(prior.rho_time, n_windows), prior.sd
 
-        qb, qt, sd = factors(t)
-        dqb, dqt, _ = torch.func.jacfwd(factors)(t)
-        precision = torch.kron(qb, qt) / sd**2
+        band_precision, time_precision, sd = factors(log_theta_tensor)
+        band_derivative, time_derivative, _ = torch.func.jacfwd(factors)(log_theta_tensor)
+        precision = torch.kron(band_precision, time_precision) / sd**2
         offset = self.mean - self.levels.reshape(-1)
         linear = self.gradient + precision @ offset
         factor, info = torch.linalg.cholesky_ex(self.hessian + precision)
         if info.item() != 0:
             return -math.inf, np.zeros(3)
         solved = torch.cholesky_solve(linear[:, None], factor)[:, 0]
-        prior = Prior(t, nb, nt)
+        prior = Prior(log_theta_tensor, n_bands, n_windows)
         value = (
             self.value
             - 0.5 * offset @ precision @ offset
@@ -305,16 +305,23 @@ class Expansion:
             - torch.log(torch.diagonal(factor)).sum()
         )
         inverse = torch.cholesky_inverse(factor)
-        u = offset - solved
-        d_log_det = torch.func.jacfwd(lambda t: Prior(t, nb, nt).log_det_covariance())(t)
+        offset_minus_solved = offset - solved  # m - v in the formula above
+        d_log_det = torch.func.jacfwd(
+            lambda log_theta_tensor: Prior(log_theta_tensor, n_bands, n_windows).log_det_covariance()
+        )(log_theta_tensor)
+        # dQ for each of the three log theta: band correlation, time correlation, sd
         derivatives = (
-            torch.kron(dqb[:, :, 0], qt) / sd**2,
-            torch.kron(qb, dqt[:, :, 1]) / sd**2,
+            torch.kron(band_derivative[:, :, 0], time_precision) / sd**2,
+            torch.kron(band_precision, time_derivative[:, :, 1]) / sd**2,
             -2 * precision,
         )
         gradient = [
-            (-0.5 * u @ dq @ u - 0.5 * (inverse * dq).sum() - 0.5 * d_log_det[i]).item()
-            for i, dq in enumerate(derivatives)
+            (
+                -0.5 * offset_minus_solved @ precision_derivative @ offset_minus_solved
+                - 0.5 * (inverse * precision_derivative).sum()
+                - 0.5 * d_log_det[index]
+            ).item()
+            for index, precision_derivative in enumerate(derivatives)
         ]
         return value.item(), np.array(gradient)
 
@@ -368,16 +375,17 @@ def _bounds():
     return [(math.log(lo), math.log(hi)) for lo, hi in zip(THETA_LOW, THETA_HIGH, strict=True)]
 
 
-def _theta_hessian(expansion: Expansion, x: np.ndarray, step: float = 0.01) -> np.ndarray:
+def _theta_hessian(expansion: Expansion, log_theta: np.ndarray, step: float = 0.01) -> np.ndarray:
     """Hessian of the expansion's log evidence in log theta, by central
     differences of its exact gradient."""
-    out = np.zeros((3, 3))
-    for i in range(3):
-        e = np.zeros(3)
-        e[i] = step
-        up, down = expansion.value_and_gradient(x + e)[1], expansion.value_and_gradient(x - e)[1]
-        out[i] = (up - down) / (2 * step)
-    return 0.5 * (out + out.T)
+    hessian = np.zeros((3, 3))
+    for index in range(3):
+        shift = np.zeros(3)
+        shift[index] = step
+        gradient_up = expansion.value_and_gradient(log_theta + shift)[1]
+        gradient_down = expansion.value_and_gradient(log_theta - shift)[1]
+        hessian[index] = (gradient_up - gradient_down) / (2 * step)
+    return 0.5 * (hessian + hessian.T)
 
 
 def _maximize_theta(expansion: Expansion, start: np.ndarray, step: float = 0.25) -> np.ndarray:
@@ -387,28 +395,28 @@ def _maximize_theta(expansion: Expansion, start: np.ndarray, step: float = 0.25)
     and far from it ``P`` can stop being positive definite (the evidence is
     then ``-inf``, and the line search backs off); the caller refits and
     calls again until theta settles."""
-    low, high = (np.array(v) for v in zip(*_bounds(), strict=True))
+    low, high = (np.array(bounds) for bounds in zip(*_bounds(), strict=True))
     low, high = np.maximum(low, start - step), np.minimum(high, start + step)
-    x = np.asarray(start, float)
-    value, gradient = expansion.value_and_gradient(x)
+    log_theta = np.asarray(start, float)
+    value, gradient = expansion.value_and_gradient(log_theta)
     for _ in range(20):
-        eigenvalues, vectors = np.linalg.eigh(-_theta_hessian(expansion, x))
+        eigenvalues, vectors = np.linalg.eigh(-_theta_hessian(expansion, log_theta))
         eigenvalues = np.maximum(eigenvalues, max(1e-3 * eigenvalues.max(), 1e-6))
         direction = vectors @ ((vectors.T @ gradient) / eigenvalues)
         size = 1.0
         while size > 1e-3:
-            candidate = np.clip(x + size * direction, low, high)
+            candidate = np.clip(log_theta + size * direction, low, high)
             new_value, new_gradient = expansion.value_and_gradient(candidate)
             if new_value > value:
                 break
             size /= 2
         else:
             break
-        moved = np.abs(candidate - x).max()
-        x, value, gradient = candidate, new_value, new_gradient
+        moved = np.abs(candidate - log_theta).max()
+        log_theta, value, gradient = candidate, new_value, new_gradient
         if moved < 1e-3:
             break
-    return x
+    return log_theta
 
 
 @dataclass
@@ -437,12 +445,12 @@ def evaluate_rt60(
     ``tolerance`` (in log units); then Laplace over log theta. ``levels``
     is the returned point's last mode, at a theta within ``tolerance``."""
     gain = model.gain(rt60)
-    nb, nt = model.shape
-    x = np.asarray(log_theta, float)
+    n_bands, n_windows = model.shape
+    current = np.asarray(log_theta, float)
     refits = 0
     while refits < max_refits:
         refits += 1
-        prior = Prior(torch.tensor(x, dtype=torch.float64), nb, nt)
+        prior = Prior(torch.tensor(current, dtype=torch.float64), n_bands, n_windows)
         found = None if levels is None else newton_mode(model, gain, prior, levels)
         if found is None:
             levels = fit_mode(model, gain, prior, levels)
@@ -451,20 +459,20 @@ def evaluate_rt60(
             expansion = Expansion.at(model, gain, levels)
         else:
             levels, expansion = found
-        new = _maximize_theta(expansion, x)
-        moved = np.abs(new - x).max()
-        x = new
+        new_log_theta = _maximize_theta(expansion, current)
+        moved = np.abs(new_log_theta - current).max()
+        current = new_log_theta
         if moved < tolerance:
             break
     # theta has moved less than `tolerance` from the expansion's own theta,
     # where the expansion is Laplace; it is not refitted again
-    peak = expansion.log_evidence(torch.tensor(x, dtype=torch.float64)).item()
-    curvature = -_theta_hessian(expansion, x)
+    peak = expansion.log_evidence(torch.tensor(current, dtype=torch.float64)).item()
+    curvature = -_theta_hessian(expansion, current)
     eigenvalues, vectors = np.linalg.eigh(curvature)
     eigenvalues = np.maximum(eigenvalues, 1e-6)
-    cov = (vectors / eigenvalues) @ vectors.T
+    covariance = (vectors / eigenvalues) @ vectors.T
     log_evidence = peak + LOG_PRIOR_THETA + 1.5 * math.log(2 * math.pi) - 0.5 * np.log(eigenvalues).sum()
-    return RT60Point(rt60, log_evidence, peak, x, cov, levels, refits)
+    return RT60Point(rt60, log_evidence, peak, current, covariance, levels, refits)
 
 
 @dataclass
@@ -474,10 +482,13 @@ class Posterior:
     def _weights(self):
         """Posterior mass of each point (trapezoid in log r) and the log
         marginal likelihood log p(y)."""
-        points = sorted(self.points, key=lambda p: p.rt60)
-        log_r = np.log([p.rt60 for p in points])
+        points = sorted(self.points, key=lambda point: point.rt60)
+        log_r = np.log([point.rt60 for point in points])
         log_density = np.array(
-            [p.log_evidence + log_prior_rt60(p.rt60).item() + math.log(p.rt60) for p in points]
+            [
+                point.log_evidence + log_prior_rt60(point.rt60).item() + math.log(point.rt60)
+                for point in points
+            ]
         )
         if len(points) == 1:
             return points, np.ones(1), float(log_density[0])
@@ -494,9 +505,9 @@ class Posterior:
 
     def rt60_quantiles(self, qs=(0.05, 0.5, 0.95)) -> np.ndarray:
         """Quantiles of r, linear in log r between points."""
-        points, w, _ = self._weights()
-        log_r = np.log([p.rt60 for p in points])
-        cdf = np.cumsum(w) - w / 2
+        points, weights, _ = self._weights()
+        log_r = np.log([point.rt60 for point in points])
+        cdf = np.cumsum(weights) - weights / 2
         return np.exp(np.interp(qs, cdf, log_r))
 
     def theta_quantiles(self, qs=(0.05, 0.5, 0.95)) -> np.ndarray:
@@ -504,17 +515,17 @@ class Posterior:
         of the Laplace Gaussians in log theta."""
         from scipy.stats import norm
 
-        points, w, _ = self._weights()
-        keep = w > 1e-6
-        out = np.zeros((3, len(qs)))
-        for i in range(3):
-            means = np.array([p.log_theta[i] for p in points])[keep]
-            sds = np.sqrt([p.log_theta_cov[i, i] for p in points])[keep]
+        points, weights, _ = self._weights()
+        keep = weights > 1e-6
+        result = np.zeros((3, len(qs)))
+        for index in range(3):
+            means = np.array([point.log_theta[index] for point in points])[keep]
+            sds = np.sqrt([point.log_theta_cov[index, index] for point in points])[keep]
             grid = np.linspace((means - 6 * sds).min(), (means + 6 * sds).max(), 4001)
-            cdf = (w[keep][:, None] * norm.cdf((grid[None, :] - means[:, None]) / sds[:, None])).sum(0)
+            cdf = (weights[keep][:, None] * norm.cdf((grid[None, :] - means[:, None]) / sds[:, None])).sum(0)
             cdf /= cdf[-1]
-            out[i] = np.exp(np.interp(qs, cdf, grid))
-        return out
+            result[index] = np.exp(np.interp(qs, cdf, grid))
+        return result
 
 
 def importance_check(
@@ -523,9 +534,9 @@ def importance_check(
     """Importance-sampling estimate of ``log p(y | r, theta_hat)`` at one
     point, with the Laplace Gaussian over the levels as the proposal (as
     :func:`evidence.log_evidence` does), and its effective sample size."""
-    nb, nt = model.shape
+    n_bands, n_windows = model.shape
     gain = model.gain(point.rt60)
-    prior = Prior(torch.tensor(point.log_theta, dtype=torch.float64), nb, nt)
+    prior = Prior(torch.tensor(point.log_theta, dtype=torch.float64), n_bands, n_windows)
     precision = prior.precision()
     expansion = Expansion.at(model, gain, point.levels)
     factor = torch.linalg.cholesky(expansion.hessian + precision)
@@ -534,7 +545,7 @@ def importance_check(
     # draws = mode + P^(-1/2) noise, with P = factor factor'
     draws = mode + torch.linalg.solve_triangular(factor.T, noise.T, upper=True).T
     half_log_2pi = 0.5 * mode.numel() * math.log(2 * math.pi)
-    log_q = -0.5 * (noise**2).sum(1) + torch.log(torch.diagonal(factor)).sum() - half_log_2pi
+    log_proposal = -0.5 * (noise**2).sum(1) + torch.log(torch.diagonal(factor)).sum() - half_log_2pi
     mean = expansion.mean
     log_prior = (
         -0.5 * torch.einsum("si,ij,sj->s", draws - mean, precision, draws - mean)
@@ -542,8 +553,10 @@ def importance_check(
         - half_log_2pi
     )
     with torch.no_grad():
-        log_lik = torch.stack([model.log_likelihood(d.reshape(nb, nt), gain) for d in draws])
-    log_weights = log_lik + log_prior - log_q
+        log_likelihood = torch.stack(
+            [model.log_likelihood(draw.reshape(n_bands, n_windows), gain) for draw in draws]
+        )
+    log_weights = log_likelihood + log_prior - log_proposal
     estimate = (torch.logsumexp(log_weights, 0) - math.log(n_samples)).item()
     effective = (1 / (torch.softmax(log_weights, 0) ** 2).sum()).item()
     return estimate, effective
@@ -552,34 +565,34 @@ def importance_check(
 def infer(model: Model, *, refine_to: float = 0.5, max_points: int = 36, verbose: bool = False) -> Posterior:
     """Posterior over RT60 and theta for ``model``'s observation.
 
-    R5's coarse grid first, each point warm-started from its neighbour; then
-    points are added in log r where the posterior mass is, until neighbouring
+    R5's coarse grid first, each point warm-started from its neighbor; then
+    points are added in log r where the posterior mass is, until neighboring
     points with mass in between are less than ``refine_to`` posterior
     standard deviations (of log r) apart.
     """
     points: list[RT60Point] = []
-    x = np.log(THETA_DEFAULT)
+    log_theta = np.log(THETA_DEFAULT)
     levels = None
     for rt60 in RT60_GRID:
-        point = evaluate_rt60(model, rt60, x, levels)
+        point = evaluate_rt60(model, rt60, log_theta, levels)
         points.append(point)
-        x, levels = point.log_theta, point.levels
+        log_theta, levels = point.log_theta, point.levels
         if verbose:
             print(f"  r {rt60:.3f}  {point.log_evidence:.1f}", flush=True)
     while len(points) < max_points:
         posterior = Posterior(points)
-        ordered, w, _ = posterior._weights()
-        log_r = np.log([p.rt60 for p in ordered])
-        mean = (w * log_r).sum()
-        sd = math.sqrt(max((w * (log_r - mean) ** 2).sum(), 1e-12))
+        ordered, weights, _ = posterior._weights()
+        log_r = np.log([point.rt60 for point in ordered])
+        mean = (weights * log_r).sum()
+        sd = math.sqrt(max((weights * (log_r - mean) ** 2).sum(), 1e-12))
         gaps = np.diff(log_r)
-        mass = w[:-1] + w[1:]
+        mass = weights[:-1] + weights[1:]
         wide = (gaps > refine_to * sd) & (mass > 1e-3)
         if not wide.any():
             break
-        i = int(np.argmax(np.where(wide, mass, -1)))
-        rt60 = float(np.exp(0.5 * (log_r[i] + log_r[i + 1])))
-        start = ordered[i] if w[i] >= w[i + 1] else ordered[i + 1]
+        index = int(np.argmax(np.where(wide, mass, -1)))
+        rt60 = float(np.exp(0.5 * (log_r[index] + log_r[index + 1])))
+        start = ordered[index] if weights[index] >= weights[index + 1] else ordered[index + 1]
         point = evaluate_rt60(model, rt60, start.log_theta, start.levels)
         points.append(point)
         if verbose:

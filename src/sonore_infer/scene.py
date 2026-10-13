@@ -40,6 +40,7 @@ from typing import ClassVar
 import torch
 
 from sonore_infer.cochleagram import Cochleagram, gaussian_log_likelihood
+from sonore_infer.erb import erb_to_freq, freq_to_erb_float
 from sonore_infer.evidence import Evidence, VariationalEvidence, log_evidence, variational_evidence
 from sonore_infer.fit import FitResult, fit
 from sonore_infer.priors import (
@@ -64,14 +65,6 @@ from sonore_infer.priors import (
 from sonore_infer.sources import _gate, trajectory_event
 
 Params = dict[str, torch.Tensor]
-
-
-def erb_to_hz(erb: torch.Tensor) -> torch.Tensor:
-    return 24.7 * 9.265 * torch.expm1(erb / 9.265)
-
-
-def hz_to_erb(freq: float) -> float:
-    return 9.265 * math.log1p(freq / (24.7 * 9.265))
 
 
 @dataclass(frozen=True)
@@ -344,11 +337,11 @@ class Harmonic(_Source):
         and ``f0`` may too (held from each onset to the next).
         """
         if self.n_events == 1 or isinstance(f0, (int, float)):
-            f0_mean = torch.tensor(hz_to_erb(f0 if self.n_events == 1 else float(f0)), dtype=dtype)
+            f0_mean = torch.tensor(freq_to_erb_float(float(f0)), dtype=dtype)
             f0_deviation = torch.zeros(timing.n_grid, dtype=dtype)
         else:
             f0_mean, f0_deviation = _per_event_deviation(
-                timing, [hz_to_erb(f) for f in _as_list(f0, self.n_events, "f0")], list(onset), dtype
+                timing, [freq_to_erb_float(f) for f in _as_list(f0, self.n_events, "f0")], list(onset), dtype
             )
         values = (
             {
@@ -374,7 +367,7 @@ class Harmonic(_Source):
 
     def render(self, params: Params, timing: SceneTiming) -> torch.Tensor:
         p = self.key
-        f0 = erb_to_hz(self.f0_erb(params))
+        f0 = erb_to_freq(self.f0_erb(params))
         level = HARMONIC_LEVEL_TRAJECTORY.trajectory(params[p("level_mean")], params[p("level_deviation")])
         spectrum = params[p("spectrum_db")]
         numbers = torch.arange(1, spectrum.shape[-1] + 1, dtype=f0.dtype)
@@ -388,7 +381,7 @@ class Harmonic(_Source):
         self._trajectory(sample, "level", timing, memberships, dtype)
         # at the f0 the source actually has (its trajectory's mean, in ERB number),
         # not the mean of its prior
-        f0 = erb_to_hz(F0_TRAJECTORY.trajectory(f0_mean, f0_deviation).mean())
+        f0 = erb_to_freq(F0_TRAJECTORY.trajectory(f0_mean, f0_deviation).mean())
         spectrum = spectrum_distribution(self.n_harmonics, f0, *self._kernel(sample, "spectrum", dtype))
         sample(self.key("spectrum_db"), spectrum, TERM_SPECTRUM)
 
@@ -433,11 +426,14 @@ class Whistle(_Source):
         """Constant trajectories at ``freq`` [Hz] and ``level_db``; with several events,
         ``onset``, ``duration`` and ``freq`` may give each event's."""
         if self.n_events == 1 or isinstance(freq, (int, float)):
-            freq_mean = torch.tensor(hz_to_erb(freq if self.n_events == 1 else float(freq)), dtype=dtype)
+            freq_mean = torch.tensor(freq_to_erb_float(float(freq)), dtype=dtype)
             freq_deviation = torch.zeros(timing.n_grid, dtype=dtype)
         else:
             freq_mean, freq_deviation = _per_event_deviation(
-                timing, [hz_to_erb(f) for f in _as_list(freq, self.n_events, "freq")], list(onset), dtype
+                timing,
+                [freq_to_erb_float(f) for f in _as_list(freq, self.n_events, "freq")],
+                list(onset),
+                dtype,
             )
         values = (
             {
@@ -453,7 +449,7 @@ class Whistle(_Source):
 
     def render(self, params: Params, timing: SceneTiming) -> torch.Tensor:
         p = self.key
-        freq = erb_to_hz(F0_TRAJECTORY.trajectory(params[p("freq_mean")], params[p("freq_deviation")]))
+        freq = erb_to_freq(F0_TRAJECTORY.trajectory(params[p("freq_mean")], params[p("freq_deviation")]))
         level = WHISTLE_LEVEL_TRAJECTORY.trajectory(params[p("level_mean")], params[p("level_deviation")])
         return self._render_events(params, timing, freq[None], level[None])
 

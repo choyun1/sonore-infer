@@ -71,7 +71,7 @@ def test_structure_prior_counts_events():
 
 def test_sampled_structures_follow_the_structure_prior():
     # a multiset of (type, events) is drawn with probability exp(structure prior) / prod(count!):
-    # the prior counts the n! labellings of a fitted mode (design C6), sampling only the distinct orders
+    # the prior counts the n! labelings of a fitted mode (design C6), sampling only the distinct orders
     torch.manual_seed(0)
     draws = 60_000
     counts = Counter(tuple(sorted(sample_structure(1.0))) for _ in range(draws))

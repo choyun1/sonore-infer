@@ -22,11 +22,12 @@ classifiers = [
 ]
 dependencies = [
     "numpy>=1.26",
+    "scipy>=1.11",  # sourceroom.Posterior.theta_quantiles (scipy.stats.norm)
     "torch>=2.4",
 ]
 
 [project.urls]
-Source = "https://github.com/choyun1/sonore-inference"
+Source = "https://github.com/choyun1/sonore-infer"
 
 [project.optional-dependencies]
 # sonore makes stimuli and serves as the test oracle (design D2); the

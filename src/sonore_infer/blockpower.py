@@ -22,7 +22,7 @@ where ``S_cc'`` is the cross-spectrum of the fine structures of bands ``c``
 and ``c'``. For Gaussian noise it is exact: the phases of two jointly
 Gaussian analytic signals with complex correlation ``rho`` have
 ``E[cos phi cos phi'] = pi/8 Re[rho 2F1(1/2, 1/2; 2; |rho|^2)]``. Only
-neighbouring ``c, c'`` overlap. Two time smearings are added: each
+neighboring ``c, c'`` overlap. Two time smearings are added: each
 synthesis filter's energy impulse response before the cut to the sound's
 length, and the analysis filter's after it. In the lowest bands both last
 tens of ms.
@@ -47,7 +47,8 @@ from .room import cosine_responses
 def phase_correlation(z: np.ndarray) -> np.ndarray:
     """``2F1(1/2, 1/2; 2; z)`` for ``0 <= z <= 1``, from 1 to 4/pi:
     ``4 / (pi z) (E(k) - (1 - z) K(k))`` with ``k^2 = z``, the complete
-    elliptic integrals by the arithmetic-geometric mean."""
+    elliptic integrals by the arithmetic-geometric mean, whose sequences are
+    ``a``, ``b`` and ``c`` as in Abramowitz & Stegun 17.6."""
     z = np.clip(np.asarray(z, float), 0.0, 1.0)
     a, b = np.ones_like(z), np.sqrt(1 - z)
     c_sum, power = 0.5 * z, 0.5
@@ -109,28 +110,29 @@ class BlockPower:
         waveform is cut or zero-padded to the recording's length and padded
         by 0.5 s more at both ends, so the filters' ringing cannot wrap.
         Equal to sonore's ``Filterbank.analyze(sound, pad=0.5)``."""
-        n = self.n_samples
-        x = torch.as_tensor(np.array(waveform, float)).reshape(-1)[:n]
+        n_samples = self.n_samples
+        padded = torch.as_tensor(np.array(waveform, float)).reshape(-1)[:n_samples]
         pad = int(round(0.5 * self.fs))
-        n_fft = n + 2 * pad
-        x = torch.nn.functional.pad(x, (pad, n_fft - pad - x.numel()))
+        n_fft = n_samples + 2 * pad
+        padded = torch.nn.functional.pad(padded, (pad, n_fft - pad - padded.numel()))
         response = torch.from_numpy(self._responses(np.fft.rfftfreq(n_fft, 1 / self.fs)))
-        bands = torch.fft.irfft(torch.fft.rfft(x)[:, None] * response, n=n_fft, dim=0)[pad : pad + n]
+        bands = torch.fft.irfft(torch.fft.rfft(padded)[:, None] * response, n=n_fft, dim=0)
+        bands = bands[pad : pad + n_samples]
         return (bands**2).reshape(self.n_blocks, self.block_samples, self.n_bands).sum(1).T
 
     @cached_property
     def _envelope_weights(self) -> tuple[torch.Tensor, torch.Tensor]:
         """The raised-cosine windows ``(source_samples, n_windows)`` and the
         squared ramp ``(source_samples,)``, as sonore makes them."""
-        t = np.arange(self.source_samples) / self.fs
-        offset = (t[:, None] - self.window / 2 * np.arange(self.n_windows)[None, :]) / self.window
+        times = np.arange(self.source_samples) / self.fs
+        offset = (times[:, None] - self.window / 2 * np.arange(self.n_windows)[None, :]) / self.window
         windows = np.where(np.abs(offset) < 0.5, 0.5 * (1 + np.cos(2 * np.pi * offset)), 0.0)
         gain = np.ones(self.source_samples)
         n_ramp = int(round(self.ramp * self.fs))
         if n_ramp:
             phase = np.linspace(0, 1, n_ramp, endpoint=False) + 0.5 / n_ramp
-            up = (1 - np.cos(np.pi * phase)) / 2
-            gain[:n_ramp], gain[-n_ramp:] = up, up[::-1]
+            rise = (1 - np.cos(np.pi * phase)) / 2
+            gain[:n_ramp], gain[-n_ramp:] = rise, rise[::-1]
         return torch.from_numpy(windows), torch.from_numpy(gain**2)
 
     @cached_property
@@ -138,46 +140,47 @@ class BlockPower:
         """``A0[b, c] = A_bcc`` and ``A1[b, c] = A_bc(c+1)`` (module docstring),
         on a two-sided grid of ``n_freqs`` frequencies."""
         freqs = np.fft.fftfreq(self.n_freqs, 1 / self.fs)
-        h = self._responses(freqs)
-        analytic = np.where(freqs[:, None] > 0, 2 * h, 0.0)
+        responses = self._responses(freqs)
+        analytic = np.where(freqs[:, None] > 0, 2 * responses, 0.0)
         power = (analytic**2).mean(0)
         mixing = []
         for lag in (0, 1):
-            out = np.zeros((self.n_bands, self.n_bands - lag))
+            mixing_lag = np.zeros((self.n_bands, self.n_bands - lag))
             for c in range(self.n_bands - lag):
                 pair = analytic[:, c] * analytic[:, c + lag]
                 rho = np.fft.ifft(pair) / np.sqrt(power[c] * power[c + lag])
                 correlation = np.pi / 8 * np.real(rho * phase_correlation(np.abs(rho) ** 2))
                 spectrum = np.real(np.fft.fft(correlation))
-                out[:, c] = (h**2).T @ (h[:, c] * h[:, c + lag] * spectrum) / self.n_freqs
-            mixing.append(torch.from_numpy(out))
+                weighted = responses[:, c] * responses[:, c + lag] * spectrum
+                mixing_lag[:, c] = (responses**2).T @ weighted / self.n_freqs
+            mixing.append(torch.from_numpy(mixing_lag))
         return mixing[0], mixing[1]
 
     @cached_property
     def _kernels(self) -> tuple[int, torch.Tensor, torch.Tensor, torch.Tensor]:
         """Energy impulse responses of the filters, zero phase, centered,
         cut where less than ``kernel_tail`` of the energy lies beyond:
-        ``(half, synthesis (n_bands, 2 half + 1), synthesis of neighbouring
+        ``(half, synthesis (n_bands, 2 half + 1), synthesis of neighboring
         pairs (n_bands - 1, ...), analysis)``. Synthesis and analysis use the
         same filters, so the first and last are equal."""
-        n = 1 << int(math.ceil(math.log2(2 * self.fs)))
-        h = self._responses(np.fft.rfftfreq(n, 1 / self.fs))
-        energy = np.fft.fftshift(np.fft.irfft(h, n=n, axis=0) ** 2, axes=0)
+        n_fft = 1 << int(math.ceil(math.log2(2 * self.fs)))
+        responses = self._responses(np.fft.rfftfreq(n_fft, 1 / self.fs))
+        energy = np.fft.fftshift(np.fft.irfft(responses, n=n_fft, axis=0) ** 2, axes=0)
         energy /= energy.sum(0, keepdims=True)
-        lag = np.abs(np.arange(n) - n // 2)
+        lag = np.abs(np.arange(n_fft) - n_fft // 2)
         order = np.argsort(lag, kind="stable")
         outside = 1 - np.cumsum(energy[order], axis=0)
         half = int(lag[order][np.argmax((outside < self.kernel_tail).all(1))])
-        kernel = energy[n // 2 - half : n // 2 + half + 1].T
+        kernel = energy[n_fft // 2 - half : n_fft // 2 + half + 1].T
         kernel = torch.from_numpy(kernel / kernel.sum(1, keepdims=True))
         return half, kernel, 0.5 * (kernel[:-1] + kernel[1:]), kernel
 
-    def _smear(self, x: torch.Tensor, kernel: torch.Tensor, half: int, length: int) -> torch.Tensor:
-        """Each row of ``x`` (starting at t = 0) convolved with its centered
+    def _smear(self, rows: torch.Tensor, kernel: torch.Tensor, half: int, length: int) -> torch.Tensor:
+        """Each of ``rows`` (starting at t = 0) convolved with its centered
         kernel; ``length`` samples from t = 0 (what rings before 0 is cut)."""
-        n_fft = 1 << int(math.ceil(math.log2(max(x.shape[1] + kernel.shape[1], half + length))))
-        out = torch.fft.irfft(torch.fft.rfft(x, n=n_fft) * torch.fft.rfft(kernel, n=n_fft), n=n_fft)
-        return out[:, half : half + length]
+        n_fft = 1 << int(math.ceil(math.log2(max(rows.shape[1] + kernel.shape[1], half + length))))
+        smeared = torch.fft.irfft(torch.fft.rfft(rows, n=n_fft) * torch.fft.rfft(kernel, n=n_fft), n=n_fft)
+        return smeared[:, half : half + length]
 
     # Products of two cell amplitudes that the envelopes' products contain:
     # (band step c' - c, window step k' - k, factor). e_c^2 has a_ck^2 and
@@ -191,9 +194,9 @@ class BlockPower:
         _, ramp = self._envelope_weights
         a0, a1 = self._mixing
         half, synthesis, synthesis_pairs, analysis = self._kernels
-        m = self.source_samples
-        same = self._smear(products[0], synthesis, half, m) * ramp
-        cross = self._smear(products[1], synthesis_pairs, half, m) * ramp
+        n_source = self.source_samples
+        same = self._smear(products[0], synthesis, half, n_source) * ramp
+        cross = self._smear(products[1], synthesis_pairs, half, n_source) * ramp
         return self._smear(a0 @ same + 2 * a1 @ cross, analysis, half, self.n_samples)
 
     def _blocks(self, power: torch.Tensor) -> torch.Tensor:
@@ -216,28 +219,28 @@ class BlockPower:
         windows, ramp = self._envelope_weights
         a0, a1 = self._mixing
         half, synthesis, synthesis_pairs, analysis = self._kernels
-        m, n_c = self.source_samples, self.n_bands
-        out = []
+        n_source, n_bands = self.source_samples, self.n_bands
+        responses = []
         for band_step, window_step, factor in self._TERMS:
-            rows = n_c - band_step
+            rows = n_bands - band_step
             kernel, mixing = (synthesis, a0) if band_step == 0 else (synthesis_pairs, a1)
-            n_k = self.n_windows - abs(window_step)
+            n_pairs = self.n_windows - abs(window_step)
             first = max(0, -window_step)
-            response = torch.zeros(rows, n_k, 4, self.n_blocks, dtype=torch.float64)
-            for k in range(n_k):
+            response = torch.zeros(rows, n_pairs, 4, self.n_blocks, dtype=torch.float64)
+            for k in range(n_pairs):
                 shape = windows[:, k + first] * windows[:, k + first + window_step]
-                smeared = self._smear(shape.expand(rows, m), kernel, half, m) * ramp
+                smeared = self._smear(shape.expand(rows, n_source), kernel, half, n_source) * ramp
                 for offset in range(-1, 3):
-                    c = torch.arange(rows)
-                    c = c[(c + offset >= 0) & (c + offset < n_c)]
-                    if len(c) == 0:
+                    bands = torch.arange(rows)
+                    bands = bands[(bands + offset >= 0) & (bands + offset < n_bands)]
+                    if len(bands) == 0:
                         continue
-                    weights = mixing[c + offset, c]
-                    power = weights[:, None] * smeared[c]
-                    power = self._smear(power, analysis[c + offset], half, self.n_samples)
-                    response[c, k, offset + 1] = factor * self._blocks(power)
-            out.append(response)
-        return out
+                    weights = mixing[bands + offset, bands]
+                    power = weights[:, None] * smeared[bands]
+                    power = self._smear(power, analysis[bands + offset], half, self.n_samples)
+                    response[bands, k, offset + 1] = factor * self._blocks(power)
+            responses.append(response)
+        return responses
 
     def source_energy(self, levels_db: torch.Tensor) -> torch.Tensor:
         """Expected energy ``(n_bands, n_blocks)`` of the source alone in each
@@ -247,12 +250,12 @@ class BlockPower:
         energy = torch.zeros(self.n_bands + 3, self.n_blocks, dtype=torch.float64)
         terms = zip(self._TERMS, self._responses_to_products, strict=True)
         for (band_step, window_step, _), response in terms:
-            n_k = self.n_windows - abs(window_step)
+            n_pairs = self.n_windows - abs(window_step)
             first = max(0, -window_step)
             rows = self.n_bands - band_step
             products = (
-                amplitude[:rows, first : first + n_k]
-                * amplitude[band_step : band_step + rows, first + window_step : first + window_step + n_k]
+                amplitude[:rows, first : first + n_pairs]
+                * amplitude[band_step : band_step + rows, first + window_step : first + window_step + n_pairs]
             )
             by_offset = torch.einsum("ck,ckoj->ocj", products, response)
             for offset in range(-1, 3):
@@ -272,11 +275,11 @@ class BlockPower:
         index = torch.arange(self.n_bands * self.n_windows).reshape(self.n_bands, self.n_windows)
         terms = zip(self._TERMS, self._responses_to_products, strict=True)
         for (band_step, window_step, _), response in terms:
-            n_k = self.n_windows - abs(window_step)
+            n_pairs = self.n_windows - abs(window_step)
             first = max(0, -window_step)
             rows = self.n_bands - band_step
-            x = index[:rows, first : first + n_k]
-            y = index[band_step : band_step + rows, first + window_step : first + window_step + n_k]
+            x = index[:rows, first : first + n_pairs]
+            y = index[band_step : band_step + rows, first + window_step : first + window_step + n_pairs]
             yield x, y, amplitude.reshape(-1)[x] * amplitude.reshape(-1)[y], response
 
     def source_energy_jacobian(self, levels_db: torch.Tensor) -> torch.Tensor:
@@ -284,17 +287,17 @@ class BlockPower:
         (cells flattened band-major)."""
         kappa = math.log(10) / 20
         n_cells = self.n_bands * self.n_windows
-        out = torch.zeros((self.n_bands + 3) * self.n_blocks * n_cells, dtype=torch.float64)
+        jacobian = torch.zeros((self.n_bands + 3) * self.n_blocks * n_cells, dtype=torch.float64)
         blocks = torch.arange(self.n_blocks)
         for x, y, products, response in self._cells_and_products(levels_db):
             rows = torch.arange(x.shape[0])[:, None, None, None]
             offsets = torch.arange(4)[None, None, :, None]
             values = (kappa * products[:, :, None, None] * response).reshape(-1)
-            out_row = ((rows + offsets) * self.n_blocks + blocks) * n_cells
+            row_starts = ((rows + offsets) * self.n_blocks + blocks) * n_cells
             for cell in (x, y):
-                out.index_add_(0, (out_row + cell[:, :, None, None]).reshape(-1), values)
-        out = out.reshape(self.n_bands + 3, self.n_blocks, n_cells)
-        return out[1 : self.n_bands + 1]
+                jacobian.index_add_(0, (row_starts + cell[:, :, None, None]).reshape(-1), values)
+        jacobian = jacobian.reshape(self.n_bands + 3, self.n_blocks, n_cells)
+        return jacobian[1 : self.n_bands + 1]
 
     def source_energy_curvature(self, levels_db: torch.Tensor, weights: torch.Tensor) -> torch.Tensor:
         """``sum_bj weights[b, j] d^2 source_energy[b, j] / d levels_db^2``,
@@ -303,22 +306,23 @@ class BlockPower:
         n_cells = self.n_bands * self.n_windows
         padded = torch.zeros(self.n_bands + 3, self.n_blocks, dtype=torch.float64)
         padded[1 : self.n_bands + 1] = weights
-        out = torch.zeros(n_cells * n_cells, dtype=torch.float64)
+        curvature = torch.zeros(n_cells * n_cells, dtype=torch.float64)
         for x, y, products, response in self._cells_and_products(levels_db):
             rows = x.shape[0]
             reached = torch.stack([padded[offset : offset + rows] for offset in range(4)], 1)
-            q = (kappa**2 * products * torch.einsum("ckoj,coj->ck", response, reached)).reshape(-1)
+            reached_response = torch.einsum("ckoj,coj->ck", response, reached)
+            pair_curvature = (kappa**2 * products * reached_response).reshape(-1)
             x, y = x.reshape(-1), y.reshape(-1)
-            for i, j in ((x, x), (y, y), (x, y), (y, x)):
-                out.index_add_(0, i * n_cells + j, q)
-        return out.reshape(n_cells, n_cells)
+            for row_cells, column_cells in ((x, x), (y, y), (x, y), (y, x)):
+                curvature.index_add_(0, row_cells * n_cells + column_cells, pair_curvature)
+        return curvature.reshape(n_cells, n_cells)
 
     def reverberant(self, source: torch.Tensor, gain: torch.Tensor) -> torch.Tensor:
         """Source energy ``(n_bands, n_blocks)`` convolved block by block with
         a room's expected gain ``(n_bands, n_blocks)``."""
-        n = self.n_blocks
-        spectrum = torch.fft.rfft(source, n=2 * n) * torch.fft.rfft(gain, n=2 * n)
-        return torch.fft.irfft(spectrum, n=2 * n)[..., :n]
+        n_blocks = self.n_blocks
+        spectrum = torch.fft.rfft(source, n=2 * n_blocks) * torch.fft.rfft(gain, n=2 * n_blocks)
+        return torch.fft.irfft(spectrum, n=2 * n_blocks)[..., :n_blocks]
 
 
 # Single renders against the model at experiment (a)'s setting (RT60 0.4 s,

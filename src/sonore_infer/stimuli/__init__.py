@@ -7,7 +7,7 @@ that default. ``two_notes`` makes milestone (b)'s stimuli, which are not
 from the paper (docs/design/milestone-b.md).
 
 This subpackage needs the ``stimuli`` extra (``pip install
-sonore-inference[stimuli]``); the rest of the package never imports it.
+sonore-infer[stimuli]``); the rest of the package never imports it.
 """
 
 from sonore_infer.stimuli.asynchronous_onsets import asynchronous_onsets_set, asynchronous_onsets_stimulus

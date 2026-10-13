@@ -8,18 +8,13 @@ import torch
 
 from sonore_infer.cochleagram import FFTCochleagram
 from sonore_infer.priors import log_prior_structure
-from sonore_infer.scene import Harmonic, Scene, SceneTiming, Whistle, erb_to_hz, evaluate, hz_to_erb
+from sonore_infer.scene import Harmonic, Scene, SceneTiming, Whistle, evaluate
 from sonore_infer.sources import whistle_event
 from sonore_infer.stimuli import mistuned_harmonic_stimulus
 
 FS = 20_000
 TIMING = SceneTiming(fs=FS, total_duration=0.5, ramp=0.01)
 EVENT = dict(onset=0.05, duration=0.4)
-
-
-def test_erb_conversions_invert_each_other():
-    for freq in [50.0, 200.0, 3000.0]:
-        assert erb_to_hz(torch.tensor(hz_to_erb(freq), dtype=torch.float64)).item() == pytest.approx(freq)
 
 
 def test_constant_harmonic_source_reproduces_the_stimulus():
