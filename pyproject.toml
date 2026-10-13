@@ -26,7 +26,7 @@ dependencies = [
 ]
 
 [project.urls]
-Source = "https://github.com/choyun1/sonore-inference"
+Source = "https://github.com/choyun1/sonore-infer"
 
 [project.optional-dependencies]
 # sonore makes stimuli and serves as the test oracle (design D2); the
