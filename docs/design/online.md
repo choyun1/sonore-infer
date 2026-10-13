@@ -226,7 +226,7 @@ in every enumerative run so far.
 
 ### O8. Code
 
-**Recommendation:** a new module `src/sonore_inference/online.py` that
+**Recommendation:** a new module `src/sonore_infer/online.py` that
 holds the fixed-lag loop over an existing `Scene` (which latents are free,
 the conditioning of O4 (A), the evidence of O5 (B)), and a tool
 `tools/online_buildup.py` that runs it on the C.11 stimuli. Existing
