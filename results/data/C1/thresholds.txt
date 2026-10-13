@@ -1,0 +1,4 @@
+f0-100_h1  laplace                            Eqn 2  25.0   BASS's rule   30
+f0-100_h1  importance (Laplace proposal)      Eqn 2  25.0   BASS's rule   30
+f0-100_h1  elbo                               Eqn 2  25.0   BASS's rule   30
+f0-100_h1  importance (variational proposal)  Eqn 2  25.0   BASS's rule   30

@@ -23,6 +23,7 @@ not import the package.
 | Script | What it does |
 |---|---|
 | `compare_two_notes.py` | One note or two (or one plus whistles) by marginal likelihood |
+| `two_notes_summary.py` | Log-odds and threshold tables from `compare_two_notes.py` outputs |
 | `run_seeds.py` | Re-runs milestones (a) and (b) for more seeds, in parallel and resumably |
 
 ## Source and room (docs/design/source-reverb.md)

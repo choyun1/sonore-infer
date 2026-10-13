@@ -1,0 +1,48 @@
+left out: sound 0 linear_matched_start floor 20 (returned the prior exactly)
+left out: sound 1 linear_matched_end floor 20 (returned the prior exactly)
+left out: sound 4 exaggerated floor 20 (has no finite posterior)
+left out: sound 8 time_reversed floor 20 (has no finite posterior)
+206 records; medians over seeds
+condition              rt60 floor  n   posterior/true  T20x3/true  log marginal re control [nats]
+control                 0.4    60  5        0.993       1.032        0.0
+control                 0.4    40  5        0.949       1.032        0.0
+control                 0.4    20  5        1.139       1.032        0.0
+control                 0.8    60  5        1.013       1.106        0.0
+control                 0.8    40  5        1.042       1.106        0.0
+control                 0.8    20  5        0.566       1.106        0.0
+time_reversed           0.4    60  5        2.925       0.145    -7382.1
+time_reversed           0.4    40  5        2.604       0.145    -2140.9
+time_reversed           0.4    20  5        0.429       0.145      -49.8
+time_reversed           0.8    60  5        2.500       0.144   -34458.3
+time_reversed           0.8    40  5        0.130       0.144    -3371.4
+time_reversed           0.8    20  4        0.340       0.146       -2.6
+linear_matched_start    0.4    60  5        0.494       0.373       61.6
+linear_matched_start    0.4    40  5        0.561       0.373       26.9
+linear_matched_start    0.4    20  4        1.062       0.368       -1.4
+linear_matched_start    0.8    60  5        0.432       0.389      253.3
+linear_matched_start    0.8    40  5        0.601       0.389       71.9
+linear_matched_start    0.8    20  5        0.561       0.389       -0.4
+linear_matched_end      0.4    60  5        1.724       1.776    -1045.9
+linear_matched_end      0.4    40  5        2.577       1.776     -275.4
+linear_matched_end      0.4    20  4        2.262       1.789      -17.0
+linear_matched_end      0.8    60  5        2.132       1.838    -1750.4
+linear_matched_end      0.8    40  5        2.496       1.838     -548.1
+linear_matched_end      0.8    20  5        0.561       1.838        0.9
+inverted                0.4    60  5        0.395       0.470      203.8
+inverted                0.4    40  5        0.355       0.470       81.9
+inverted                0.4    20  5        0.786       0.470       -0.8
+inverted                0.8    60  5        0.352       0.349      368.4
+inverted                0.8    40  5        0.410       0.349      160.0
+inverted                0.8    20  5        0.563       0.349        6.0
+exaggerated             0.4    60  5        1.031       1.049      -27.8
+exaggerated             0.4    40  5        1.018       1.049      -15.4
+exaggerated             0.4    20  4        1.170       1.040       -0.9
+exaggerated             0.8    60  5        1.047       1.121      -74.9
+exaggerated             0.8    40  5        1.069       1.121      -21.1
+exaggerated             0.8    20  5        0.545       1.121        0.2
+reduced                 0.4    60  5        0.945       1.044        9.4
+reduced                 0.4    40  5        0.865       1.044       11.4
+reduced                 0.4    20  5        1.027       1.044        0.1
+reduced                 0.8    60  5        0.992       1.066       13.2
+reduced                 0.8    40  5        1.079       1.066       13.1
+reduced                 0.8    20  5        0.580       1.066       -0.2
