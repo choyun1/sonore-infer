@@ -5,8 +5,8 @@
 > checked carefully. Numbers, methods and interpretations may change.
 
 **Status:** done (2026-10-12). **Paper target:** none in Cusimano et al.
-(2024); see [R1](R1-source-and-room.md). The design's experiment (b) (R7),
-after Traer & McDermott (2016), who found listeners' judgements of
+(2024); see [R1](R1-source-and-room.md). The design's experiment (b) (decision R7),
+after Traer & McDermott (2016), who found listeners' judgments of
 reverberation biased by atypical rooms. Listeners are not compared here.
 **Code:** `tools/atypical_rooms.py`, PR
 [#37](https://github.com/choyun1/sonore-infer/pull/37) (`d03e2ef`), using

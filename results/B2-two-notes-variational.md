@@ -87,5 +87,5 @@ Raw outputs: [`data/B2/`](data/B2/).
   octave, 20 ms), so the octave's margin may be a few units smaller.
 - Importance sampling's effective sample size is 1 to 6 of 256 for most fits.
 - Not compared with listeners, and BASS was not run on these stimuli
-  (design B6).
+  (decision B6 of [milestone (b)](../docs/design/milestone-b.md)).
 - Followed up by [B3](B3-octave-sigma5.md) (likelihood SD 5 dB), [B4](B4-two-notes-seeds.md) (seeds) and [C1](C1-kernel-inferred.md) (kernel inferred).

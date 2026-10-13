@@ -25,6 +25,13 @@ Conventions on every page:
 - Every number comes from a committed output under [`data/`](data/) and a
   script under `tools/`, or is marked as an estimate.
 
+**Experiment IDs and decision numbers.** The design documents number their
+decisions with the same letters (decision B1 is in milestone-b.md, decision
+C1 in milestone-c.md, decision R1 in source-reverb.md). On these pages a bare
+ID such as B1 is an experiment; a decision is always written "decision B1".
+Inside a design document a bare number is one of its decisions; elsewhere
+both are written with their word.
+
 ## How the experiments work
 
 ### The main idea
