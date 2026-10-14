@@ -125,3 +125,19 @@ def test_buildup_stimuli_are_prefixes_of_the_longest():
         assert shorter.shape[0] == round((0.05 + 0.5 * n) * bu.FS)
         assert (shorter == longest[: shorter.shape[0]]).all()
     assert len(bu.buildup_set()) == 12
+
+
+def test_a_fit_with_patience_stops_when_it_stops_improving():
+    from sonore_infer.fit import fit
+
+    waveform = torch.tensor(bu.buildup_stimulus(1, 8, lead=0.05).data[:, 0], dtype=F64)[: round(0.3 * bu.FS)]
+    cochleagram = FFTCochleagram()
+    scene, init = prefix_scene((WhistleSpec("w0", TONES[:1]),), 0.3, bu.FS, bu.RAMP)
+    observed = cochleagram(waveform)
+    kwargs = dict(learning_rates=scene.learning_rates(), steps=400, log_prior=scene.log_prior)
+    full = fit(scene.render, init, observed, cochleagram, **kwargs)
+    stopped = fit(scene.render, init, observed, cochleagram, patience=20, tolerance=1.0, **kwargs)
+    n = len(stopped.history)
+    assert n < len(full.history)
+    assert stopped.history == full.history[:n]  # the same path, cut short
+    assert max(stopped.history) - max(stopped.history[: n - 20]) < 1.0

@@ -58,6 +58,12 @@ def main():
     )
     parser.add_argument("--steps", type=int, default=30, help="Adam steps per window")
     parser.add_argument("--batch-steps", type=int, default=0, help="batch reference at each triplet's end")
+    parser.add_argument(
+        "--patience",
+        type=int,
+        default=None,
+        help="batch fits stop once they gain less than 1 over this many steps (--batch-steps is then a cap)",
+    )
     args = parser.parse_args()
     cochleagram = FFTCochleagram()
     sound = bu.buildup_stimulus(args.triplets, args.semitones, lead=LEAD)
@@ -71,7 +77,7 @@ def main():
 
     batch = {}
     if args.batch_steps:
-        print("batch: triplets  hypothesis  laplace  structure  log_joint  seconds")
+        print("batch: triplets  hypothesis  laplace  structure  log_joint  seconds  steps")
         for n, end in enumerate(checkpoints, start=1):
             observed = cochleagram(waveform[: round(end * bu.FS)])
             for name, spec in specs.items():
@@ -85,12 +91,13 @@ def main():
                     learning_rates=scene.learning_rates(),
                     steps=args.batch_steps,
                     log_prior=scene.log_prior,
+                    patience=args.patience,
                 )
                 state = batch_laplace(scene, result.params, observed, cochleagram)
                 batch[n, name] = state.value + scene.structure_log_prior()
                 print(
                     f"batch: {n}  {name}  {state.value:10.2f}  {scene.structure_log_prior():6.2f}"
-                    f"  {state.peak:10.2f}  {time.perf_counter() - begin:6.1f}",
+                    f"  {state.peak:10.2f}  {time.perf_counter() - begin:6.1f}  {len(result.history) - 1}",
                     flush=True,
                 )
 
