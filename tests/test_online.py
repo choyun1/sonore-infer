@@ -151,3 +151,22 @@ def test_leaky_log_odds():
     assert leaky_log_odds(ends, ones, zeros, math.inf)[-1] == pytest.approx(200)
     # a constant gain of 1 per 50 ms levels off at 1 / (1 - exp(-0.05 / tau)), about 20 tau
     assert leaky_log_odds(ends, ones, zeros, 0.5)[-1] == pytest.approx(1 / (1 - math.exp(-0.1)))
+
+
+def test_online_windows_with_patience_stop_early_and_report_their_steps():
+    _, _, _, fixed = short_run(math.inf, steps=200)
+    waveform = torch.tensor(bu.buildup_stimulus(1, 8, lead=0.05).data[:, 0], dtype=F64)[: round(0.3 * bu.FS)]
+    adaptive = run_online(
+        waveform,
+        (WhistleSpec("w0", TONES),),
+        FFTCochleagram(),
+        fs=bu.FS,
+        ramp=bu.RAMP,
+        window=0.05,
+        lag=math.inf,
+        steps=200,
+        patience=10,
+    )
+    assert all(step.window.adam_steps == 200 for step in fixed)
+    assert all(step.window.adam_steps <= 200 for step in adaptive)
+    assert any(step.window.adam_steps < 200 for step in adaptive)
