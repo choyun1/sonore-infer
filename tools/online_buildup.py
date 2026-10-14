@@ -53,7 +53,9 @@ def main():
     parser.add_argument("--semitones", type=float, default=8)
     parser.add_argument("--triplets", type=int, default=6)
     parser.add_argument("--window", type=float, default=0.05, help="s between updates")
-    parser.add_argument("--lag", type=float, nargs="+", default=[1.0], help="s; inf for no freezing")
+    parser.add_argument(
+        "--lag", type=float, nargs="*", default=[1.0], help="s; inf for no freezing; none for batch only"
+    )
     parser.add_argument("--steps", type=int, default=30, help="Adam steps per window")
     parser.add_argument("--batch-steps", type=int, default=0, help="batch reference at each triplet's end")
     args = parser.parse_args()
