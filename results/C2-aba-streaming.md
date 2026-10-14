@@ -87,7 +87,7 @@ gives 6.0 and 5.4. Every seed prefers two streams, by 8 to 10.5, so the
 
 ![C2-aba-streaming](plots/C2-aba-streaming.svg)
 
-*Log odds of two streams over one, variational importance estimate, from [`data/C2/`](data/C2/).*
+*Log odds of two streams over one, variational importance estimate, seed 0, from [`data/C2/`](data/C2/). Top: the map with its color scale stopping at ±20, as in the paper's Fig. 8D, for comparison by eye. Bottom: the same values on their full scale.*
 
 ## What it says
 

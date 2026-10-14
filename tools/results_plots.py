@@ -599,23 +599,85 @@ def kernel_inferred():
     return figure([mistuned, octave], "C1: log odds with the GP kernel fixed and inferred", legend)
 
 
+ABA_SEMITONES = (1, 3, 6, 9, 12)
+ABA_INTERVALS = (67, 83, 100, 117, 134, 150)
+ABA_CLIP = 20  # the color scale of the paper's Fig. 8D stops at ±20
+
+
+def aba_heatmap(found):
+    """The map as the paper draws it: semitones by interval, color clipped at ±20, values printed."""
+    panel = Panel(600, 260, (0, len(ABA_INTERVALS)), (0, len(ABA_SEMITONES)), left=46, bottom=34)
+    panel.items.append(
+        "<style>.cell-two { fill: var(--s2) } .cell-one { fill: var(--s1) } "
+        ".cell-value { font-size: 10.5px; fill: var(--text); font-variant-numeric: tabular-nums }</style>"
+    )
+    for row, semitones in enumerate(ABA_SEMITONES):
+        for column, interval in enumerate(ABA_INTERVALS):
+            odds = aba_map.log_odds(found, semitones, interval, "vi_importance")
+            x0, x1 = panel.x(column), panel.x(column + 1)
+            y0, y1 = panel.y(row + 1), panel.y(row)
+            kind = "cell-two" if odds > 0 else "cell-one"
+            opacity = min(abs(odds), ABA_CLIP) / ABA_CLIP
+            panel.items.append(
+                f'<rect class="{kind}" x="{x0 + 1:.1f}" y="{y0 + 1:.1f}" width="{x1 - x0 - 2:.1f}" '
+                f'height="{y1 - y0 - 2:.1f}" fill-opacity="{opacity:.2f}">'
+                f"<title>{semitones} st, {interval} ms: {odds:+.1f}</title></rect>"
+            )
+            panel.text((x0 + x1) / 2, (y0 + y1) / 2 + 3.5, f"{odds:+.0f}", "cell-value", "middle")
+        middle = (panel.y(row) + panel.y(row + 1)) / 2
+        panel.text(panel.left - 6, middle + 3.5, f"{semitones}", "tick", "end")
+    for column, interval in enumerate(ABA_INTERVALS):
+        panel.text(
+            (panel.x(column) + panel.x(column + 1)) / 2,
+            panel.plot_bottom + 14,
+            f"{interval}",
+            "tick",
+            "middle",
+        )
+    panel.text(
+        (panel.left + panel.plot_right) / 2,
+        panel.height - 4,
+        "onset-to-onset interval (ms)",
+        "label",
+        "middle",
+    )
+    middle_y = (panel.top + panel.plot_bottom) / 2
+    panel.items.append(
+        text_element(
+            "label", 10, middle_y, "semitones (B above A)", "middle", f"rotate(-90 10 {middle_y:.1f})"
+        )
+    )
+    panel.text(
+        panel.left,
+        14,
+        "Scale stops at ±20 as in the paper's Fig. 8D: orange two streams, blue one",
+        "title",
+    )
+    return panel
+
+
 def aba_streaming():
     found = aba_map.collect([data("C2", "one_converged"), data("C2", "run_300steps")])
-    intervals = sorted({key[1] for key in found})
     panel = Panel(600, 260, (60, 157), (-50, 230), left=46)
     panel.axes(
-        [67, 83, 100, 117, 134, 150],
+        list(ABA_INTERVALS),
         [-50, 0, 50, 100, 150, 200],
         x_label="onset-to-onset interval (ms)",
         y_label="log odds, two streams vs one",
+        title="The same values on their full scale (legend above)",
     )
     panel.horizontal(0)
     legend = []
-    for semitones, color in zip((1, 3, 6, 9, 12), ("s1", "s2", "s3", "s4", "s5"), strict=True):
-        points = [(dt, aba_map.log_odds(found, semitones, dt, "vi_importance")) for dt in intervals]
+    for semitones, color in zip(ABA_SEMITONES, ("s1", "s2", "s3", "s4", "s5"), strict=True):
+        points = [(dt, aba_map.log_odds(found, semitones, dt, "vi_importance")) for dt in ABA_INTERVALS]
         panel.line(points, color, tip=lambda x, y, st=semitones: f"{st} st, {x:g} ms: {y:+.1f}")
         legend.append((color, f"{semitones} semitone{'s' if semitones > 1 else ''}", "line"))
-    return figure([panel], "C2: ABA, log odds of two streams by interval and frequency gap", legend)
+    return figure(
+        [aba_heatmap(found), panel],
+        "C2: ABA, log odds of two streams by interval and frequency gap",
+        legend,
+        columns=1,
+    )
 
 
 # Source and room
