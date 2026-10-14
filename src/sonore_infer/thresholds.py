@@ -20,14 +20,15 @@ everywhere it is ``high``, which the paper reports as not measurable.
 from __future__ import annotations
 
 import numpy as np
+from numpy.typing import ArrayLike
 
 
-def probability_from_log_odds(log_odds):
+def probability_from_log_odds(log_odds: ArrayLike) -> np.ndarray:
     """``p(H1 | X)`` from the log posterior odds of H1 over H0."""
     return 1 / (1 + np.exp(-np.asarray(log_odds, float)))
 
 
-def threshold(values, probability_high) -> float:
+def threshold(values: ArrayLike, probability_high: ArrayLike) -> float:
     """Eqn 2's threshold, from ``p(H1 | X)`` measured at increasing stimulus ``values``."""
     values = np.asarray(values, float)
     probability_low = 1 - np.asarray(probability_high, float)

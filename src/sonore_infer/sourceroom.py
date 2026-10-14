@@ -39,6 +39,7 @@ all the mass on one point. Instead:
 from __future__ import annotations
 
 import math
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 
 import numpy as np
@@ -90,7 +91,7 @@ class Model:
     bias_db: float = BIAS_DB
     drr_db: float = TYPICAL_DRR_DB
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.observed_db = DB * torch.log(self.observed.to(torch.float64).clamp_min(1e-300))
         self.floor = self.observed_db.max() - self.floor_db
         self.target = torch.maximum(self.observed_db, self.floor)
@@ -99,9 +100,11 @@ class Model:
 
     @property
     def shape(self) -> tuple[int, int]:
+        """Shape of the level grid: ``(n_bands, n_windows)``."""
         return self.power.n_bands, self.power.n_windows
 
     def gain(self, rt60: float) -> torch.Tensor:
+        """The room's expected gain at median RT60 ``rt60`` [s], see :meth:`RoomGain.gain`."""
         return self.room.gain(rt60)
 
     def log_likelihood(self, levels: torch.Tensor, gain: torch.Tensor) -> torch.Tensor:
@@ -114,7 +117,9 @@ class Model:
             math.log(self.sigma_db) + 0.5 * math.log(2 * math.pi)
         )
 
-    def likelihood_derivatives(self, levels: torch.Tensor, gain: torch.Tensor):
+    def likelihood_derivatives(
+        self, levels: torch.Tensor, gain: torch.Tensor
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         """Log likelihood, its gradient and the Hessian of its negative with
         respect to the flattened levels, all exact."""
         power = self.power
@@ -152,7 +157,7 @@ class Prior:
     n_bands: int
     n_windows: int
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         base = SpectrogramPrior()
         band_correlation, time_correlation, sd = torch.exp(self.log_theta)
         self.rho_band = torch.exp(-base.band_spacing_erb / band_correlation)
@@ -172,6 +177,7 @@ class Prior:
         return torch.kron(band_precision, time_precision) / self.sd**2
 
     def log_det_covariance(self) -> torch.Tensor:
+        """Log determinant of the covariance of the flattened levels."""
         n_bands, n_windows = self.n_bands, self.n_windows
         return (
             2 * n_bands * n_windows * torch.log(self.sd)
@@ -224,7 +230,7 @@ def fit_mode(
         tolerance_change=1e-12,
     )
 
-    def closure():
+    def closure() -> torch.Tensor:
         optimizer.zero_grad()
         levels = model.mean + sd * band_factor @ whitened @ time_factor.T
         loss = -model.log_likelihood(levels, gain) + 0.5 * (whitened**2).sum()
@@ -248,6 +254,7 @@ class Expansion:
 
     @classmethod
     def at(cls, model: Model, gain: torch.Tensor, levels: torch.Tensor) -> Expansion:
+        """The expansion of ``model``'s log likelihood at ``levels``, with room gain ``gain``."""
         value, gradient, hessian = model.likelihood_derivatives(levels, gain)
         return cls(levels, float(value), gradient, hessian, model.mean.expand_as(levels).reshape(-1))
 
@@ -283,7 +290,7 @@ class Expansion:
         n_bands, n_windows = self.levels.shape
         log_theta_tensor = torch.tensor(log_theta, dtype=torch.float64)
 
-        def factors(log_theta_tensor):
+        def factors(log_theta_tensor: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
             prior = Prior(log_theta_tensor, n_bands, n_windows)
             return ar1_precision(prior.rho_band, n_bands), ar1_precision(prior.rho_time, n_windows), prior.sd
 
@@ -343,7 +350,7 @@ def newton_mode(
     precision = prior.precision().detach()
     mean = model.mean.expand(shape).reshape(-1)
 
-    def log_joint(levels, value):
+    def log_joint(levels: torch.Tensor, value: torch.Tensor | float) -> torch.Tensor:
         return value - 0.5 * (levels - mean) @ precision @ (levels - mean)
 
     levels = start.reshape(-1).clone()
@@ -371,7 +378,7 @@ def newton_mode(
     return None
 
 
-def _bounds():
+def _bounds() -> list[tuple[float, float]]:
     return [(math.log(lo), math.log(hi)) for lo, hi in zip(THETA_LOW, THETA_HIGH, strict=True)]
 
 
@@ -453,17 +460,18 @@ def evaluate_rt60(
         prior = Prior(torch.tensor(current, dtype=torch.float64), n_bands, n_windows)
         found = None if levels is None else newton_mode(model, gain, prior, levels)
         if found is None:
-            levels = fit_mode(model, gain, prior, levels)
-            found = newton_mode(model, gain, prior, levels)
-        if found is None:
-            expansion = Expansion.at(model, gain, levels)
-        else:
-            levels, expansion = found
+            fitted = fit_mode(model, gain, prior, levels)
+            found = newton_mode(model, gain, prior, fitted)
+            if found is None:
+                found = fitted, Expansion.at(model, gain, fitted)
+        levels, expansion = found
         new_log_theta = _maximize_theta(expansion, current)
         moved = np.abs(new_log_theta - current).max()
         current = new_log_theta
         if moved < tolerance:
             break
+    if levels is None:
+        raise ValueError("max_refits must be at least 1")
     # theta has moved less than `tolerance` from the expansion's own theta,
     # where the expansion is Laplace; it is not refitted again
     peak = expansion.log_evidence(torch.tensor(current, dtype=torch.float64)).item()
@@ -477,9 +485,12 @@ def evaluate_rt60(
 
 @dataclass
 class Posterior:
+    """The posterior over RT60 from the evidence at a set of RT60 points, and the
+    Laplace Gaussians in log theta at each."""
+
     points: list[RT60Point]
 
-    def _weights(self):
+    def _weights(self) -> tuple[list[RT60Point], np.ndarray, float]:
         """Posterior mass of each point (trapezoid in log r) and the log
         marginal likelihood log p(y)."""
         points = sorted(self.points, key=lambda point: point.rt60)
@@ -501,16 +512,17 @@ class Posterior:
 
     @property
     def log_marginal(self) -> float:
+        """The log marginal likelihood ``log p(y)``."""
         return self._weights()[2]
 
-    def rt60_quantiles(self, qs=(0.05, 0.5, 0.95)) -> np.ndarray:
+    def rt60_quantiles(self, qs: Sequence[float] = (0.05, 0.5, 0.95)) -> np.ndarray:
         """Quantiles of r, linear in log r between points."""
         points, weights, _ = self._weights()
         log_r = np.log([point.rt60 for point in points])
         cdf = np.cumsum(weights) - weights / 2
         return np.exp(np.interp(qs, cdf, log_r))
 
-    def theta_quantiles(self, qs=(0.05, 0.5, 0.95)) -> np.ndarray:
+    def theta_quantiles(self, qs: Sequence[float] = (0.05, 0.5, 0.95)) -> np.ndarray:
         """Quantiles ``(3, len(qs))`` of each theta, from the mixture over r
         of the Laplace Gaussians in log theta."""
         from scipy.stats import norm
@@ -591,10 +603,10 @@ def infer(model: Model, *, refine_to: float = 0.5, max_points: int = 36, verbose
         if not wide.any():
             break
         index = int(np.argmax(np.where(wide, mass, -1)))
-        rt60 = float(np.exp(0.5 * (log_r[index] + log_r[index + 1])))
+        added_rt60 = float(np.exp(0.5 * (log_r[index] + log_r[index + 1])))
         start = ordered[index] if weights[index] >= weights[index + 1] else ordered[index + 1]
-        point = evaluate_rt60(model, rt60, start.log_theta, start.levels)
+        point = evaluate_rt60(model, added_rt60, start.log_theta, start.levels)
         points.append(point)
         if verbose:
-            print(f"  r {rt60:.4f}  {point.log_evidence:.1f}  (sd of log r {sd:.4f})", flush=True)
+            print(f"  r {added_rt60:.4f}  {point.log_evidence:.1f}  (sd of log r {sd:.4f})", flush=True)
     return Posterior(points)

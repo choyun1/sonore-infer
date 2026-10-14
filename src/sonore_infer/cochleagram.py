@@ -31,6 +31,7 @@ from functools import lru_cache
 
 import numpy as np
 import torch
+from numpy.typing import ArrayLike
 
 # room.py, spectrotemporal.py and some tools import these from here too.
 from sonore_infer.erb import erb_bandwidth, erb_to_freq, freq_to_erb
@@ -38,7 +39,9 @@ from sonore_infer.erb import erb_bandwidth, erb_to_freq, freq_to_erb
 REFERENCE_RMS = 1e-6
 
 
-def gammatone_response(freqs, cfs, order: int = 4, bandwidth_factor: float = 1.019) -> np.ndarray:
+def gammatone_response(
+    freqs: ArrayLike, cfs: ArrayLike, order: int = 4, bandwidth_factor: float = 1.019
+) -> np.ndarray:
     """Causal gammatone responses at ``freqs`` [Hz], shape ``(len(freqs), len(cfs))``.
 
     The exact Fourier transform of ``t**(order - 1) exp(-2 pi b t) cos(2 pi cf t)``
@@ -49,13 +52,15 @@ def gammatone_response(freqs, cfs, order: int = 4, bandwidth_factor: float = 1.0
     cf_row = np.asarray(cfs, float)[None, :]
     b = bandwidth_factor * erb_bandwidth(cf_row)
 
-    def gammatone(freq):
+    def gammatone(freq: np.ndarray) -> np.ndarray:
         return (b + 1j * (freq - cf_row)) ** -order + (b + 1j * (freq + cf_row)) ** -order
 
     return gammatone(freq_col) / np.abs(gammatone(cf_row))
 
 
-def ringing_samples(cfs, fs: float, order: int, bandwidth_factor: float, level_db: float = -60.0) -> int:
+def ringing_samples(
+    cfs: np.ndarray, fs: float, order: int, bandwidth_factor: float, level_db: float = -60.0
+) -> int:
     """Samples until the slowest filter's envelope ``t**(order-1) exp(-2 pi b t)`` stays below ``level_db``.
 
     The envelope is that of the gammatone's own impulse response, and it is
@@ -98,16 +103,19 @@ class Cochleagram:
 
     @property
     def pad_samples(self) -> int:
+        """Zero-padding at each end [samples]: ``pad``, or the slowest filter's ringing to -60 dB."""
         if self.pad is not None:
             return int(self.pad)
         return ringing_samples(self.cfs, self.fs, self.order, self.bandwidth_factor)
 
     @property
     def frame_samples(self) -> int:
+        """Length of each time window [samples]."""
         return round(self.frame * self.fs)
 
     @property
     def hop_samples(self) -> int:
+        """Step between time windows [samples]."""
         return round(self.hop * self.fs)
 
     def n_frames(self, n_samples: int) -> int:
@@ -120,7 +128,7 @@ class Cochleagram:
         return (starts + (self.frame_samples - 1) / 2) / self.fs
 
     @lru_cache(maxsize=8)  # noqa: B019 (the dataclass is frozen and small; the cache saves a recompute per step)
-    def _analytic_transfer(self, n_padded: int, dtype, device) -> torch.Tensor:
+    def _analytic_transfer(self, n_padded: int, dtype: torch.dtype, device: torch.device) -> torch.Tensor:
         """Responses on the full DFT grid, times the analytic-signal weights
         (1 at DC and Nyquist, 2 at positive and 0 at negative frequencies),
         shape ``(n_channels, n_padded)``."""
@@ -218,10 +226,11 @@ class FFTCochleagram(Cochleagram):
 
     @property
     def fft_size(self) -> int:
+        """FFT length: the power of two at least twice the window length."""
         return 2 ** int(np.ceil(np.log2(2 * self.frame_samples)))
 
     @lru_cache(maxsize=8)  # noqa: B019 (frozen dataclass)
-    def _weights(self, dtype, device) -> torch.Tensor:
+    def _weights(self, dtype: torch.dtype, device: torch.device) -> torch.Tensor:
         """Channel weights over the FFT bins, shape ``(n_channels, fft_size // 2 + 1)``, calibrated."""
         freqs = np.fft.rfftfreq(self.fft_size, 1 / self.fs)
         weights = np.abs(gammatone_response(freqs, self.cfs, self.order, self.bandwidth_factor)).T

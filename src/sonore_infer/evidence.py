@@ -50,6 +50,11 @@ def flatten(
 
 @dataclass
 class Evidence:
+    """What :func:`log_evidence` returns: the Laplace and importance-sampling
+    estimates of ``log p(sound | H)``, the effective sample size of the
+    ``n_samples`` importance draws, ``log p(sound, theta*)`` at the mode, and how
+    many Hessian eigenvalues were raised to ``min_eigenvalue``."""
+
     laplace: float
     importance: float
     effective_sample_size: float
@@ -75,7 +80,7 @@ def log_evidence(
     """
     vector, unflatten = flatten({name: value.detach() for name, value in mode.items()})
 
-    def flat_log_joint(flat):
+    def flat_log_joint(flat: torch.Tensor) -> torch.Tensor:
         return log_joint(unflatten(flat))
 
     peak = flat_log_joint(vector).item()
@@ -99,7 +104,7 @@ def log_evidence(
     else:
         draws = proposal.sample((n_samples,))
 
-    def log_weight(draw):
+    def log_weight(draw: torch.Tensor) -> torch.Tensor:
         # a draw far outside the prior's support can make the model itself
         # fail (an overflowing f0, say); it carries no weight
         try:
@@ -119,6 +124,11 @@ def log_evidence(
 
 @dataclass
 class VariationalEvidence:
+    """What :func:`variational_evidence` returns: the ELBO (mean of the last
+    tenth of the steps), the importance-sampling estimate of ``log p(sound | H)``
+    and its effective sample size over ``n_samples`` draws, and the ELBO at
+    every step."""
+
     elbo: float
     importance: float
     effective_sample_size: float
@@ -152,7 +162,7 @@ def variational_evidence(
     """
     vector, unflatten = flatten({name: value.detach() for name, value in mode.items()})
 
-    def flat_log_joint(flat):
+    def flat_log_joint(flat: torch.Tensor) -> torch.Tensor:
         return log_joint(unflatten(flat))
 
     dimension = vector.numel()
@@ -165,14 +175,14 @@ def variational_evidence(
     log_scale = torch.zeros(dimension, dtype=vector.dtype, requires_grad=True)
     optimizer = torch.optim.Adam([mean, log_scale], lr=learning_rate)
     gaussian_entropy = 0.5 * dimension * (1 + math.log(2 * math.pi)) + log_det_whitening
-    history = []
+    history: list[float] = []
     for step in range(steps):
         if report and step % max(1, steps // 10) == 0:
             report(f"variational fit, step {step}/{steps}")
         optimizer.zero_grad()
         noise = torch.randn(n_draws, dimension, generator=generator, dtype=vector.dtype)
         draws = vector + (mean + noise * log_scale.exp()) @ whitening.T
-        values = []
+        values: list[torch.Tensor] = []
         for draw in draws:
             with torch.no_grad():
                 inside = math.isfinite(flat_log_joint(draw).item())
@@ -199,7 +209,7 @@ def variational_evidence(
             - log_det_whitening
         )
 
-        def log_weight(z, log_q_z):
+        def log_weight(z: torch.Tensor, log_q_z: torch.Tensor) -> torch.Tensor:
             try:
                 return flat_log_joint(vector + whitening @ z) - log_q_z
             except ValueError:

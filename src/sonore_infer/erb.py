@@ -21,26 +21,40 @@ integral of ``1 / erb_bandwidth`` to within 6e-5 (relative), not exactly.
 from __future__ import annotations
 
 import math
+from typing import overload
 
 import numpy as np
 import torch
+from numpy.typing import ArrayLike
 
 
-def erb_bandwidth(freq):
+@overload
+def erb_bandwidth(freq: torch.Tensor) -> torch.Tensor: ...
+@overload
+def erb_bandwidth(freq: ArrayLike) -> np.ndarray: ...
+def erb_bandwidth(freq: torch.Tensor | ArrayLike) -> torch.Tensor | np.ndarray:
     """Equivalent rectangular bandwidth [Hz] at ``freq`` [Hz]."""
     if isinstance(freq, torch.Tensor):
         return 24.7 * (4.37 * freq / 1000 + 1)
     return 24.7 * (4.37 * np.asarray(freq, float) / 1000 + 1)
 
 
-def freq_to_erb(freq):
+@overload
+def freq_to_erb(freq: torch.Tensor) -> torch.Tensor: ...
+@overload
+def freq_to_erb(freq: ArrayLike) -> np.ndarray: ...
+def freq_to_erb(freq: torch.Tensor | ArrayLike) -> torch.Tensor | np.ndarray:
     """Frequency [Hz] to ERB number [Cams]."""
     if isinstance(freq, torch.Tensor):
         return 9.265 * torch.log1p(freq / (24.7 * 9.265))
     return 9.265 * np.log1p(np.asarray(freq, float) / (24.7 * 9.265))
 
 
-def erb_to_freq(erb):
+@overload
+def erb_to_freq(erb: torch.Tensor) -> torch.Tensor: ...
+@overload
+def erb_to_freq(erb: ArrayLike) -> np.ndarray: ...
+def erb_to_freq(erb: torch.Tensor | ArrayLike) -> torch.Tensor | np.ndarray:
     """ERB number [Cams] to frequency [Hz]; the inverse of :func:`freq_to_erb`."""
     if isinstance(erb, torch.Tensor):
         return 24.7 * 9.265 * torch.expm1(erb / 9.265)

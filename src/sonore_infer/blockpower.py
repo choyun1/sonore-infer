@@ -35,6 +35,7 @@ likelihood takes them as a bias and a noise in dB.
 from __future__ import annotations
 
 import math
+from collections.abc import Iterator
 from dataclasses import dataclass
 from functools import cached_property
 
@@ -86,14 +87,17 @@ class BlockPower:
 
     @property
     def block_samples(self) -> int:
+        """Length of one block [samples]."""
         return int(round(self.block * self.fs))
 
     @property
     def n_samples(self) -> int:
+        """Length of the recording [samples]."""
         return self.n_blocks * self.block_samples
 
     @property
     def source_samples(self) -> int:
+        """Length of the random spectrogram source [samples]."""
         return int(round(self.duration * self.fs))
 
     @property
@@ -171,8 +175,8 @@ class BlockPower:
         order = np.argsort(lag, kind="stable")
         outside = 1 - np.cumsum(energy[order], axis=0)
         half = int(lag[order][np.argmax((outside < self.kernel_tail).all(1))])
-        kernel = energy[n_fft // 2 - half : n_fft // 2 + half + 1].T
-        kernel = torch.from_numpy(kernel / kernel.sum(1, keepdims=True))
+        kept = energy[n_fft // 2 - half : n_fft // 2 + half + 1].T
+        kernel = torch.from_numpy(kept / kept.sum(1, keepdims=True))
         return half, kernel, 0.5 * (kernel[:-1] + kernel[1:]), kernel
 
     def _smear(self, rows: torch.Tensor, kernel: torch.Tensor, half: int, length: int) -> torch.Tensor:
@@ -268,7 +272,9 @@ class BlockPower:
     # is P = exp(kappa (l_x + l_y)), kappa = ln 10 / 20, so dP/dl_x = dP/dl_y
     # = kappa P and every second derivative in (l_x, l_y) is kappa^2 P.
 
-    def _cells_and_products(self, levels_db: torch.Tensor):
+    def _cells_and_products(
+        self, levels_db: torch.Tensor
+    ) -> Iterator[tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]]:
         """For each term of ``_TERMS``: flat indices of its two cells (x, y),
         each ``(rows, n_k)``, their products of amplitudes, and its response."""
         amplitude = 10 ** (levels_db.detach().to(torch.float64) / 20)

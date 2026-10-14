@@ -45,6 +45,7 @@ def tone_onsets(triplets: int, lead: float = 0.0) -> list[tuple[float, str]]:
 
 
 def tone_freqs(semitones: float) -> dict[str, float]:
+    """Frequency [Hz] of tone A and of tone B, ``semitones`` above it."""
     return {"A": A_FREQ, "B": A_FREQ * 2 ** (semitones / 12)}
 
 
