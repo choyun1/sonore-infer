@@ -55,7 +55,8 @@ key from window to window."""
 
 
 def coordinates(params: Params, free: Free) -> list[Coordinate]:
-    keys = []
+    """The free entries of ``params``, in the order of ``free``'s names and then of each flattened tensor."""
+    keys: list[Coordinate] = []
     for name, mask in free.items():
         if params[name].shape != mask.shape:
             raise ValueError(f"{name}: mask shape {tuple(mask.shape)} != {tuple(params[name].shape)}")
@@ -101,6 +102,7 @@ class LaplaceState:
 
     @property
     def value(self) -> float:
+        """The Laplace estimate over every free latent."""
         return self.restricted(self.keys)[0]
 
     def restricted(self, keys: Sequence[Coordinate]) -> tuple[float, int]:
@@ -126,7 +128,7 @@ def laplace(
     """The Laplace state of ``log_joint`` at ``mode`` over the free entries."""
     vector, keys, unflatten = free_vector(mode, free)
 
-    def negative(flat):
+    def negative(flat: torch.Tensor) -> torch.Tensor:
         return -log_joint(unflatten(flat))
 
     with torch.no_grad():
@@ -175,13 +177,18 @@ def adam_free(
                 break
         (-value).backward()
         for name in names:
-            params[name].grad.mul_(free[name].to(params[name].dtype))
+            grad = params[name].grad
+            assert grad is not None  # every free parameter is in the log joint
+            grad.mul_(free[name].to(params[name].dtype))
         optimizer.step()
     return best, history
 
 
 @dataclass
 class WindowTerm:
+    """One window's term of the evidence and what it took: the free latents,
+    the floored Hessian eigenvalues, the wall-clock seconds and the Adam steps."""
+
     end: float  # s
     term: float  # log p(x_k | x_1:k-1), estimated
     total: float  # the running log evidence
@@ -219,6 +226,8 @@ class FixedLagEvidence:
 
 @dataclass(frozen=True)
 class Tone:
+    """One tone of a stimulus, as a hypothesis is started from it."""
+
     onset: float  # s
     duration: float  # s
     freq: float  # Hz
@@ -236,7 +245,7 @@ class WhistleSpec:
 Hypothesis = tuple[WhistleSpec, ...]
 
 
-def _scalar_or_list(values: list[float]):
+def _scalar_or_list(values: list[float]) -> float | list[float]:
     return values[0] if len(values) == 1 else values
 
 
@@ -244,7 +253,8 @@ def prefix_scene(hypothesis: Hypothesis, end: float, fs: float, ramp: float) -> 
     """The hypothesis on the sound's first ``end`` seconds, with the tones whose onsets
     have arrived, and its batch-style initialization (as ``tools/compare_aba.py``)."""
     timing = SceneTiming(fs=fs, total_duration=end, ramp=ramp)
-    sources, init = [], {}
+    sources: list[Whistle] = []
+    init: Params = {}
     for spec in hypothesis:
         tones = [tone for tone in spec.tones if tone.onset < end]
         if not tones:
@@ -271,7 +281,7 @@ def extend(scene: Scene, fresh: Params, previous: Params, hypothesis: Hypothesis
     is chosen so it starts at its tone's onset given the previous events'
     current onsets and durations.
     """
-    params = {}
+    params: Params = {}
     for source in scene.sources:
         p = source.key
         if p("onset") not in previous:  # a new source
@@ -310,7 +320,7 @@ def extend(scene: Scene, fresh: Params, previous: Params, hypothesis: Hypothesis
 
 def lag_free(scene: Scene, params: Params, end: float, lag: float) -> Free:
     """What is free at ``end`` with a lag of ``lag`` seconds (``math.inf``: everything)."""
-    free = {}
+    free: Free = {}
     start = end - lag
     for source in scene.sources:
         p = source.key
@@ -335,7 +345,9 @@ def lag_free(scene: Scene, params: Params, end: float, lag: float) -> Free:
     return free
 
 
-def silence_log_likelihood(observed: torch.Tensor, cochleagram: Cochleagram, n_samples: int, sigma: float):
+def silence_log_likelihood(
+    observed: torch.Tensor, cochleagram: Cochleagram, n_samples: int, sigma: float
+) -> float:
     """The log likelihood of ``observed`` under a scene with no sources."""
     if observed.shape[-1] == 0:
         return 0.0

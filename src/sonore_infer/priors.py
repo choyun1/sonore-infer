@@ -116,7 +116,7 @@ def log_prior_structure(source_types: list[str], duration: float, n_events: list
 class ZeroTruncatedPoisson(torch.distributions.Distribution):
     """The number of sources: Poisson(``rate``) conditioned on at least one (design D8)."""
 
-    arg_constraints = {}
+    arg_constraints: ClassVar[dict] = {}
     support = torch.distributions.constraints.positive_integer
 
     def __init__(self, rate: float):
@@ -131,7 +131,7 @@ class ZeroTruncatedPoisson(torch.distributions.Distribution):
             - math.log1p(-math.exp(-self.rate))
         )
 
-    def sample(self, sample_shape=()) -> torch.Tensor:
+    def sample(self, sample_shape: torch.Size | list[int] | tuple[int, ...] = ()) -> torch.Tensor:
         poisson = torch.distributions.Poisson(torch.tensor(float(self.rate)))
         value = poisson.sample(torch.Size(sample_shape))
         while (value == 0).any():
@@ -171,7 +171,7 @@ class BoundedUniform(torch.distributions.Uniform):
     Pyro (design C7).
     """
 
-    def __init__(self, low: float, high: float, dtype=torch.float64):
+    def __init__(self, low: float, high: float, dtype: torch.dtype = torch.float64):
         super().__init__(torch.tensor(low, dtype=dtype), torch.tensor(high, dtype=dtype), validate_args=False)
         self.bounds = (low, high)
 
@@ -183,7 +183,7 @@ class BoundedUniform(torch.distributions.Uniform):
         )
 
 
-def log_duration_distribution(dtype=torch.float64) -> torch.distributions.StudentT:
+def log_duration_distribution(dtype: torch.dtype = torch.float64) -> torch.distributions.StudentT:
     """Prior of one event's log duration [log s], or of one rest: the log-normal with
     the normal-gamma of Table A.1 integrated out, a Student-t (see
     :func:`log_prior_event_timing`)."""
@@ -211,10 +211,10 @@ class NormalGammaMarginal(torch.distributions.Distribution):
     + log(lam0 / lam_k) / 2 - k log(2 pi) / 2.
     """
 
-    arg_constraints = {}
+    arg_constraints: ClassVar[dict] = {}
     support = torch.distributions.constraints.real_vector
 
-    def __init__(self, k: int, dtype=torch.float64):
+    def __init__(self, k: int, dtype: torch.dtype = torch.float64):
         self.k = k
         self.dtype = dtype
         super().__init__(event_shape=torch.Size([k]), validate_args=False)
@@ -235,7 +235,7 @@ class NormalGammaMarginal(torch.distributions.Distribution):
             - 0.5 * k * math.log(2 * math.pi)
         )
 
-    def sample(self, sample_shape=()) -> torch.Tensor:
+    def sample(self, sample_shape: torch.Size | list[int] | tuple[int, ...] = ()) -> torch.Tensor:
         p = TIMING_NORMAL_GAMMA
         shape = torch.Size(sample_shape)
         tau = torch.distributions.Gamma(
@@ -291,14 +291,15 @@ class TrajectoryPrior:
     along fast and slow changes.
     """
 
-    sigma: float
-    lengthscale: float
+    sigma: float | torch.Tensor  # a tensor when inferred, see with_kernel
+    lengthscale: float | torch.Tensor
     beta: float
     epsilon: float
     mean_range: tuple[float, float]
     stability: float = 0.001
 
-    def cholesky(self, n_grid: int, dtype=torch.float64) -> torch.Tensor:
+    def cholesky(self, n_grid: int, dtype: torch.dtype = torch.float64) -> torch.Tensor:
+        """Cholesky factor of the kernel on ``n_grid`` grid points, with one event covering them all."""
         t = torch.arange(n_grid, dtype=dtype) * GRID_STEP
         covariance = self.sigma**2 * torch.exp(-0.5 * ((t[:, None] - t[None, :]) / self.lengthscale) ** 2)
         covariance = covariance + self.beta**2
@@ -326,11 +327,12 @@ class TrajectoryPrior:
         covariance = covariance + diagonal * torch.eye(n_grid, dtype=dtype)
         return torch.linalg.cholesky(covariance)
 
-    def mean_distribution(self, dtype=torch.float64) -> BoundedUniform:
+    def mean_distribution(self, dtype: torch.dtype = torch.float64) -> BoundedUniform:
+        """The uniform prior of the trajectory's mean on ``mean_range``."""
         return BoundedUniform(*self.mean_range, dtype=dtype)
 
     def deviation_distribution(
-        self, n_grid: int, memberships: torch.Tensor | None = None, dtype=torch.float64
+        self, n_grid: int, memberships: torch.Tensor | None = None, dtype: torch.dtype = torch.float64
     ) -> torch.distributions.MultivariateNormal:
         """The Gaussian process of the deviations on the grid. With one event
         (``memberships`` None) the within-event term covers the whole grid,
@@ -340,6 +342,7 @@ class TrajectoryPrior:
         return torch.distributions.MultivariateNormal(torch.zeros(n_grid, dtype=dtype), scale_tril=scale_tril)
 
     def trajectory(self, mean: torch.Tensor, deviation: torch.Tensor) -> torch.Tensor:
+        """The trajectory on the grid: its mean plus the deviations."""
         return mean + deviation
 
     def with_kernel(self, sigma: torch.Tensor, lengthscale: torch.Tensor) -> TrajectoryPrior:
@@ -371,6 +374,7 @@ HARMONIC_LEVEL_TRAJECTORY = TrajectoryPrior(
 
 
 def softplus(x: torch.Tensor) -> torch.Tensor:
+    """``log(1 + exp(x))``, as torch computes it."""
     return torch.nn.functional.softplus(x)
 
 
@@ -385,7 +389,7 @@ class TruncatedNormal(torch.distributions.Distribution):
     arg_constraints: ClassVar[dict] = {}
     has_rsample = False
 
-    def __init__(self, loc: float, scale: float, low: float, high: float, dtype=torch.float64):
+    def __init__(self, loc: float, scale: float, low: float, high: float, dtype: torch.dtype = torch.float64):
         self.normal = torch.distributions.Normal(
             torch.tensor(loc, dtype=dtype), torch.tensor(scale, dtype=dtype), validate_args=False
         )
@@ -398,7 +402,7 @@ class TruncatedNormal(torch.distributions.Distribution):
         super().__init__(validate_args=False)
 
     @property
-    def support(self):
+    def support(self) -> torch.distributions.constraints.Constraint:
         return torch.distributions.constraints.interval(*self.bounds)
 
     def log_prob(self, value: torch.Tensor) -> torch.Tensor:
@@ -407,7 +411,7 @@ class TruncatedNormal(torch.distributions.Distribution):
         density = self.normal.log_prob(value) - self.log_mass
         return torch.where(inside, density, torch.full_like(density, -math.inf))
 
-    def sample(self, sample_shape=()) -> torch.Tensor:
+    def sample(self, sample_shape: torch.Size | list[int] | tuple[int, ...] = ()) -> torch.Tensor:
         low, high = self.cdf_bounds
         u = low + (high - low) * torch.rand(torch.Size(sample_shape), dtype=low.dtype)
         return self.normal.icdf(u)
@@ -439,13 +443,16 @@ class KernelParameterPrior:
 
     @property
     def raw_bounds(self) -> tuple[float, float]:
+        """``bounds`` mapped through the inverse softplus: the interval of ``raw``."""
         return inverse_softplus(self.bounds[0]), inverse_softplus(self.bounds[1])
 
-    def raw_distribution(self, dtype=torch.float64) -> TruncatedNormal:
+    def raw_distribution(self, dtype: torch.dtype = torch.float64) -> TruncatedNormal:
+        """The truncated normal prior of ``raw``."""
         scale = float(softplus(torch.tensor(self.raw_scale, dtype=torch.float64)))
         return TruncatedNormal(self.loc, scale, *self.raw_bounds, dtype)
 
-    def distribution(self, dtype=torch.float64) -> LogisticReparametrized:
+    def distribution(self, dtype: torch.dtype = torch.float64) -> LogisticReparametrized:
+        """The prior of the latent ``free``."""
         return LogisticReparametrized(self.raw_distribution(dtype))
 
     def value(self, free: torch.Tensor) -> torch.Tensor:
@@ -482,7 +489,7 @@ class LogisticReparametrized(torch.distributions.Distribution):
         )
         return self.base.log_prob(inner) + jacobian
 
-    def sample(self, sample_shape=()) -> torch.Tensor:
+    def sample(self, sample_shape: torch.Size | list[int] | tuple[int, ...] = ()) -> torch.Tensor:
         low, high = self.base.bounds
         fraction = (self.base.sample(sample_shape) - low) / (high - low)
         return torch.logit(fraction)

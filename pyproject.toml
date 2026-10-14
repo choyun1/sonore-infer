@@ -37,7 +37,7 @@ Source = "https://github.com/choyun1/sonore-infer"
 stimuli = ["sonore==0.6.0"]
 # Scene.model() hands a scene to Pyro (design C7); the core never needs it.
 pyro = ["pyro-ppl>=1.9"]
-dev = ["pytest>=8", "ruff>=0.5", "sonore==0.6.0", "pyro-ppl>=1.9"]
+dev = ["pytest>=8", "ruff>=0.5", "mypy>=1.11", "sonore==0.6.0", "pyro-ppl>=1.9"]
 
 [tool.hatch.version]
 path = "src/sonore_infer/__init__.py"
@@ -48,6 +48,21 @@ packages = ["src/sonore_infer"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 filterwarnings = ["error::RuntimeWarning"]
+
+[tool.mypy]
+# default (non-strict) checking of src/ only; tools/ and tests/ are scripts
+files = ["src"]
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+# optional dependencies, untyped or not installed
+module = ["sonore.*", "pyro.*", "scipy.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# Pyro is optional (design C7); its own types would make scene.py's adapter noisy
+module = ["pyro.*"]
+follow_imports = "skip"
 
 [tool.ruff]
 line-length = 110

@@ -28,4 +28,6 @@ jobs:
       # the CPU-only torch wheels: much smaller than the default CUDA build on Linux
       - run: python -m pip install -e ".[dev]" --extra-index-url https://download.pytorch.org/whl/cpu
       - run: ruff check .
+      - run: ruff format --check .
+      - run: mypy
       - run: python -m pytest -q

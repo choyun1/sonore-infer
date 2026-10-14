@@ -59,10 +59,12 @@ class SpectrogramPrior:
 
     @property
     def rho_band(self) -> float:
+        """Correlation between neighboring bands, ``band_spacing_erb`` apart."""
         return math.exp(-self.band_spacing_erb / self.band_correlation_erb)
 
     @property
     def rho_time(self) -> float:
+        """Correlation between neighboring grid times, ``step`` apart."""
         return math.exp(-self.step / self.time_correlation)
 
     def mean_db(self) -> np.ndarray:
