@@ -56,7 +56,15 @@ def main():
     parser.add_argument(
         "--lag", type=float, nargs="*", default=[1.0], help="s; inf for no freezing; none for batch only"
     )
-    parser.add_argument("--steps", type=int, default=30, help="Adam steps per window")
+    parser.add_argument(
+        "--steps", type=int, default=30, help="Adam steps per window (most, with --window-patience)"
+    )
+    parser.add_argument(
+        "--window-patience",
+        type=int,
+        default=None,
+        help="each window stops once it gains less than 1 over this many steps (decision O9)",
+    )
     parser.add_argument("--batch-steps", type=int, default=0, help="batch reference at each triplet's end")
     parser.add_argument(
         "--patience",
@@ -103,7 +111,9 @@ def main():
 
     for lag in args.lag:
         print(f"lag {lag:g} s")
-        print("window: lag  hypothesis  end  n_free  term  total  structure  floored  log_joint  seconds")
+        print(
+            "window: lag  hypothesis  end  n_free  term  total  structure  floored  log_joint  seconds  steps"
+        )
         runs = {}
         for name, spec in specs.items():
 
@@ -112,7 +122,7 @@ def main():
                 print(
                     f"window: {lag:g}  {name}  {w.end:.3f}  {w.n_free:4d}  {w.term:9.2f}"
                     f"  {w.total:10.2f}  {step.structure_log_prior:6.2f}  {w.floored:2d}"
-                    f"  {w.log_joint:10.2f}  {w.seconds:6.2f}",
+                    f"  {w.log_joint:10.2f}  {w.seconds:6.2f}  {w.adam_steps}",
                     flush=True,
                 )
 
@@ -127,6 +137,7 @@ def main():
                     window=args.window,
                     lag=lag,
                     steps=args.steps,
+                    patience=args.window_patience,
                     ends=None,
                     report=report,
                 )
