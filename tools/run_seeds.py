@@ -17,8 +17,9 @@ only the sampling in the evidence estimates. Seed 0 is the runs already made.
     python tools/run_seeds.py --out seeds_out             # seeds 1-9, half the CPU's threads
     python tools/run_seeds.py --out seeds_out --list      # print the jobs and stop
     python tools/run_seeds.py --out seeds_out --jobs 6 --only a
-    python tools/run_seeds.py --out aba_out --only aba --seeds 0 --steps 3000   # the ABA map, 30 stimuli
-    python tools/run_seeds.py --out aba_one_3000 --only aba --seeds 0 --steps 3000 --hypotheses one
+    python tools/run_seeds.py --out aba_out --only aba --seeds 0   # the ABA map, 30 stimuli
+    # the one-stream fits only, each until it converges (at most 15000 steps)
+    python tools/run_seeds.py --out aba_one --only aba --seeds 0 --hypotheses one --tolerance 0.5
 """
 
 import argparse
@@ -48,7 +49,7 @@ ABA_SEMITONES = [1, 3, 6, 9, 12]
 ABA_INTERVALS = [0.067, 0.083, 0.1, 0.117, 0.134, 0.15]
 
 
-def jobs(seeds, only, steps=None, hypotheses=None):
+def jobs(seeds, only, steps=None, hypotheses=None, tolerance=None):
     """(name, argv) for every job, seed by seed."""
     out = []
     for seed in seeds:
@@ -64,6 +65,7 @@ def jobs(seeds, only, steps=None, hypotheses=None):
                             ["compare_aba.py", "--semitones", str(semitones), "--intervals", str(interval)]
                             + ["--infer-kernel"]
                             + (["--hypotheses", *hypotheses] if hypotheses else [])
+                            + (["--tolerance", str(tolerance)] if tolerance else [])
                             + common,
                         )
                     )
@@ -233,6 +235,11 @@ def main():
     parser.add_argument(
         "--hypotheses", nargs="+", choices=["one", "two"], help="ABA only: fit only these hypotheses"
     )
+    parser.add_argument(
+        "--tolerance",
+        type=float,
+        help="ABA only: stop each fit once it rises by less than this over 1000 steps (--steps then 15000)",
+    )
     parser.add_argument("--heartbeat", type=float, default=5.0, help="minutes between 'still running' lines")
     parser.add_argument("--list", action="store_true", help="print the jobs and their state, then stop")
     args = parser.parse_args()
@@ -240,7 +247,9 @@ def main():
         (args.out / sub).mkdir(parents=True, exist_ok=True)
     for stale in args.out.glob("*/*.partial"):
         stale.unlink()
-    all_jobs = jobs(args.seeds, args.only, args.steps, args.hypotheses)
+    if args.tolerance and not args.steps:
+        args.steps = 15000
+    all_jobs = jobs(args.seeds, args.only, args.steps, args.hypotheses, args.tolerance)
     todo = [(name, argv) for name, argv in all_jobs if not (args.out / f"{name}.txt").exists()]
     done_before = len(all_jobs) - len(todo)
     print(

@@ -613,18 +613,26 @@ def evaluate(
     variational_steps: int = 0,
     sigma: float = 10.0,
     report: Callable[[str], None] | None = None,
+    tolerance: float | None = None,
 ) -> SceneResult:
     """Fit ``scene`` from each initialization, keep the best mode, and estimate its evidence.
 
     The Laplace and importance-sampling estimates are always made; with
     ``variational_steps``, so is the variational one, from the same mode.
     ``sigma`` is the likelihood's SD [dB] (BASS's value by default).
-    ``report``, if given, receives a message as each stage starts.
+    ``report``, if given, receives a message as each stage starts. With
+    ``tolerance``, ``steps`` is a maximum and each fit stops once it has
+    converged (see :func:`~sonore_infer.fit.fit`).
     """
 
     def fit_one(index, init):
         if report:
-            report(f"fitting (Adam, {steps} steps) from start {index + 1} of {len(inits)}")
+            limit = (
+                f"up to {steps} steps, stopping at a rise under {tolerance}"
+                if tolerance
+                else f"{steps} steps"
+            )
+            report(f"fitting (Adam, {limit}) from start {index + 1} of {len(inits)}")
         return fit(
             scene.render,
             init,
@@ -634,6 +642,7 @@ def evaluate(
             steps=steps,
             sigma=sigma,
             log_prior=scene.log_prior,
+            tolerance=tolerance,
         )
 
     fits = [fit_one(index, init) for index, init in enumerate(inits)]

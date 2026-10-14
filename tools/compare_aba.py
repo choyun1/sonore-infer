@@ -73,7 +73,14 @@ def main():
     parser.add_argument(
         "--intervals", type=float, nargs="+", default=list(ab.ONSET_INTERVALS), help="onset-to-onset [s]"
     )
-    parser.add_argument("--steps", type=int, default=300)
+    parser.add_argument(
+        "--steps", type=int, default=300, help="Adam steps per fit (a maximum with --tolerance)"
+    )
+    parser.add_argument(
+        "--tolerance",
+        type=float,
+        help="stop a fit once its log joint has risen by less than this over the last 1000 steps",
+    )
     parser.add_argument(
         "--variational-steps",
         type=int,
@@ -99,12 +106,14 @@ def main():
     args = parser.parse_args()
     cochleagram = FFTCochleagram()
     print(
-        f"{args.steps} Adam steps, {args.samples} samples, seed {args.seed}, "
+        f"{args.steps} Adam steps"
+        + (f" at most, stopping at a rise under {args.tolerance} over 1000" if args.tolerance else "")
+        + f", {args.samples} samples, seed {args.seed}, "
         "fft-bass-gain cochleagram, trajectories, all timing inferred"
         + (", GP sigma and lengthscale inferred" if args.infer_kernel else "")
     )
     print(
-        "stimulus  hypothesis  n_params  structure  laplace  importance  ess  floored"
+        "stimulus  hypothesis  n_params  structure  fit_steps  laplace  importance  ess  floored"
         "  log_joint_at_mode  seconds" + ("  elbo  vi_importance  vi_ess" if args.variational_steps else "")
     )
     for semitones in args.semitones:
@@ -127,12 +136,14 @@ def main():
                     generator=torch.Generator().manual_seed(args.seed),
                     variational_steps=args.variational_steps,
                     report=status(hypothesis),
+                    tolerance=args.tolerance,
                 )
                 results[hypothesis] = result
                 e = result.evidence
                 n_params = sum(value.numel() for value in starts[0].values())
                 print(
                     f"{name:16s}  {hypothesis:4s}  {n_params:5d}  {result.structure_log_prior:7.2f}"
+                    f"  {len(result.fit.history) - 1:9d}"
                     f"  {e.laplace:9.1f}  {e.importance:9.1f}  {e.effective_sample_size:4.0f}"
                     f"  {e.floored_eigenvalues:3d}"
                     f"  {e.log_joint_at_mode:9.1f}  {time.perf_counter() - begin:7.1f}"

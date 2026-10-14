@@ -37,6 +37,8 @@ def fit(
     steps: int = 300,
     sigma: float = 10.0,
     log_prior: Callable[[dict[str, torch.Tensor]], torch.Tensor] | None = None,
+    tolerance: float | None = None,
+    patience: int = 1000,
 ) -> FitResult:
     """Maximize ``log p(observed | render(params))`` over ``params`` with Adam.
 
@@ -46,11 +48,16 @@ def fit(
     the parameters with the best objective seen, which is evaluated before
     every step. With ``log_prior``, the objective is the log likelihood plus
     the log prior, and ``log_likelihood`` in the result holds that sum.
+
+    With ``tolerance``, ``steps`` is a maximum: the fit stops once the best
+    objective has risen by less than ``tolerance`` over the last ``patience``
+    steps. Without it, every one of ``steps`` steps is taken.
     """
     params = {name: value.detach().clone().requires_grad_() for name, value in init.items()}
     optimizer = torch.optim.Adam([{"params": [params[name]], "lr": learning_rates[name]} for name in params])
     best = FitResult({name: value.detach().clone() for name, value in params.items()}, float("-inf"))
-    for _ in range(steps + 1):
+    best_by_step = []
+    for step in range(steps + 1):
         optimizer.zero_grad()
         log_likelihood = gaussian_log_likelihood(observed, cochleagram(render(params)), sigma)
         if log_prior is not None:
@@ -60,6 +67,13 @@ def fit(
         if value > best.log_likelihood:
             best.log_likelihood = value
             best.params = {name: tensor.detach().clone() for name, tensor in params.items()}
+        best_by_step.append(best.log_likelihood)
+        if (
+            tolerance is not None
+            and step >= patience
+            and best.log_likelihood - best_by_step[step - patience] < tolerance
+        ):
+            break
         (-log_likelihood).backward()
         optimizer.step()
     return best
