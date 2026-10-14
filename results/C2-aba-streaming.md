@@ -4,8 +4,8 @@
 > results. The work was done with AI assistance (Claude) and has not yet been
 > checked carefully. Numbers, methods and interpretations may change.
 
-**Status:** map done (2026-10-14); seeds 1–4 for the two cells under 10
-still to run. **Paper target:** Fig. 8D (right), App. C.10. **Code:**
+**Status:** map done (2026-10-14); seeds 0–4 for the two cells under 10
+done (2026-10-14). **Paper target:** Fig. 8D (right), App. C.10. **Code:**
 `tools/compare_aba.py`, milestone (c) step 4. Design:
 [milestone (c)](../docs/design/milestone-c.md), decision C8.
 
@@ -65,6 +65,24 @@ stops at ±20: about −15 to −20 at 1 semitone, slightly negative (about −5
 at 3, slightly positive (about +5) at 6, and +10 to +20 or more at 9 and 12,
 with little change across intervals.
 
+### Seeds 0–4 on the two cells under 10
+
+Two cells had margins under 10, so they were rerun with seeds 1 to 4
+(`data/C2/seeds/`), as the design asks (milestone-c.md §8). The seed
+changes only the draws of the evidence estimates; the fits are the same.
+In these reruns the two-stream fit also used the stopping rule (1222
+steps); its log joint at the mode is within 0.3 of the 300-step fit and its
+Laplace evidence within 0.3.
+
+| Stimulus | Seed 0 | Seeds 1–4 | Mean (SD), seeds 0–4 |
+| --- | --- | --- | --- |
+| 3 st, 83 ms | 7.8 | 8.5, 8.9, 10.5, 9.7 | 9.1 (1.0) |
+| 3 st, 150 ms | 9.5 | 9.0, 7.9, 10.1, 9.1 | 9.1 (0.8) |
+
+Variational log odds. The ELBO gives 7.3 to 9.6 on seeds 1–4, and Laplace
+gives 6.0 and 5.4. Every seed prefers two streams, by 8 to 10.5, so the
+3-semitone preference for two streams is not seed noise.
+
 ## Plots
 
 ![C2-aba-streaming](plots/C2-aba-streaming.svg)
@@ -101,6 +119,7 @@ within 0.6, checked at 3 and 6 semitones, 100 ms
 python tools/run_seeds.py --out aba_out --only aba --seeds 0          # both hypotheses, 300 steps
 python tools/run_seeds.py --out aba_one --only aba --seeds 0 --hypotheses one --tolerance 0.5
 python tools/aba_map.py aba_one/aba aba_out/aba > map.txt             # one from the rerun, two from the first
+python tools/run_seeds.py --out aba_seeds --only aba --seeds 1 2 3 4 --tolerance 0.5 --stimuli 3:0.083 3:0.15
 python tools/aba_fit_steps.py --semitones 6 --interval 0.1 --hypothesis one --steps 15000
 ```
 
@@ -111,10 +130,8 @@ PC, variational evidence within 5.
 
 ## Open
 
-- Seeds 1–4 for 3 semitones at 83 ms (7.8) and 150 ms (9.5), the two
-  margins under 10.
-- The 3-semitone row prefers two streams; the paper's model and listeners
-  lean to one.
+- The 3-semitone row prefers two streams, under all five seeds where it
+  was closest; the paper's model and listeners lean to one.
 - 9 semitones at 67 ms (217) stands out from its row.
 - Milestones (a) and (b) used 300 Adam steps; whether their one-source fits
   had converged has not been rechecked.
