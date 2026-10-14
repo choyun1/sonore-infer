@@ -45,6 +45,12 @@ evidence estimate).
 | 400 | 2 | about 10 | 5.1 | 4.9 | 15 |
 | 400 | 3 | about 13 | 7.1 | 6.8 | 11 |
 
+## Plots
+
+![A1-gammatone-baseline](plots/A1-gammatone-baseline.svg)
+
+*Posterior probability of two sources against mistuning, per condition, from the kept rows in [`data/A1/`](data/A1/) (Laplace estimate). The solid green line is our threshold (Eqn 2); the dashed line is the paper's model, read by eye. Left-out rows are not plotted.*
+
 ## What it says
 
 There is a mistuned-harmonic effect, with thresholds that rise with harmonic

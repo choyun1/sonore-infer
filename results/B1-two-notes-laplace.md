@@ -57,6 +57,12 @@ Controls (one note split into two sources an octave apart, vs one): 200 Hz
 Harmonic plus whistles vs one: −104 to −179 at the tritones; −8.7 to +21.5
 at the fifth, all but one resting on fits with no true peak.
 
+## Plots
+
+![B1-two-notes-laplace](plots/B1-two-notes-laplace.svg)
+
+*Log odds of two sources over the best one-source fit (Laplace estimate), from [`data/B1/summary.txt`](data/B1/summary.txt). Above zero favors two notes.*
+
 ## What it says
 
 Tritones and the fifth come out as two sources at every asynchrony,

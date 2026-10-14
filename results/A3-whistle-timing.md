@@ -39,6 +39,12 @@ Thresholds, % of f0 (`data/A3/thresholds.txt`). 5 rows left out.
 | 400 | 2 | about 10 | 6.5 | 7.9 | 7.7 |
 | 400 | 3 | about 13 | 9.5 | 12.9 | 12.6 |
 
+## Plots
+
+![A3-whistle-timing](plots/A3-whistle-timing.svg)
+
+*Posterior probability of two sources against mistuning, per condition, from the kept rows in [`data/A3/`](data/A3/) (Laplace estimate). The solid green line is our threshold (Eqn 2); the dashed line is the paper's model, read by eye. Left-out rows are not plotted.*
+
 ## What it says
 
 Inferring the whistle's timing lowers the two-source evidence by about 10

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 628 308" width="628" height="308" role="img" aria-label="B1: log odds of two notes over one">
+<style>
+:root { --background: #f6f7f5; --text: #1b1d1c; --muted: #5d625f; --rule: #dcdfdb;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #b07c00; --s5: #6b6f6c;
+  --q1: #b9d3f2; --q2: #85b1e8; --q3: #4f8bdc; --q4: #2a69bd; --q5: #163f78; --diamond: #1b1d1c }
+@media (prefers-color-scheme: dark) { :root { --background: #1f2221; --text: #e9ebe8; --muted: #a3a8a4;
+  --rule: #333836; --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #9a9f9b;
+  --q1: #24446e; --q2: #2f5d9a; --q3: #3f7ccc; --q4: #78a8e8; --q5: #b8d3f5; --diamond: #e9ebe8 } }
+.background { fill: var(--background) }
+text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; fill: var(--muted) }
+.tick { font-size: 10px; font-variant-numeric: tabular-nums }
+.label { font-size: 10.5px }
+.title { font-size: 11px; font-weight: 600; fill: var(--text) }
+.note { font-size: 9.5px }
+.legend { font-size: 12px }
+.grid { stroke: var(--rule); stroke-width: 1 }
+.axis { stroke: var(--muted); stroke-width: 1 }
+.zero { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 2 3 }
+.line { fill: none; stroke-width: 2; stroke-linejoin: round }
+.vertical { stroke-width: 1.5 }
+.dash { stroke-dasharray: 5 4 }
+.marker { stroke: var(--background); stroke-width: 1.5 }
+.diamond { fill: none; stroke: var(--diamond); stroke-width: 2 }
+.s1 { stroke: var(--s1) } circle.s1 { fill: var(--s1) }
+.s2 { stroke: var(--s2) } circle.s2 { fill: var(--s2) }
+.s3 { stroke: var(--s3) } circle.s3 { fill: var(--s3) }
+.s4 { stroke: var(--s4) } circle.s4 { fill: var(--s4) }
+.s5 { stroke: var(--s5) } circle.s5 { fill: var(--s5) }
+circle.q1 { fill: var(--q1) } circle.q2 { fill: var(--q2) } circle.q3 { fill: var(--q3) }
+circle.q4 { fill: var(--q4) } circle.q5 { fill: var(--q5) }
+</style>
+<rect class="background" width="628" height="308" rx="8"/>
+<g transform="translate(14 14)"><line class="line s1" x1="1.0" x2="21.0" y1="8.0" y2="8.0"/><text class="legend" x="26.0" y="12.0" text-anchor="start">Tritone, different spectra</text><line class="line s2" x1="223.0" x2="243.0" y1="8.0" y2="8.0"/><text class="legend" x="248.0" y="12.0" text-anchor="start">Tritone</text><line class="line s3" x1="312.0" x2="332.0" y1="8.0" y2="8.0"/><text class="legend" x="337.0" y="12.0" text-anchor="start">Just fifth</text><line class="line s4" x1="422.0" x2="442.0" y1="8.0" y2="8.0"/><text class="legend" x="447.0" y="12.0" text-anchor="start">Octave</text></g>
+<g transform="translate(14 34)"><line class="grid" x1="46.0" x2="590.0" y1="230.0" y2="230.0"/><text class="tick" x="41.0" y="233.5" text-anchor="end">-40</text><line class="grid" x1="46.0" x2="590.0" y1="198.0" y2="198.0"/><text class="tick" x="41.0" y="201.5" text-anchor="end">-20</text><line class="grid" x1="46.0" x2="590.0" y1="166.0" y2="166.0"/><text class="tick" x="41.0" y="169.5" text-anchor="end">0</text><line class="grid" x1="46.0" x2="590.0" y1="134.0" y2="134.0"/><text class="tick" x="41.0" y="137.5" text-anchor="end">20</text><line class="grid" x1="46.0" x2="590.0" y1="102.0" y2="102.0"/><text class="tick" x="41.0" y="105.5" text-anchor="end">40</text><line class="grid" x1="46.0" x2="590.0" y1="70.0" y2="70.0"/><text class="tick" x="41.0" y="73.5" text-anchor="end">60</text><line class="grid" x1="46.0" x2="590.0" y1="38.0" y2="38.0"/><text class="tick" x="41.0" y="41.5" text-anchor="end">80</text><line class="axis" x1="46.0" x2="590.0" y1="230.0" y2="230.0"/><line class="axis" x1="46.0" x2="46.0" y1="230.0" y2="234.0"/><text class="tick" x="46.0" y="245.0" text-anchor="middle">0</text><line class="axis" x1="182.0" x2="182.0" y1="230.0" y2="234.0"/><text class="tick" x="182.0" y="245.0" text-anchor="middle">10</text><line class="axis" x1="318.0" x2="318.0" y1="230.0" y2="234.0"/><text class="tick" x="318.0" y="245.0" text-anchor="middle">20</text><line class="axis" x1="454.0" x2="454.0" y1="230.0" y2="234.0"/><text class="tick" x="454.0" y="245.0" text-anchor="middle">40</text><line class="axis" x1="590.0" x2="590.0" y1="230.0" y2="234.0"/><text class="tick" x="590.0" y="245.0" text-anchor="middle">80</text><text class="label" x="318.0" y="258.0" text-anchor="middle">onset asynchrony of the upper note (ms; equally spaced, not to scale)</text><text class="label" x="10.0" y="126.0" text-anchor="middle" transform="rotate(-90 10 126.0)">log odds, two vs one</text><line class="zero" x1="46.0" x2="590.0" y1="166.0" y2="166.0"/><path class="line s1" d="M46.0,108.1 L182.0,91.0 L318.0,101.4 L454.0,69.2 L590.0,72.1"/><circle class="marker s1" cx="46.0" cy="108.1" r="3"><title>Tritone, different spectra, 0 ms: +36.2</title></circle><circle class="marker s1" cx="182.0" cy="91.0" r="3"><title>Tritone, different spectra, 10 ms: +46.9</title></circle><circle class="marker s1" cx="318.0" cy="101.4" r="3"><title>Tritone, different spectra, 20 ms: +40.4</title></circle><circle class="marker s1" cx="454.0" cy="69.2" r="3"><title>Tritone, different spectra, 40 ms: +60.5</title></circle><circle class="marker s1" cx="590.0" cy="72.1" r="3"><title>Tritone, different spectra, 80 ms: +58.7</title></circle><path class="line s2" d="M46.0,123.0 L182.0,115.8 L318.0,113.7 L454.0,102.0 L590.0,81.8"/><circle class="marker s2" cx="46.0" cy="123.0" r="3"><title>Tritone, 0 ms: +26.9</title></circle><circle class="marker s2" cx="182.0" cy="115.8" r="3"><title>Tritone, 10 ms: +31.4</title></circle><circle class="marker s2" cx="318.0" cy="113.7" r="3"><title>Tritone, 20 ms: +32.7</title></circle><circle class="marker s2" cx="454.0" cy="102.0" r="3"><title>Tritone, 40 ms: +40.0</title></circle><circle class="marker s2" cx="590.0" cy="81.8" r="3"><title>Tritone, 80 ms: +52.6</title></circle><path class="line s3" d="M46.0,53.7 L182.0,53.0 L318.0,44.6 L454.0,31.6 L590.0,42.3"/><circle class="marker s3" cx="46.0" cy="53.7" r="3"><title>Just fifth, 0 ms: +70.2</title></circle><circle class="marker s3" cx="182.0" cy="53.0" r="3"><title>Just fifth, 10 ms: +70.6</title></circle><circle class="marker s3" cx="318.0" cy="44.6" r="3"><title>Just fifth, 20 ms: +75.9</title></circle><circle class="marker s3" cx="454.0" cy="31.6" r="3"><title>Just fifth, 40 ms: +84.0</title></circle><circle class="marker s3" cx="590.0" cy="42.3" r="3"><title>Just fifth, 80 ms: +77.3</title></circle><path class="line s4" d="M46.0,173.8 L182.0,176.6 L318.0,191.1 L454.0,177.8 L590.0,175.1"/><circle class="marker s4" cx="46.0" cy="173.8" r="3"><title>Octave, 0 ms: -4.9</title></circle><circle class="marker s4" cx="182.0" cy="176.6" r="3"><title>Octave, 10 ms: -6.6</title></circle><circle class="marker s4" cx="318.0" cy="191.1" r="3"><title>Octave, 20 ms: -15.7</title></circle><circle class="marker s4" cx="454.0" cy="177.8" r="3"><title>Octave, 40 ms: -7.4</title></circle><circle class="marker s4" cx="590.0" cy="175.1" r="3"><title>Octave, 80 ms: -5.7</title></circle><text class="note" x="586.0" y="161.0" text-anchor="end">above: two sources</text></g>
+</svg>

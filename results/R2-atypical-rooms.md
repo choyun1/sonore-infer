@@ -65,6 +65,12 @@ Log marginal likelihood against the control (same seed, RT60 and floor),
 at floors 60 and 40: time-reversed −2,141 to −34,458 nats; the other rooms
 −1,750 to +368.
 
+## Plots
+
+![R2-atypical-rooms](plots/R2-atypical-rooms.svg)
+
+*Posterior median RT60 over the true RT60, median over 5 seeds, against T20 × 3 measured from the same impulse responses. From [`data/R2/atypical_rooms_summary.txt`](data/R2/atypical_rooms_summary.txt).*
+
 ## What it says
 
 - Where the room breaks an assumption, the model's RT60 is biased the same

@@ -48,6 +48,12 @@ whistles by 50 to 59.
 Asynchrony thresholds by Eqn 2: 0 ms for both tritones and the fifth; none
 within 240 ms for the octave (Eqn 2 returns the largest asynchrony).
 
+## Plots
+
+![B2-two-notes-variational](plots/B2-two-notes-variational.svg)
+
+*Log odds of two sources over the best one-source fit (variational estimate), from [`data/B2/summary.txt`](data/B2/summary.txt). Above zero favors two notes.*
+
 ## What it says
 
 - Tritones and the just fifth: two sources at every asynchrony, synchronous

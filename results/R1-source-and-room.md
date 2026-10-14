@@ -45,6 +45,12 @@ per parameter. Experiment (b) is [R2](R2-atypical-rooms.md).
 The survey files are not redistributed; the prior fit runs where they are
 downloaded, so its raw output is not here.
 
+## Likelihood slice
+
+![R1-likelihood-slice](plots/R1-likelihood-slice.svg)
+
+*Likelihood of one rendered sound (RT60 0.4 s, DRR 10 dB) as the model's RT60 varies, everything else at the truth; σ = 3.6 dB. From [`data/R1/likelihood_slices.txt`](data/R1/likelihood_slices.txt). Values below −60 are drawn at the bottom edge.*
+
 ## Experiment (a): recovery
 
 Run by `tools/recovery.py`: 10 seeds × RT60 {0.2, 0.4, 0.8} s × three
@@ -65,6 +71,12 @@ Share of runs whose 90% interval contains the truth, all settings pooled:
 Per setting and RT60 (9 or 10 runs each), the median of posterior median
 over truth for RT60 is 0.98 to 1.03, and the 90% interval's width (95% over
 5% quantile) is 1.02 to 1.08 at 3.6 dB and 1.04 to 1.18 at 7.2 dB.
+
+## Plots
+
+![R1-interval-coverage](plots/R1-interval-coverage.svg)
+
+*Share of runs whose 90% posterior interval contains the truth, per source setting and true RT60 (s), 9 or 10 runs each, from [`data/R1/recovery_summary.txt`](data/R1/recovery_summary.txt). The dotted line is the nominal 90%.*
 
 ## What it says
 

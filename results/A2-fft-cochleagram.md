@@ -44,6 +44,12 @@ Thresholds, % of f0 (`data/A2/thresholds.txt`). 1 row left out.
 | 400 | 2 | about 10 | 5.1 | 6.5 | 6.2 |
 | 400 | 3 | about 13 | 7.1 | 9.5 | 9.1 |
 
+## Plots
+
+![A2-fft-cochleagram](plots/A2-fft-cochleagram.svg)
+
+*Posterior probability of two sources against mistuning, per condition, from the kept rows in [`data/A2/`](data/A2/) (Laplace estimate). The solid green line is our threshold (Eqn 2); the dashed line is the paper's model, read by eye. Left-out rows are not plotted.*
+
 ## What it says
 
 The wider low-frequency channels move every threshold up, most at 100 Hz,
