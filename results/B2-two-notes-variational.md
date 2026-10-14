@@ -48,6 +48,12 @@ whistles by 50 to 59.
 Asynchrony thresholds by Eqn 2: 0 ms for both tritones and the fifth; none
 within 240 ms for the octave (Eqn 2 returns the largest asynchrony).
 
+## Plots
+
+![B2-two-notes-variational](plots/B2-two-notes-variational.svg)
+
+*Log odds of two sources over the best one-source fit (variational estimate), from [`data/B2/summary.txt`](data/B2/summary.txt). Above zero favors two notes.*
+
 ## What it says
 
 - Tritones and the just fifth: two sources at every asynchrony, synchronous
@@ -87,5 +93,5 @@ Raw outputs: [`data/B2/`](data/B2/).
   octave, 20 ms), so the octave's margin may be a few units smaller.
 - Importance sampling's effective sample size is 1 to 6 of 256 for most fits.
 - Not compared with listeners, and BASS was not run on these stimuli
-  (design B6).
+  (decision B6 of [milestone (b)](../docs/design/milestone-b.md)).
 - Followed up by [B3](B3-octave-sigma5.md) (likelihood SD 5 dB), [B4](B4-two-notes-seeds.md) (seeds) and [C1](C1-kernel-inferred.md) (kernel inferred).

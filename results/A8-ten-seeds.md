@@ -47,6 +47,12 @@ BASS's rule is from the local averaging script, as in A6.
 Per mistuning, the log odds vary by an SD of 0.4 to 3.7 between seeds,
 with one 7.8 (100 Hz h1 at 0%, far below zero).
 
+## Plots
+
+![A8-ten-seeds](plots/A8-ten-seeds.svg)
+
+*Log odds of two sources over one against mistuning, from [`data/A8/summary.txt`](data/A8/summary.txt) and [`data/A7/`](data/A7/). Bars are ± 1 SD over seeds. Above zero favors two sources.*
+
 ## What it says
 
 - Ten seeds change no threshold on the paper's points.

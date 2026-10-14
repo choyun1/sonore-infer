@@ -30,3 +30,9 @@ has its own design documents, tools and results.
   not milestones (a) and (b).
 - **Decision numbers** carry the letter of their document: D (design-v1),
   B (milestone-b), R (source-reverb), C (milestone-c), O (online).
+- **Experiment IDs** (A1–A8, B1–B4, C1, R1, R2; pages in
+  [`results/`](../results/README.md)) share letters with decision numbers,
+  so outside their own document both are written with their word: "experiment B1" is a result
+  page, "decision B1" is a section of milestone-b.md. Inside a design
+  document a bare number is one of its decisions; on a result page a bare
+  ID is an experiment.

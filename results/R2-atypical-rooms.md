@@ -5,8 +5,8 @@
 > checked carefully. Numbers, methods and interpretations may change.
 
 **Status:** done (2026-10-12). **Paper target:** none in Cusimano et al.
-(2024); see [R1](R1-source-and-room.md). The design's experiment (b) (R7),
-after Traer & McDermott (2016), who found listeners' judgements of
+(2024); see [R1](R1-source-and-room.md). The design's experiment (b) (decision R7),
+after Traer & McDermott (2016), who found listeners' judgments of
 reverberation biased by atypical rooms. Listeners are not compared here.
 **Code:** `tools/atypical_rooms.py`, PR
 [#37](https://github.com/choyun1/sonore-infer/pull/37) (`d03e2ef`), using
@@ -64,6 +64,12 @@ posterior) and are left out.
 Log marginal likelihood against the control (same seed, RT60 and floor),
 at floors 60 and 40: time-reversed −2,141 to −34,458 nats; the other rooms
 −1,750 to +368.
+
+## Plots
+
+![R2-atypical-rooms](plots/R2-atypical-rooms.svg)
+
+*Posterior median RT60 over the true RT60, median over 5 seeds, against T20 × 3 measured from the same impulse responses. From [`data/R2/atypical_rooms_summary.txt`](data/R2/atypical_rooms_summary.txt).*
 
 ## What it says
 

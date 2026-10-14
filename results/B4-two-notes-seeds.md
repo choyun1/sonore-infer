@@ -54,6 +54,12 @@ Five seeds on the close cases (`data/B4/`, seed 0 from `data/B2/`): octave
 0 ms −34.4 ± 2.6, octave 240 ms −22.0 ± 2.1; fifth whistles at 10 ms
 4.1 ± 4.6 (ELBO −1.2 ± 1.6), at 80 ms 2.3 ± 3.6 (ELBO 0.2 ± 0.6).
 
+## Plots
+
+![B4-two-notes-seeds](plots/B4-two-notes-seeds.svg)
+
+*Mean log odds over 10 seeds (Cho's PC, variational estimate) ± 1 SD, from [`data/A8/summary.txt`](data/A8/summary.txt): two notes against the best one source, and for the fifth also harmonic plus whistles.*
+
 ## What it says
 
 - Every sign is the same as with one seed. The tritones and the fifth are
