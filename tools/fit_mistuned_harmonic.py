@@ -12,7 +12,7 @@ Prints each hypothesis's best log likelihood relative to a perfect fit
 (``-0.5 * sum(residual**2) / sigma**2``, so 0 is the best possible), their
 difference, and H2's fitted whistle. These are maximum-likelihood fits without priors: H2 has two
 more parameters than H1, so the difference is not evidence for two sources
-on its own (see ``sonore_inference.fit``). The number of harmonics, the
+on its own (see ``sonore_infer.fit``). The number of harmonics, the
 onset and the duration are given, not inferred.
 
     python tools/fit_mistuned_harmonic.py --f0 200 --harmonic 3
@@ -24,10 +24,10 @@ import time
 
 import torch
 
-from sonore_inference.cochleagram import Cochleagram, gaussian_log_likelihood
-from sonore_inference.fit import fit
-from sonore_inference.sources import harmonic_tone, whistle
-from sonore_inference.stimuli import mistuned_harmonic as mh
+from sonore_infer.cochleagram import Cochleagram, gaussian_log_likelihood
+from sonore_infer.fit import fit
+from sonore_infer.sources import harmonic_tone, whistle
+from sonore_infer.stimuli import mistuned_harmonic as mh
 
 TIMING = dict(
     fs=mh.FS,

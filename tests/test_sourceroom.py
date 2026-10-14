@@ -1,6 +1,6 @@
 """Laplace evidence over the source levels at fixed RT60 and source
 statistics (docs/design/source-reverb.md, R5), against autograd and
-:func:`sonore_inference.evidence.log_evidence`."""
+:func:`sonore_infer.evidence.log_evidence`."""
 
 import math
 
@@ -10,9 +10,9 @@ import sonore as so
 import torch
 from scipy.signal import fftconvolve
 
-from sonore_inference.blockpower import BlockPower
-from sonore_inference.evidence import log_evidence
-from sonore_inference.sourceroom import (
+from sonore_infer.blockpower import BlockPower
+from sonore_infer.evidence import log_evidence
+from sonore_infer.sourceroom import (
     THETA_DEFAULT,
     Expansion,
     Model,
@@ -22,7 +22,7 @@ from sonore_inference.sourceroom import (
     initial_levels,
     newton_mode,
 )
-from sonore_inference.spectrotemporal import SpectrogramPrior
+from sonore_infer.spectrotemporal import SpectrogramPrior
 
 FS = 20_000.0
 RT60 = 0.3
@@ -30,7 +30,7 @@ RT60 = 0.3
 
 @pytest.fixture(scope="module")
 def model():
-    """A 200 ms source in a 0.3 s room, 400 ms analysed, to keep it quick."""
+    """A 200 ms source in a 0.3 s room, 400 ms analyzed, to keep it quick."""
     power = BlockPower(n_blocks=40, duration=0.2)
     env = so.gaussian_spectrogram(power.duration, FS, rng=0)
     x = env.to_sound(so.gaussian_noise(power.duration, FS, rng=1000)).ramp(power.ramp).data.ravel()

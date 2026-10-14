@@ -3,7 +3,7 @@
 Status: **accepted by Cho on 2026-10-11** (C1 to C10 as recommended, C7 as
 revised for Pyro; see §7). Written 2026-10-10. AI-assisted (Claude),
 from design v1 (D3, D5, D8), milestone (b)'s design and results, the scene
-module (`src/sonore_inference/scene.py`, `priors.py`) and Appendices A–C of
+module (`src/sonore_infer/scene.py`, `priors.py`) and Appendices A–C of
 the paper.
 
 **How numbers are marked.**
@@ -11,7 +11,7 @@ the paper.
 - **[paper §x]**: Cusimano, Hewitt & McDermott (2024), *Listening with
   generative models*, Cognition 253, 105874, at the section given.
 - **[measured]**: from a `tools/` run already in the project, with its path.
-- **[code]**: read in BASS at `48e3755` (no licence; read only, nothing
+- **[code]**: read in BASS at `48e3755` (no license; read only, nothing
   copied), with file and line.
 - **[estimate]**: my estimate, with its basis next to it.
 
@@ -73,7 +73,7 @@ sit above them.
 **Recommendation: (B), in that order.** (A) is the part that changes what the
 model can say, and it can be checked against the paper's streaming results
 with the method we already trust. Search is what makes the grammar useful on
-sounds nobody has labelled, so it belongs in the same milestone, but only once
+sounds nobody has labeled, so it belongs in the same milestone, but only once
 (A) is tested. (C) is left out: the paper calls inference the central
 challenge and says the proposal network still failed when it proposed the
 wrong sound type [paper §4.2.2]; training it would need 100,000 sampled scenes
@@ -167,7 +167,7 @@ event's timing (`model/feature.py:136-141`) [code].
 test stimulus (the log prior should differ only by the few grid points under
 the ramps). Gradient-based fits of onsets were already fragile in (a) and
 (b); a prior that is discontinuous in onset would make them worse. This is a
-departure from the paper's text, so it is labelled as such in the code.
+departure from the paper's text, so it is labeled as such in the code.
 
 ### C5. The noise type
 
@@ -182,10 +182,10 @@ sounds.
 
 ### C6. Counting the sources of a hypothesis
 
-A fit finds one mode with labelled sources (source 0, source 1, ...). Any
+A fit finds one mode with labeled sources (source 0, source 1, ...). Any
 permutation of the labels gives another mode with the same density, and the
 hypothesis "these sounds, as these sources" includes all of them. With
-distinct continuous values, n sources have n! such labellings, so the
+distinct continuous values, n sources have n! such labelings, so the
 hypothesis's prior mass is n! times what the fit measures. This n! cancels
 the 1/n! of the Poisson, as in a Poisson point process.
 
@@ -249,7 +249,7 @@ Notes on (C).
   needs a small custom one. Everything else is stock: uniform, Student-t,
   geometric, categorical, and multivariate normal for the GPs.
 - C6's n! is a fact about the hypothesis, not about any one sample site. A
-  Pyro trace of one labelled scene would therefore differ from
+  Pyro trace of one labeled scene would therefore differ from
   `structure_log_prior` by exactly log n!. The test will check for that
   difference, and the code will say why.
 - With D5, (C) also makes it cheap to measure HMC against our variational
@@ -378,7 +378,7 @@ No claim about perception beyond those comparisons.
 
 ## 5. Order of work
 
-1. C6: count labellings as n!, with the toy-model test; note the shift in
+1. C6: count labelings as n!, with the toy-model test; note the shift in
    (b)'s log odds in the results README (PR).
 2. C2 + C4: several events per source, rests and durations with (μ, λ)
    integrated out (C3 (D)), soft event membership; `Scene.sample` and the
@@ -400,10 +400,10 @@ Each step is one PR; nothing past step 1 starts before Cho accepts this.
 2. **C2** Several events per source, parametrized by rests and durations as
    in the paper? (recommended: yes)
 3. **C3** Infer σ and ℓ; integrate out (μ, λ) exactly? (recommended: yes)
-4. **C4** Soft event membership in the non-stationary kernel, a labelled
+4. **C4** Soft event membership in the non-stationary kernel, a labeled
    departure from the paper? (recommended: yes)
 5. **C5** Leave the noise type for later? (recommended: yes)
-6. **C6** Count n! labellings, changing (b)'s log odds slightly?
+6. **C6** Count n! labelings, changing (b)'s log odds slightly?
    (recommended: yes)
 7. **C7** Pyro-ready priors (named `torch.distributions` sites and an optional
    `Scene.model()`), with Pyro an optional extra? (recommended: yes)

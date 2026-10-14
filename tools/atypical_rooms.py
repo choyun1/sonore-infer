@@ -10,7 +10,7 @@ room is the control. Seeds of spectrogram, carrier and room are shared
 across conditions (and distinct from each other), so each condition hears
 the same source through a room drawn from the same noise.
 
-The posterior is :func:`sonore_inference.sourceroom.infer` at floors of 20,
+The posterior is :func:`sonore_infer.sourceroom.infer` at floors of 20,
 40 and 60 dB below the observation's peak and the measured sigma.
 
 Each line written holds: the condition, true RT60, floor, the posterior's
@@ -38,9 +38,9 @@ import torch
 from rt60_prior_fit import measure
 from scipy.signal import fftconvolve
 
-from sonore_inference.blockpower import BlockPower
-from sonore_inference.room import TYPICAL_DRR_DB
-from sonore_inference.sourceroom import Model, infer
+from sonore_infer.blockpower import BlockPower
+from sonore_infer.room import TYPICAL_DRR_DB
+from sonore_infer.sourceroom import Model, infer
 
 FS = 20_000.0
 RT60S = (0.4, 0.8)

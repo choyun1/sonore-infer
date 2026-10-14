@@ -4,10 +4,10 @@ import numpy as np
 import pytest
 import torch
 
-from sonore_inference.cochleagram import Cochleagram
-from sonore_inference.fit import fit
-from sonore_inference.sources import harmonic_tone, whistle, whistle_event
-from sonore_inference.stimuli import mistuned_harmonic_stimulus
+from sonore_infer.cochleagram import Cochleagram
+from sonore_infer.fit import fit
+from sonore_infer.sources import harmonic_tone, whistle, whistle_event
+from sonore_infer.stimuli import mistuned_harmonic_stimulus
 
 FS = 20_000
 
@@ -92,7 +92,7 @@ def test_whistle_event_timing_has_gradients():
 
 
 def test_constant_trajectories_give_the_whistle_and_the_harmonic_tone():
-    from sonore_inference.sources import trajectory_event
+    from sonore_infer.sources import trajectory_event
 
     kwargs = dict(fs=FS, total_duration=0.5, ramp=0.01)
     freq, level = torch.tensor(330.0, dtype=torch.float64), torch.tensor(55.0, dtype=torch.float64)
@@ -111,7 +111,7 @@ def test_constant_trajectories_give_the_whistle_and_the_harmonic_tone():
 
 
 def test_a_frequency_glide_has_the_integrated_phase():
-    from sonore_inference.sources import trajectory_event
+    from sonore_infer.sources import trajectory_event
 
     # a linear glide from 400 to 500 Hz over 0.5 s: phase 2 pi (400 t + 100 t^2)
     grid = torch.linspace(400.0, 500.0, 51, dtype=torch.float64)[None]

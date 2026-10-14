@@ -3,7 +3,7 @@
 Rows for the same f0 and harmonic are merged across files (so a finer grid
 can be run separately and added), sorted by mistuning; then it converts the log posterior odds
 of two sources over one into probabilities and applies the threshold of
-Eqn 2 (``sonore_inference.thresholds``), for the Laplace and the
+Eqn 2 (``sonore_infer.thresholds``), for the Laplace and the
 importance-sampling estimates. A threshold of 50% means two sources were
 never preferred, which the paper reports as not measurable.
 
@@ -19,7 +19,7 @@ import argparse
 import math
 import re
 
-from sonore_inference.thresholds import probability_from_log_odds, threshold
+from sonore_infer.thresholds import probability_from_log_odds, threshold
 
 HEADER = re.compile(r"f0 (\S+) Hz, harmonic (\d+) mistuned")
 ROW = re.compile(r"\s*(\d+(?:\.\d+)?)" + r"\s+(-?(?:[\d.]+|inf|nan))" * 9 + r"\s*$")

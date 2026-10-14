@@ -1,4 +1,4 @@
-# sonore-inference: design document, version 1
+# sonore-infer: design document, version 1
 
 Status: **accepted by Cho on 2026-10-05** (D1 to D8 as recommended; see §5 for
 the answers to D3 and D6).
@@ -60,7 +60,7 @@ items are marked "check in code".
    all* noise sources rather than one frozen draw per source.
 6. **Likelihood details.** The likelihood uses an FFT-based gammatone-like
    spectrogram (Ellis 2009), chosen for speed: 64 channels with half-ERB
-   bandwidths and centre frequencies from 20 to 9423 Hz, 25 ms window, 10 ms
+   bandwidths and center frequencies from 20 to 9423 Hz, 25 ms window, 10 ms
    hop, truncated at 20 dB relative to a fixed reference RMS of 1e-6, compared
    under isotropic Gaussian noise with σ = 10, which was set by hand
    [paper §2.2.3, App. A.5]. The chcochleagram model (Feather et al. 2023;
@@ -139,11 +139,15 @@ items are marked "check in code".
   separate session that could reach GitHub; its notes, with file and line
   references, are in [bass-code-check.md](bass-code-check.md). The global
   GitHub name search (§2) was still not run.
-- I have not checked chcochleagram's licence.
+- I have not checked chcochleagram's license.
 
 ---
 
 ## 2. Name check (sonore-inference)
+
+Renamed on 2026-10-13 to `sonore-infer` (import name `sonore_infer`), to
+match `sonore-sketch` / `sonore_sketch`. `sonore-infer` returned 404 on PyPI
+that day. The table below is the original check, left as it was.
 
 | Where | Result | How |
 |---|---|---|
@@ -347,12 +351,12 @@ a laptop, then measure seconds per iteration with a `tools/` script before
 planning (c). **Question for Cho: what do you have access to?** The answer
 bounds scene length and the number of hypotheses at (c).
 
-### D7. Licence and reuse
+### D7. License and reuse
 
 **Options for this project:** MIT (as sonore), BSD-3-Clause, or Apache-2.0
 (adds an explicit patent grant).
 
-**Reuse of BASS.** The repository has no licence [code], so its code cannot
+**Reuse of BASS.** The repository has no license [code], so its code cannot
 be copied without permission. The paper is CC BY 4.0 [paper, p. 1], and the
 model, algorithms and stimulus specifications it describes can be
 re-implemented from the text with citation. Running BASS's code to compare
@@ -361,8 +365,8 @@ outputs copies nothing into this project.
 **Recommendation: MIT, matching sonore.** Implement only from the paper and
 sonore, cite the paper wherever an equation or parameter comes from it, and
 keep names taken from the paper unchanged. Ask Maddie whether the code could
-carry a licence anyway, since later comparison (sequential inference, the
-fitted priors) would benefit. chcochleagram's licence is to be checked before
+carry a license anyway, since later comparison (sequential inference, the
+fitted priors) would benefit. chcochleagram's license is to be checked before
 it is used even as a test dependency.
 
 ### D8. Prior on the number of sources
@@ -439,7 +443,7 @@ and the updated questions for Maddie and Josh are in §6.
 - The code samples the number of sources at a rate of 1 per second
   (zero-truncated) but scores it as Poisson(1) per scene. Was that mismatch
   intended, and which one did you mean as the model?
-- Could the code carry a licence (MIT or BSD)?
+- Could the code carry a license (MIT or BSD)?
 - Is anyone extending BASS to voices with time-varying formants, to binaural
   scenes or to reverberation, which the paper lists as future work?
 - What GPU did a typical hypothesis optimization run on?
@@ -457,7 +461,7 @@ instrument-identification or timbre experiment. Instrument identity is
 implicit: a source has one spectral shape shared by all its events (the
 paper's example is "a filter corresponds to the instrument body") plus its own
 priors on f0, level and timing [App. A.2], so notes are grouped into a source,
-not labelled. The harmonic spectrum prior was fitted to classical-instrument
+not labeled. The harmonic spectrum prior was fitted to classical-instrument
 recordings (URMP) and birdsong [App. A.3]. Instruments appear among the
 everyday-sound failures, and each failure points to a missing piece:
 
@@ -506,7 +510,7 @@ perception. Two practical points:
 
 URMP, which BASS used for its priors, has separate instrument tracks and their
 mixes, so it could serve as test data for both (b″) and track extraction
-(its licence is not yet checked).
+(its license is not yet checked).
 
 ---
 

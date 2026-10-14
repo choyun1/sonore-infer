@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from sonore_inference.thresholds import probability_from_log_odds, threshold
+from sonore_infer.thresholds import probability_from_log_odds, threshold
 
 VALUES = [0, 5, 10, 20, 30, 40, 50]
 

@@ -3,7 +3,7 @@ requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [project]
-name = "sonore-inference"
+name = "sonore-infer"
 dynamic = ["version"]
 description = "Inferring auditory scenes by inverting a generative model of sound (analysis by synthesis)."
 readme = "README.md"
@@ -22,11 +22,12 @@ classifiers = [
 ]
 dependencies = [
     "numpy>=1.26",
+    "scipy>=1.11",  # sourceroom.Posterior.theta_quantiles (scipy.stats.norm)
     "torch>=2.4",
 ]
 
 [project.urls]
-Source = "https://github.com/choyun1/sonore-inference"
+Source = "https://github.com/choyun1/sonore-infer"
 
 [project.optional-dependencies]
 # sonore makes stimuli and serves as the test oracle (design D2); the
@@ -39,10 +40,10 @@ pyro = ["pyro-ppl>=1.9"]
 dev = ["pytest>=8", "ruff>=0.5", "sonore==0.6.0", "pyro-ppl>=1.9"]
 
 [tool.hatch.version]
-path = "src/sonore_inference/__init__.py"
+path = "src/sonore_infer/__init__.py"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/sonore_inference"]
+packages = ["src/sonore_infer"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

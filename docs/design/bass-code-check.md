@@ -31,7 +31,7 @@ Implication for design: what the paper calls "rate 1 per second" holds for the
 training-data generator; the prior that scored hypotheses during inference is
 Poisson(1) over the whole scene, whatever its length. For the illusion stimuli
 (roughly 0.5 to 2 s) the two differ modestly; for longer everyday sounds they
-differ more. sonore-inference should pick one deliberately and state it.
+differ more. sonore-infer should pick one deliberately and state it.
 
 ## Item 7. Variational objective: standard ELBO or importance-weighted?
 
@@ -62,7 +62,7 @@ what ran.**
   the repo).
 
 Implication for design: the handoff's "importance-weighted ELBO" describes the
-code's option; the runs used the plain ELBO. sonore-inference can start with
+code's option; the runs used the plain ELBO. sonore-infer can start with
 the plain ELBO and keep K as a parameter.
 
 ## Item 8. Harmonic excitation (paper vs earlier code reading)
@@ -85,6 +85,6 @@ than "near Nyquist".**
 - So "samples above Nyquist set to zero" [paper App. A.5] is the end point of a
   1 kHz linear roll-off, not a hard cut, and the count is 199, not 200.
 
-Implication for design: minor. If sonore-inference reproduces BASS renders as a
+Implication for design: minor. If sonore-infer reproduces BASS renders as a
 test oracle, match 199 harmonics and the two linear tapers; otherwise any
 smooth band-limit is fine.

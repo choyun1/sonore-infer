@@ -7,7 +7,7 @@ import sonore as so
 import torch
 from sonore.spatial.reverb import _model
 
-from sonore_inference.room import RoomGain, band_rt60s, cosine_responses, onset_levels_db
+from sonore_infer.room import RoomGain, band_rt60s, cosine_responses, onset_levels_db
 
 FS = 20_000.0
 
@@ -88,7 +88,7 @@ def test_block_transfer_is_the_decay_weighted_by_a_triangle():
 def test_rt60_prior_is_the_gamma_density():
     from scipy import stats
 
-    from sonore_inference.room import RT60_PRIOR_SCALE_S, RT60_PRIOR_SHAPE, log_prior_rt60
+    from sonore_infer.room import RT60_PRIOR_SCALE_S, RT60_PRIOR_SHAPE, log_prior_rt60
 
     rt60 = np.array([0.05, 0.2, 0.4, 1.0, 2.5])
     expected = stats.gamma.logpdf(rt60, RT60_PRIOR_SHAPE, scale=RT60_PRIOR_SCALE_S)

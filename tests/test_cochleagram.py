@@ -5,7 +5,7 @@ import pytest
 import sonore as so
 import torch
 
-from sonore_inference.cochleagram import (
+from sonore_infer.cochleagram import (
     Cochleagram,
     FFTCochleagram,
     freq_to_erb,

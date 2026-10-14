@@ -27,7 +27,7 @@ that one sound. The work has two experiments. (a) Recover the parameters
 from sounds the model could have made. (b) Infer with an exponential-room
 model from rooms that are not exponential, and measure how RT60 is biased.
 A comparison with Traer & McDermott's (2016) listeners is optional, and if
-done it is labelled a comparison, not a validation.
+done it is labeled a comparison, not a validation.
 
 Out of scope: several sources, binaural cues, real recordings as observations
 (except as an optional later test), and amortized inference.
@@ -206,13 +206,13 @@ would put all the mass on one point. Now a, b and s are integrated at each
 RT60 by a second-order expansion of the likelihood in the levels (a
 closed-form Gaussian integral for any a, b, s) and Laplace in log
 coordinates, and RT60 starts on the 15 points and is refined around the
-posterior's bulk (`sonore_inference.sourceroom`). About 5 minutes per
+posterior's bulk (`sonore_infer.sourceroom`). About 5 minutes per
 sound per sigma on 2 cores.
 
 ### R6. Framework and placement
 
 PyTorch, per design-v1 D1. The numpy probes are ported, not reused. New
-modules go under `src/sonore_inference/`: `spectrotemporal.py` (R1 source
+modules go under `src/sonore_infer/`: `spectrotemporal.py` (R1 source
 prior), `room.py` (R2/R3 expected energy) and `blockpower.py` (R4). Tools go
 in `tools/`. The milestone (b) modules (`scene.py`, `cochleagram.py`,
 `evidence.py`) are reused without edits, so the two lines of work do not
@@ -246,7 +246,7 @@ script downloads them, and only the two fitted numbers go in the code, with
 a citation.
 
 Two things are open:
-- The licence of the original files is unchecked. A mirror says CC BY 4.0,
+- The license of the original files is unchecked. A mirror says CC BY 4.0,
   but that was not read on the MIT page.
 - The MIT site is blocked from this container by its network policy, so the
   download has to happen on Cho's machine (§6).
@@ -259,7 +259,7 @@ Two things are open:
 2. Expected-energy model (R2/R3) with tests against `band_rt60s` and
    averaged renders; measure the room's residual and log bias. *(Update:
    the source's carrier-noise residual moves to step 3, where the source's
-   expected band power is modelled.)*
+   expected band power is modeled.)*
 3. Block-power likelihood (R4) with the source's expected band power;
    carrier-noise residual and log-bias correction; likelihood slices at the
    truth. *(Done: bias -1.3 dB and sigma 3.6 dB pooled at RT60 0.4 s, DRR

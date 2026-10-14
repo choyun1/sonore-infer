@@ -1,7 +1,7 @@
 """One note or two for milestone (b)'s stimuli, by marginal likelihood (docs/design/milestone-b.md).
 
-For each stimulus, three hypotheses (B2), each fitted from known starting
-points (B3) and the best posterior mode kept:
+For each stimulus, three hypotheses (decision B2), each fitted from known
+starting points (decision B3) and the best posterior mode kept:
 
 - ``one``: one harmonic source, started at 200 Hz, at the upper note's f0,
   and at 100 Hz (every component of the just fifth is a harmonic of 100 Hz);
@@ -32,9 +32,9 @@ import time
 
 import torch
 
-from sonore_inference.cochleagram import FFTCochleagram
-from sonore_inference.scene import Harmonic, Scene, SceneTiming, Whistle, evaluate
-from sonore_inference.stimuli import two_notes as tn
+from sonore_infer.cochleagram import FFTCochleagram
+from sonore_infer.scene import Harmonic, Scene, SceneTiming, Whistle, evaluate
+from sonore_infer.stimuli import two_notes as tn
 
 TIMING = SceneTiming(fs=tn.FS, total_duration=tn.DURATION + 2 * tn.PADDING, ramp=tn.RAMP)
 ABSENT_DB = 30.0

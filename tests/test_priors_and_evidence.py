@@ -6,9 +6,9 @@ import numpy as np
 import pytest
 import torch
 
-from sonore_inference.cochleagram import erb_to_freq, freq_to_erb
-from sonore_inference.evidence import log_evidence, variational_evidence
-from sonore_inference.priors import (
+from sonore_infer.cochleagram import erb_to_freq, freq_to_erb
+from sonore_infer.evidence import log_evidence, variational_evidence
+from sonore_infer.priors import (
     log_prior_event_timing,
     log_prior_level,
     log_prior_log_frequency,
@@ -67,7 +67,7 @@ def test_structure_prior():
     )
     assert log_prior_structure(["harmonic"], 0.5) == pytest.approx(one)
     assert log_prior_structure(["harmonic", "whistle"], 0.5) == pytest.approx(two)
-    # two sources of the same type count both labellings too (design C6)
+    # two sources of the same type count both labelings too (design C6)
     assert log_prior_structure(["whistle", "whistle"], 0.5) == pytest.approx(two)
 
 
@@ -76,7 +76,7 @@ def test_structure_prior_matches_sampling_from_the_generative_model():
     # each source a uniform type, a Geometric(0.5) number of events and one position
     # x ~ U(0, 2). The hypothesis "two whistles of one event each, one with x in [0, 1)
     # and one in [1, 2)" has probability exp(structure prior) * (1/2) * (1/2): the
-    # structure prior times the mass of one labelled mode.
+    # structure prior times the mass of one labeled mode.
     rng = np.random.default_rng(0)
     duration, draws = 2.0, 1_000_000
     n = rng.poisson(duration, draws)
@@ -217,7 +217,7 @@ def test_event_timing_prior_is_the_normal_gamma_marginal():
 
 
 def test_trajectory_prior_covariance_and_density():
-    from sonore_inference.priors import GRID_STEP, TrajectoryPrior
+    from sonore_infer.priors import GRID_STEP, TrajectoryPrior
 
     prior = TrajectoryPrior(sigma=2.0, lengthscale=0.1, beta=0.5, epsilon=0.1, mean_range=(0.0, 10.0))
     lower = prior.cholesky(5)

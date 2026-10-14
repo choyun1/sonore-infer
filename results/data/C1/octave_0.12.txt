@@ -1,0 +1,8 @@
+300 Adam steps, 128 samples, sigma 10 dB, seed 0, fft-bass-gain cochleagram, trajectories, all timing inferred, GP sigma and lengthscale inferred
+stimulus  hypothesis  n_params  structure  laplace  importance  ess  floored  log_joint_at_mode  seconds  elbo  vi_importance  vi_ess
+octave 120 ms                       one@200      124    -2.05    -9975.5   -10013.8     1    1    -9906.0    612.1    -9976.7    -9974.1    22
+octave 120 ms                       two          242    -4.54    -9988.1  -2635617.6     1    2    -9862.8   1037.6    -9998.8    -9993.5     9
+octave 120 ms                       log odds vs best one (laplace): two -15.0
+octave 120 ms                       log odds vs best one (importance): two -2625606.3
+octave 120 ms                       log odds vs best one (elbo): two -24.6
+octave 120 ms                       log odds vs best one (variational): two -21.9

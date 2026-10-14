@@ -1,0 +1,8 @@
+octave   0 ms  sigma 10.0  one@200   log_lik   -9912.9  sum_sq_resid    3268.0 dB^2  rms  1.03 dB  log_prior    -12.3  terms 46.3 -33.6 -24.6 -0.4
+octave   0 ms  sigma 10.0  two       log_lik   -9896.5  sum_sq_resid       0.0 dB^2  rms  0.00 dB  log_prior     -9.7  terms 46.3 -33.6 -19.9 -0.4 46.3 -33.6 -14.5 -0.4
+octave   0 ms  sigma  5.0  one@200   log_lik   -7800.1  sum_sq_resid    1647.5 dB^2  rms  0.73 dB  log_prior    -29.8  terms 46.3 -33.6 -42.2 -0.4
+octave   0 ms  sigma  5.0  two       log_lik   -7767.2  sum_sq_resid       0.0 dB^2  rms  0.00 dB  log_prior     -9.7  terms 46.3 -33.6 -19.9 -0.4 46.3 -33.6 -14.5 -0.4
+octave 240 ms  sigma 10.0  one@200   log_lik   -9910.4  sum_sq_resid    2775.6 dB^2  rms  0.95 dB  log_prior     -9.1  terms 45.9 -33.9 -20.7 -0.4
+octave 240 ms  sigma 10.0  two       log_lik   -9896.5  sum_sq_resid       0.0 dB^2  rms  0.00 dB  log_prior    -10.0  terms 46.3 -33.6 -19.9 -0.4 46.3 -33.6 -14.5 -0.7
+octave 240 ms  sigma  5.0  one@200   log_lik   -7815.0  sum_sq_resid    2389.8 dB^2  rms  0.88 dB  log_prior    -13.2  terms 45.3 -34.9 -23.2 -0.4
+octave 240 ms  sigma  5.0  two       log_lik   -7767.2  sum_sq_resid       0.0 dB^2  rms  0.00 dB  log_prior    -10.0  terms 46.3 -33.6 -19.9 -0.4 46.3 -33.6 -14.5 -0.7
