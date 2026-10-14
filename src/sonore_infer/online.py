@@ -394,6 +394,8 @@ def run_online(
     for end in ends:
         begin = time.perf_counter()
         n_samples = round(end * fs)
+        if n_samples < cochleagram.frame_samples:
+            continue  # not one whole frame yet: nothing heard, nothing to update
         observed = cochleagram(waveform[:n_samples])
         scene, fresh = prefix_scene(hypothesis, end, fs, ramp)
         if scene is None:

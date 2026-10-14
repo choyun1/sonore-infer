@@ -170,3 +170,18 @@ def test_online_windows_with_patience_stop_early_and_report_their_steps():
     assert all(step.window.adam_steps == 200 for step in fixed)
     assert all(step.window.adam_steps <= 200 for step in adaptive)
     assert any(step.window.adam_steps < 200 for step in adaptive)
+
+
+def test_windows_shorter_than_a_frame_are_skipped():
+    waveform = torch.tensor(bu.buildup_stimulus(1, 8, lead=0.05).data[:, 0], dtype=F64)[: round(0.1 * bu.FS)]
+    steps = run_online(
+        waveform,
+        (WhistleSpec("w0", TONES[:1]),),
+        FFTCochleagram(),
+        fs=bu.FS,
+        ramp=bu.RAMP,
+        window=0.01,
+        lag=math.inf,
+        steps=2,
+    )
+    assert [round(step.window.end, 3) for step in steps] == [0.06, 0.07, 0.08, 0.09, 0.1]
