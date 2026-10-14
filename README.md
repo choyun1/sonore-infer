@@ -118,11 +118,12 @@ under review by Adrian Cho, and may change.
 
 ## References
 
-The works the package implements or rebuilds stimuli from. Each design
-document lists the further works it draws on.
+The works the package implements or rebuilds stimuli from. Those the
+stimuli come from are cited as in Cusimano et al.'s (2024) reference
+list. Each design document lists the further works it draws on.
 
-Bregman, A. S., & Ahad, P. A. (1996). *Demonstrations of auditory scene
-analysis: The perceptual organization of sound* [Audio CD]. MIT Press.
+Bregman, A. S., & Ahad, P. (1996). *Demonstrations of auditory scene
+analysis: The perceptual organization of sound* [Audio CD]. McGill University.
 https://themusiclab.github.io/bregman-archive/downloadstoc.htm
 
 Cusimano, M., Hewitt, L. B., & McDermott, J. H. (2024). Listening with
@@ -131,7 +132,7 @@ https://doi.org/10.1016/j.cognition.2024.105874
 
 Darwin, C. J., & Sutherland, N. S. (1984). Grouping frequency components
 of vowels: When is a harmonic not a harmonic? *The Quarterly Journal of
-Experimental Psychology Section A*, *36*(2), 193–208.
+Experimental Psychology*, *36*(2), 193–208.
 
 Ellis, D. P. W. (2009). *Gammatone-like spectrograms* [Computer software].
 https://www.ee.columbia.edu/~dpwe/resources/matlab/gammatonegram/
