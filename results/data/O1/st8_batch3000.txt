@@ -1,0 +1,14 @@
+8 st, 6 triplets, window 50 ms, 30 Adam steps per window, fft-bass-gain cochleagram, all timing inferred
+batch: triplets  hypothesis  laplace  structure  log_joint  seconds
+batch: 1  one   -10981.49   -3.47   -10853.88    42.1
+batch: 1  two   -10973.73   -5.16   -10710.73    47.7
+batch: 2  one   -21350.47   -5.83   -21084.83   110.2
+batch: 2  two   -21316.32   -6.88   -20802.65   123.8
+batch: 3  one   -31702.43   -8.21   -31311.82   222.7
+batch: 3  two   -31655.45   -8.87   -30886.77   267.4
+batch: 4  one   -42061.03  -10.61   -41538.65   307.7
+batch: 4  two   -41993.27  -10.99   -40969.42   369.8
+batch: 5  one   -52410.72  -13.03   -51764.94   465.2
+batch: 5  two   -52330.16  -13.19   -51050.99   582.4
+batch: 6  one   -62758.80  -15.46   -61990.92   660.6
+batch: 6  two   -62666.30  -15.45   -61131.86   797.7

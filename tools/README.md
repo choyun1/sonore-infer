@@ -43,6 +43,13 @@ not import the package.
 |---|---|
 | `results_plots.py` | Draws the SVG plots in `results/plots/` from the committed outputs in `results/data/` |
 
+## Online inference (docs/design/online.md)
+
+| Script | What it does |
+|---|---|
+| `online_buildup.py` | Buildup of streaming (App. C.11) in one online pass, against batch fits at each triplet's end |
+| `leaky_odds.py` | Leaky log odds (decision O10) from `online_buildup.py` outputs, no new inference |
+
 ## Measurements of the cochleagram, and readings of the paper
 
 | Script | What it does |
