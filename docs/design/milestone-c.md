@@ -448,3 +448,15 @@ option (C), and Cho chose it.
   (−10009.8, −10009.8, −10010.9, −10010.5); with the kernel fixed they are
   −10012.0, −10016.1, −10016.7 and −10014.9 [measured]. The prior on the
   parameter itself is unchanged, so the evidence is the same integral.
+- **C8, Adam steps.** 300 Adam steps, the setting of milestones (a) and
+  (b), leave the ABA one-stream fit far from its mode. Its log joint at
+  6 semitones and 100 ms is −63313 after 300 steps and −62875 after 7500,
+  and it stays there to 15000. The two-stream fit gains only 0.2 from 300
+  to 1000 steps on all 30 stimuli [measured: `tools/aba_fit_steps.py`,
+  `results/data/C2/fit_steps_check/`]. The online work found the same
+  for its batch reference (`results/O1-online-buildup.md`). So ABA fits
+  run until the best log joint rises by less than 0.5 over 1000 steps
+  (`fit`'s `patience=1000, tolerance=0.5`, the rule added with the online
+  work), at most 15000 steps. At 3 and 6 semitones (100 ms), stopping
+  there gives the same Laplace evidence as 15000 steps and variational
+  evidence within 0.6 [measured]. Milestones (a) and (b) have not been rechecked for this.

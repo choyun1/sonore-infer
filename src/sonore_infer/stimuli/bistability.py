@@ -8,7 +8,10 @@ every stimulus padded with silence to 3.1 s; 30 stimuli.
 
 Assumed, because the text does not say:
 
-- The first tone starts at time 0 and all the padding comes after.
+- The first tone starts at time 0 and all the padding comes after, unless
+  ``lead`` moves some of it before the first tone. A model whose onset prior
+  starts at 0 needs that (milestone (c) uses 50 ms), since an onset exactly
+  on the edge of its prior's support leaves no room for a fit to move it.
 - Each tone starts in cosine phase.
 - "70 dB" is each tone's steady-state level, before ramps.
 """
@@ -27,11 +30,11 @@ REPEATS = 4
 TOTAL_DURATION = 3.1
 
 
-def tone_onsets(onset_interval: float, repeats: int = REPEATS) -> list[tuple[float, str]]:
+def tone_onsets(onset_interval: float, repeats: int = REPEATS, lead: float = 0.0) -> list[tuple[float, str]]:
     """(onset time, "A" or "B") for every tone; each triplet takes four intervals."""
     onsets = []
     for repeat in range(repeats):
-        start = 4 * repeat * onset_interval
+        start = lead + 4 * repeat * onset_interval
         onsets += [(start, "A"), (start + onset_interval, "B"), (start + 2 * onset_interval, "A")]
     return onsets
 
@@ -43,12 +46,14 @@ def bistability_stimulus(
     repeats: int = REPEATS,
     total_duration: float = TOTAL_DURATION,
     fs: float = FS,
+    lead: float = 0.0,
 ) -> so.Sound:
-    """One ABA sequence, B ``semitones`` above A, padded to ``total_duration``."""
+    """One ABA sequence, B ``semitones`` above A, starting after ``lead`` s of
+    silence and padded to ``total_duration``."""
     freqs = {"A": A_FREQ, "B": A_FREQ * 2 ** (semitones / 12)}
     total_samples = round(total_duration * fs)
     tones = []
-    for onset, name in tone_onsets(onset_interval, repeats):
+    for onset, name in tone_onsets(onset_interval, repeats, lead):
         tone = sinusoid(TONE_DURATION, fs, freqs[name], TONE_LEVEL_DB).ramp(RAMP, shape="cosine")
         tones.append(tone.pad_to(tone.n_samples + round(onset * fs), align="end"))
     sequence = so.mix(tones)

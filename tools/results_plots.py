@@ -22,6 +22,7 @@ import math
 import os
 import re
 
+import aba_map
 import mistuning_thresholds
 import two_notes_summary
 
@@ -598,6 +599,25 @@ def kernel_inferred():
     return figure([mistuned, octave], "C1: log odds with the GP kernel fixed and inferred", legend)
 
 
+def aba_streaming():
+    found = aba_map.collect([data("C2", "one_converged"), data("C2", "run_300steps")])
+    intervals = sorted({key[1] for key in found})
+    panel = Panel(600, 260, (60, 157), (-50, 230), left=46)
+    panel.axes(
+        [67, 83, 100, 117, 134, 150],
+        [-50, 0, 50, 100, 150, 200],
+        x_label="onset-to-onset interval (ms)",
+        y_label="log odds, two streams vs one",
+    )
+    panel.horizontal(0)
+    legend = []
+    for semitones, color in zip((1, 3, 6, 9, 12), ("s1", "s2", "s3", "s4", "s5"), strict=True):
+        points = [(dt, aba_map.log_odds(found, semitones, dt, "vi_importance")) for dt in intervals]
+        panel.line(points, color, tip=lambda x, y, st=semitones: f"{st} st, {x:g} ms: {y:+.1f}")
+        legend.append((color, f"{semitones} semitone{'s' if semitones > 1 else ''}", "line"))
+    return figure([panel], "C2: ABA, log odds of two streams by interval and frequency gap", legend)
+
+
 # Source and room
 
 
@@ -752,6 +772,7 @@ PLOTS = {
     "B3-octave-sigma5": octave_sigma5,
     "B4-two-notes-seeds": two_notes_seeds,
     "C1-kernel-inferred": kernel_inferred,
+    "C2-aba-streaming": aba_streaming,
     "R1-likelihood-slice": likelihood_slice,
     "R1-interval-coverage": interval_coverage,
     "R2-atypical-rooms": atypical_rooms,
