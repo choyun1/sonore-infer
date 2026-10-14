@@ -78,6 +78,10 @@ def main():
     waveform = torch.tensor(sound.data[:, 0], dtype=DTYPE)
     specs = hypotheses(args.semitones, args.triplets)
     checkpoints = [round(bu.duration(n, LEAD), 9) for n in range(1, args.triplets + 1)]
+    # window ends: multiples of the window, plus each triplet's end, so the odds can be read there
+    total = bu.duration(args.triplets, LEAD)
+    grid = [round((k + 1) * args.window, 9) for k in range(int(total / args.window + 1e-9))]
+    ends = sorted(set(grid) | set(checkpoints))
     print(
         f"{args.semitones:g} st, {args.triplets} triplets, window {1000 * args.window:g} ms, "
         f"{args.steps} Adam steps per window, fft-bass-gain cochleagram, all timing inferred"
@@ -138,7 +142,7 @@ def main():
                     lag=lag,
                     steps=args.steps,
                     patience=args.window_patience,
-                    ends=None,
+                    ends=ends,
                     report=report,
                 )
             }
