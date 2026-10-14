@@ -30,23 +30,23 @@ not import the package.
 
 | Script | What it does |
 |---|---|
-| `rt60_prior_fit.py` | RT60 prior and typical DRR from Traer & McDermott's IR survey (R2, R8) |
-| `room_gain_check.py` | Measures `RoomGain` against `synth_ir` renders (R3) |
-| `block_power_check.py` | Measures `BlockPower`'s expected energies against sonore renders (R3-R4) |
-| `likelihood_slices.py` | Likelihood along one parameter at a time through the truth (R4-R5) |
-| `recovery.py` | Experiment (a) of R7: recover RT60 and the source's statistics |
-| `atypical_rooms.py` | Experiment (b) of R7: the model heard through atypical rooms |
+| `rt60_prior_fit.py` | RT60 prior and typical DRR from Traer & McDermott's IR survey (decisions R2, R8) |
+| `room_gain_check.py` | Measures `RoomGain` against `synth_ir` renders (decision R3) |
+| `block_power_check.py` | Measures `BlockPower`'s expected energies against sonore renders (decisions R3-R4) |
+| `likelihood_slices.py` | Likelihood along one parameter at a time through the truth (decisions R4-R5) |
+| `recovery.py` | Experiment (a) of decision R7: recover RT60 and the source's statistics |
+| `atypical_rooms.py` | Experiment (b) of decision R7: the model heard through atypical rooms |
 
 ## Measurements of the cochleagram, and readings of the paper
 
 | Script | What it does |
 |---|---|
 | `channel_bandwidths.py` | Measures the effective bandwidth of the cochleagram's channels, gammatone against FFT |
-| `table_a2_quartiles.py` | Which reading of Table A.2's parameters reproduces its quartiles (C3) |
+| `table_a2_quartiles.py` | Which reading of Table A.2's parameters reproduces its quartiles (decision C3) |
 
 ## Machine and timing
 
 | Script | What it does |
 |---|---|
-| `machine_specs.py` | Prints the specs of this machine that matter for timing (D6) |
-| `time_cochleagram.py` | Seconds per cochleagram forward and backward pass (D6) |
+| `machine_specs.py` | Prints the specs of this machine that matter for timing (decision D6) |
+| `time_cochleagram.py` | Seconds per cochleagram forward and backward pass (decision D6) |
