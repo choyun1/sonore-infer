@@ -18,6 +18,7 @@ only the sampling in the evidence estimates. Seed 0 is the runs already made.
     python tools/run_seeds.py --out seeds_out --list      # print the jobs and stop
     python tools/run_seeds.py --out seeds_out --jobs 6 --only a
     python tools/run_seeds.py --out aba_out --only aba --seeds 0 --steps 3000   # the ABA map, 30 stimuli
+    python tools/run_seeds.py --out aba_one_3000 --only aba --seeds 0 --steps 3000 --hypotheses one
 """
 
 import argparse
@@ -47,7 +48,7 @@ ABA_SEMITONES = [1, 3, 6, 9, 12]
 ABA_INTERVALS = [0.067, 0.083, 0.1, 0.117, 0.134, 0.15]
 
 
-def jobs(seeds, only, steps=None):
+def jobs(seeds, only, steps=None, hypotheses=None):
     """(name, argv) for every job, seed by seed."""
     out = []
     for seed in seeds:
@@ -62,6 +63,7 @@ def jobs(seeds, only, steps=None):
                             f"aba/st{semitones}_dt{interval}_seed{seed}",
                             ["compare_aba.py", "--semitones", str(semitones), "--intervals", str(interval)]
                             + ["--infer-kernel"]
+                            + (["--hypotheses", *hypotheses] if hypotheses else [])
                             + common,
                         )
                     )
@@ -228,6 +230,9 @@ def main():
         type=int,
         help="Adam steps per fit (default: each tool's own, 300); use a new --out for a new value",
     )
+    parser.add_argument(
+        "--hypotheses", nargs="+", choices=["one", "two"], help="ABA only: fit only these hypotheses"
+    )
     parser.add_argument("--heartbeat", type=float, default=5.0, help="minutes between 'still running' lines")
     parser.add_argument("--list", action="store_true", help="print the jobs and their state, then stop")
     args = parser.parse_args()
@@ -235,7 +240,7 @@ def main():
         (args.out / sub).mkdir(parents=True, exist_ok=True)
     for stale in args.out.glob("*/*.partial"):
         stale.unlink()
-    all_jobs = jobs(args.seeds, args.only, args.steps)
+    all_jobs = jobs(args.seeds, args.only, args.steps, args.hypotheses)
     todo = [(name, argv) for name, argv in all_jobs if not (args.out / f"{name}.txt").exists()]
     done_before = len(all_jobs) - len(todo)
     print(

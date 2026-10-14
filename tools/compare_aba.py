@@ -85,6 +85,13 @@ def main():
         "--seed", type=int, default=0, help="seed for the evidence's sampling (fits are deterministic)"
     )
     parser.add_argument(
+        "--hypotheses",
+        nargs="+",
+        choices=["one", "two"],
+        default=["one", "two"],
+        help="fit only these (the log odds are printed only when both are)",
+    )
+    parser.add_argument(
         "--infer-kernel",
         action="store_true",
         help="infer each GP's sigma and lengthscale instead of fixing them at the medians (design C3 (B))",
@@ -107,6 +114,8 @@ def main():
             observed = cochleagram(torch.tensor(sound.data[:, 0], dtype=DTYPE))
             results = {}
             for hypothesis, scene, starts in hypotheses(semitones, interval, args.infer_kernel):
+                if hypothesis not in args.hypotheses:
+                    continue
                 begin = time.perf_counter()
                 result = evaluate(
                     scene,
@@ -135,6 +144,8 @@ def main():
                     ),
                     flush=True,
                 )
+            if len(results) < 2:
+                continue
             estimates = ["laplace", "importance"] + (
                 ["elbo", "variational"] if args.variational_steps else []
             )
