@@ -1,0 +1,8 @@
+two 300 63 s log joint -61943.7
+one 1000 184 s log joint -62979.1
+two 1000 202 s log joint -61943.5
+one 3000 552 s log joint -62918.1
+two 3000 615 s log joint -61943.5
+
+[exited with code 0]
+one 300 57 s log joint -63313.3

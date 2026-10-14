@@ -134,7 +134,7 @@ What every experiment here shares unless its page says otherwise:
 | [B3](B3-octave-sigma5.md) | Octave with likelihood SD 5 dB | none | done | Still one source up to 240 ms; odds rise faster |
 | [B4](B4-two-notes-seeds.md) | B2 over seeds (5 on close cases, then 10 on all) | none | done | Every sign unchanged; seed SD 1–5 |
 | [C1](C1-kernel-inferred.md) | GP sigma and lengthscale inferred (100/1 and octave) | Fig. 7D, Table A.2 | done | 100/1 still 25%; octave still one source |
-| C2 | ABA streaming map | App. C.10 | running | 4 of 30 stimuli in the project files so far; no page yet |
+| [C2](C2-aba-streaming.md) | ABA sequences, one stream or two (30 stimuli) | Fig. 8D, App. C.10 | map done; seeds 1–4 on 2 cells to run | One stream at 1 semitone, two from 3 up (paper: from about 6) |
 | [R1](R1-source-and-room.md) | Source and room (RT60) from one sound | none in this paper | done | RT60 within 3%; 90% intervals cover 66% (overconfident) |
 | [R2](R2-atypical-rooms.md) | Atypical rooms, exponential room model | none in this paper | done | Biased like T20 × 3; time-reversed rooms do not fit |
 

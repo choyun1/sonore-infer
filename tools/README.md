@@ -24,7 +24,15 @@ not import the package.
 |---|---|
 | `compare_two_notes.py` | One note or two (or one plus whistles) by marginal likelihood |
 | `two_notes_summary.py` | Log-odds and threshold tables from `compare_two_notes.py` outputs |
-| `run_seeds.py` | Re-runs milestones (a) and (b) for more seeds, in parallel and resumably |
+| `run_seeds.py` | Re-runs milestones (a) and (b) for more seeds, and the ABA map (`--only aba`), in parallel and resumably |
+
+## Milestone (c): scene grammar
+
+| Script | What it does |
+|---|---|
+| `compare_aba.py` | One stream or two for an ABA sequence by marginal likelihood (App. C.10) |
+| `aba_map.py` | The ABA map of log odds from `compare_aba.py` outputs, combining reruns of one hypothesis |
+| `aba_fit_steps.py` | How far one ABA hypothesis's fit has got after a given number of Adam steps |
 
 ## Source and room (docs/design/source-reverb.md)
 

@@ -1,0 +1,85 @@
+log odds two streams vs one, variational
+semitones        67       83      100      117      134      150  (onset-to-onset, ms)
+        1     -23.1    -18.5    -18.7    -16.4    -17.7    -17.9
+        3      11.5      7.8     13.2     10.2     10.2      9.5
+        6      93.0     92.1     97.2     94.0     25.6     17.7
+        9     216.9     66.6     48.1     41.0     34.1     33.9
+       12     136.1     83.9     62.4     50.3     42.7     39.0
+
+log odds two streams vs one, elbo
+semitones        67       83      100      117      134      150  (onset-to-onset, ms)
+        1     -21.9    -20.5    -16.5    -19.9    -19.9    -18.6
+        3       9.3      8.3     14.6      9.7      8.5      8.5
+        6      91.9     91.2     94.3     93.2     32.0     23.3
+        9     217.0     69.3     46.5     41.0     36.2     29.5
+       12     138.5     89.3     67.8     52.2     46.2     39.0
+
+log odds two streams vs one, laplace
+semitones        67       83      100      117      134      150  (onset-to-onset, ms)
+        1     -25.4    -24.1    -23.9    -23.5    -23.6    -23.3
+        3       8.3      6.3      8.9      8.7      5.9      5.5
+        6      95.7     93.9     95.4     97.1     39.2     40.5
+        9     216.9     83.0     66.0     51.5     41.7     41.0
+       12     166.4    107.5     74.8     60.9     51.4     46.0
+
+stimulus           hypothesis  fit_steps  laplace  vi_importance  folder
+  1 st   67 ms  one        1236   -63634.1   -63632.7  results/data/C2/one_converged
+  1 st   67 ms  two           ?   -63659.5   -63655.8  results/data/C2/run_300steps
+  1 st   83 ms  one        1233   -63638.9   -63638.6  results/data/C2/one_converged
+  1 st   83 ms  two           ?   -63663.0   -63657.1  results/data/C2/run_300steps
+  1 st  100 ms  one        1215   -63632.5   -63637.2  results/data/C2/one_converged
+  1 st  100 ms  two           ?   -63656.4   -63655.9  results/data/C2/run_300steps
+  1 st  117 ms  one        1185   -63641.4   -63640.9  results/data/C2/one_converged
+  1 st  117 ms  two           ?   -63664.9   -63657.3  results/data/C2/run_300steps
+  1 st  134 ms  one        1173   -63644.1   -63643.5  results/data/C2/one_converged
+  1 st  134 ms  two           ?   -63667.7   -63661.2  results/data/C2/run_300steps
+  1 st  150 ms  one        1162   -63637.4   -63640.0  results/data/C2/one_converged
+  1 st  150 ms  two           ?   -63660.7   -63657.9  results/data/C2/run_300steps
+  3 st   67 ms  one        1782   -63668.4   -63665.8  results/data/C2/one_converged
+  3 st   67 ms  two           ?   -63660.1   -63654.3  results/data/C2/run_300steps
+  3 st   83 ms  one        1924   -63669.8   -63665.1  results/data/C2/one_converged
+  3 st   83 ms  two           ?   -63663.5   -63657.3  results/data/C2/run_300steps
+  3 st  100 ms  one        2466   -63670.0   -63670.3  results/data/C2/one_converged
+  3 st  100 ms  two           ?   -63661.1   -63657.1  results/data/C2/run_300steps
+  3 st  117 ms  one        1980   -63674.2   -63669.9  results/data/C2/one_converged
+  3 st  117 ms  two           ?   -63665.5   -63659.7  results/data/C2/run_300steps
+  3 st  134 ms  one        3246   -63675.3   -63671.9  results/data/C2/one_converged
+  3 st  134 ms  two           ?   -63669.4   -63661.7  results/data/C2/run_300steps
+  3 st  150 ms  one        3615   -63670.9   -63668.8  results/data/C2/one_converged
+  3 st  150 ms  two           ?   -63665.4   -63659.3  results/data/C2/run_300steps
+  6 st   67 ms  one        4656   -63754.8   -63747.7  results/data/C2/one_converged
+  6 st   67 ms  two           ?   -63659.1   -63654.7  results/data/C2/run_300steps
+  6 st   83 ms  one        5351   -63756.5   -63750.1  results/data/C2/one_converged
+  6 st   83 ms  two           ?   -63662.6   -63658.0  results/data/C2/run_300steps
+  6 st  100 ms  one        5718   -63757.2   -63752.2  results/data/C2/one_converged
+  6 st  100 ms  two           ?   -63661.8   -63655.0  results/data/C2/run_300steps
+  6 st  117 ms  one        6910   -63761.7   -63753.9  results/data/C2/one_converged
+  6 st  117 ms  two           ?   -63664.6   -63659.9  results/data/C2/run_300steps
+  6 st  134 ms  one        5299   -63707.7   -63689.3  results/data/C2/one_converged
+  6 st  134 ms  two           ?   -63668.5   -63663.7  results/data/C2/run_300steps
+  6 st  150 ms  one        4930   -63706.5   -63678.8  results/data/C2/one_converged
+  6 st  150 ms  two           ?   -63666.0   -63661.1  results/data/C2/run_300steps
+  9 st   67 ms  one        4993   -63878.8   -63873.1  results/data/C2/one_converged
+  9 st   67 ms  two           ?   -63661.9   -63656.2  results/data/C2/run_300steps
+  9 st   83 ms  one        5740   -63748.0   -63724.8  results/data/C2/one_converged
+  9 st   83 ms  two           ?   -63665.0   -63658.2  results/data/C2/run_300steps
+  9 st  100 ms  one        6368   -63728.1   -63703.1  results/data/C2/one_converged
+  9 st  100 ms  two           ?   -63662.1   -63655.0  results/data/C2/run_300steps
+  9 st  117 ms  one        6839   -63718.7   -63702.2  results/data/C2/one_converged
+  9 st  117 ms  two           ?   -63667.2   -63661.2  results/data/C2/run_300steps
+  9 st  134 ms  one        7159   -63711.8   -63697.7  results/data/C2/one_converged
+  9 st  134 ms  two           ?   -63670.1   -63663.6  results/data/C2/run_300steps
+  9 st  150 ms  one        7481   -63707.3   -63690.8  results/data/C2/one_converged
+  9 st  150 ms  two           ?   -63666.3   -63656.9  results/data/C2/run_300steps
+ 12 st   67 ms  one        6494   -63826.8   -63790.9  results/data/C2/one_converged
+ 12 st   67 ms  two           ?   -63660.4   -63654.8  results/data/C2/run_300steps
+ 12 st   83 ms  one        7498   -63771.3   -63741.6  results/data/C2/one_converged
+ 12 st   83 ms  two           ?   -63663.8   -63657.7  results/data/C2/run_300steps
+ 12 st  100 ms  one        8363   -63736.5   -63718.8  results/data/C2/one_converged
+ 12 st  100 ms  two           ?   -63661.7   -63656.4  results/data/C2/run_300steps
+ 12 st  117 ms  one        8657   -63726.8   -63709.1  results/data/C2/one_converged
+ 12 st  117 ms  two           ?   -63665.9   -63658.8  results/data/C2/run_300steps
+ 12 st  134 ms  one        8914   -63720.3   -63706.5  results/data/C2/one_converged
+ 12 st  134 ms  two           ?   -63668.9   -63663.8  results/data/C2/run_300steps
+ 12 st  150 ms  one        9532   -63711.9   -63700.5  results/data/C2/one_converged
+ 12 st  150 ms  two           ?   -63665.9   -63661.5  results/data/C2/run_300steps
