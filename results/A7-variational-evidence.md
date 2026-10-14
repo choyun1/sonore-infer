@@ -46,6 +46,12 @@ project's files that re-implements BASS's rule, so it is not committed.
 `tools/mistuning_thresholds.py` does not read the extra columns and drops
 floored rows, so it is not used here.
 
+## Plots
+
+![A7-variational-evidence](plots/A7-variational-evidence.svg)
+
+*p(two) by four evidence estimates at the paper's 7 levels, from [`data/A7/`](data/A7/). The four lines mostly lie on top of each other.*
+
 ## What it says
 
 The variational estimates give the same thresholds as Laplace here, so the

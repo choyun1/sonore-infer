@@ -37,6 +37,12 @@ not import the package.
 | `recovery.py` | Experiment (a) of R7: recover RT60 and the source's statistics |
 | `atypical_rooms.py` | Experiment (b) of R7: the model heard through atypical rooms |
 
+## Result pages (results/)
+
+| Script | What it does |
+|---|---|
+| `results_plots.py` | Draws the SVG plots in `results/plots/` from the committed outputs in `results/data/` |
+
 ## Measurements of the cochleagram, and readings of the paper
 
 | Script | What it does |

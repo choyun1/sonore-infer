@@ -37,6 +37,12 @@ ELBO in brackets (`data/B3/`, by `tools/two_notes_summary.py`):
 Controls at 5 dB: 200 Hz −25.6, 282.8 Hz −19.0, 300 Hz −21.7, 400 Hz
 −19.5; all one source, as at 10 dB.
 
+## Plots
+
+![B3-octave-sigma5](plots/B3-octave-sigma5.svg)
+
+*Octave: log odds of two sources over the best one source, recomputed from [`data/B2/`](data/B2/) and [`data/B3/`](data/B3/) by `tools/two_notes_summary.py`. Below zero is one source.*
+
 ## What it says
 
 - At 5 dB the octave is still one source at every asynchrony up to 240 ms.

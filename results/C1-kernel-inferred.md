@@ -48,6 +48,12 @@ the kernel fixed (`data/C1/thresholds.txt`).
 | Kernel fixed (B2) | −33.6 | −33.1 | −28.3 | −27.0 | −26.3 | −23.4 | −25.4 | −21.9 |
 | Kernel inferred | −44.3 | −38.7 | −40.4 | −32.0 | −25.1 | −21.9 | −26.1 | −23.5 |
 
+## Plots
+
+![C1-kernel-inferred](plots/C1-kernel-inferred.svg)
+
+*Log odds of two sources over one, variational importance estimate, from [`data/C1/`](data/C1/), [`data/A7/`](data/A7/) and [`data/B2/`](data/B2/).*
+
 ## What it says
 
 - Inferring sigma and lengthscale does not close the 100 Hz h1 gap.

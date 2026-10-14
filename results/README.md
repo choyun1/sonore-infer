@@ -24,6 +24,8 @@ Conventions on every page:
   average 10 seeds as the paper did.
 - Every number comes from a committed output under [`data/`](data/) and a
   script under `tools/`, or is marked as an estimate.
+- **Plots** in [`plots/`](plots/) are drawn from those outputs by
+  `tools/results_plots.py`; rerun it after changing any output.
 
 ## How the experiments work
 
@@ -130,6 +132,10 @@ What every experiment here shares unless its page says otherwise:
 | [R2](R2-atypical-rooms.md) | Atypical rooms, exponential room model | none in this paper | done | Biased like T20 × 3; time-reversed rooms do not fit |
 
 ## Milestone (a) at a glance
+
+![Milestone (a) thresholds by experiment](plots/milestone-a-thresholds.svg)
+
+*Each dot is one experiment's threshold (Eqn 2, Laplace); darker is later in the sequence. Not measurable (n.m.) is drawn at 50. The diamonds are the paper's model, read by eye. Drawn by `tools/results_plots.py`.*
 
 Mistuned-harmonic thresholds (% of f0, Eqn 2, Laplace estimate). Each column
 adds one change to the one before. "n.m." is not measurable below 50%, as

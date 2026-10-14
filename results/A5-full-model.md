@@ -45,6 +45,12 @@ not valid there).
 The scene module of PR #15 reproduces all 225 rows identically as printed
 (both evidence estimates, both effective sample sizes, both log odds).
 
+## Plots
+
+![A5-full-model](plots/A5-full-model.svg)
+
+*Posterior probability of two sources against mistuning, per condition, from the kept rows in [`data/A5/`](data/A5/) (Laplace estimate). The solid green line is our threshold (Eqn 2); the dashed line is the paper's model, read by eye. Left-out rows are not plotted.*
+
 ## What it says
 
 The two gaps narrow but do not close: 100 Hz harmonic 1 is 26.6% against

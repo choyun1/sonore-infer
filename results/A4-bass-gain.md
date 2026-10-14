@@ -38,6 +38,12 @@ Thresholds, % of f0 (`data/A4/thresholds.txt`). 7 rows left out.
 | 400 | 2 | about 10 | 7.9 | 7.7 | 7.6 |
 | 400 | 3 | about 13 | 12.9 | 12.5 | 11.6 |
 
+## Plots
+
+![A4-bass-gain](plots/A4-bass-gain.svg)
+
+*Posterior probability of two sources against mistuning, per condition, from the kept rows in [`data/A4/`](data/A4/) (Laplace estimate). The solid green line is our threshold (Eqn 2); the dashed line is the paper's model, read by eye. Left-out rows are not plotted.*
+
 ## What it says
 
 The gain moves 100 Hz harmonic 1 from 15.0% to 23.5% and barely changes the

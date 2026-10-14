@@ -43,6 +43,12 @@ ELBO). Ours is A5's full model on the same 7 levels.
 Ours by BASS's rule on all 9 conditions, 7 levels:
 `data/A6/ours_bass_rule.txt`.
 
+## Plots
+
+![A6-bass-own-code](plots/A6-bass-own-code.svg)
+
+*Log odds of two sources over one at the paper's 7 levels, from [`data/A6/thresholds.txt`](data/A6/thresholds.txt). Above zero favors two sources.*
+
 ## What it says
 
 At 200 Hz harmonic 2, BASS's run and ours agree by both rules, and BASS's
