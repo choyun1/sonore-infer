@@ -767,7 +767,7 @@ def main():
         path = os.path.join(args.out, f"{name}.svg")
         with open(path, "w", encoding="utf-8", newline="\n") as file:
             file.write(plot())
-        print(os.path.relpath(path))
+        print(path)
 
 
 if __name__ == "__main__":

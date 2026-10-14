@@ -8,11 +8,12 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
 def test_committed_plots_match_their_data(tmp_path):
-    subprocess.run(
+    result = subprocess.run(
         [sys.executable, str(ROOT / "tools" / "results_plots.py"), "--out", str(tmp_path)],
-        check=True,
         capture_output=True,
+        text=True,
     )
+    assert result.returncode == 0, result.stderr
     drawn = sorted(path.name for path in tmp_path.glob("*.svg"))
     committed = sorted(path.name for path in (ROOT / "results" / "plots").glob("*.svg"))
     assert drawn == committed
