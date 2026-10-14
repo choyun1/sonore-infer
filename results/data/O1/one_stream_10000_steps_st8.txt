@@ -1,0 +1,10 @@
+step 300: log joint -66464.4
+step 1000: log joint -62250.7
+step 2000: log joint -61994.8
+step 3000: log joint -61990.9
+step 4000: log joint -61987.5
+step 5000: log joint -61985.8
+step 6000: log joint -61985.8
+step 7500: log joint -61985.8
+step 10000: log joint -61985.8
+8.0 st one, 10000 steps: laplace+structure -62800.3 (2606s)
