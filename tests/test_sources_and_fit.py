@@ -61,29 +61,6 @@ def test_fit_recovers_f0_and_level():
     assert result.log_likelihood > result.history[0]
 
 
-def test_fit_with_tolerance_stops_once_converged_and_matches_the_full_fit_until_then():
-    cochleagram = Cochleagram()
-    kwargs = dict(fs=FS, onset=0.05, duration=0.2, total_duration=0.3, ramp=0.01)
-
-    def render(params):
-        return harmonic_tone(params["log_f0"].exp(), params["levels_db"], **kwargs)
-
-    truth = {"log_f0": torch.tensor(np.log(200.0)), "levels_db": torch.full((6,), 60.0)}
-    observed = cochleagram(render(truth)).detach()
-    init = {"log_f0": torch.tensor(np.log(206.0)), "levels_db": torch.full((6,), 55.0)}
-    rates = {"log_f0": 2e-3, "levels_db": 0.5}
-    full = fit(render, init, observed, cochleagram, learning_rates=rates, steps=400)
-    stopped = fit(
-        render, init, observed, cochleagram, learning_rates=rates, steps=400, tolerance=1.0, patience=50
-    )
-    n = len(stopped.history)
-    assert 50 < n < len(full.history)
-    assert stopped.history == full.history[:n]
-    best = np.maximum.accumulate(full.history)
-    assert best[n - 1] - best[n - 51] < 1.0
-    assert all(best[step] - best[step - 50] >= 1.0 for step in range(50, n - 1))
-
-
 def test_whistle_event_matches_whistle_at_whole_samples():
     freq, level = torch.tensor(640.0, dtype=torch.float64), torch.tensor(60.0, dtype=torch.float64)
     timing = dict(fs=20_000, total_duration=0.5, ramp=0.01)

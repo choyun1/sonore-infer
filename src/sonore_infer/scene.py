@@ -621,8 +621,9 @@ def evaluate(
     ``variational_steps``, so is the variational one, from the same mode.
     ``sigma`` is the likelihood's SD [dB] (BASS's value by default).
     ``report``, if given, receives a message as each stage starts. With
-    ``tolerance``, ``steps`` is a maximum and each fit stops once it has
-    converged (see :func:`~sonore_infer.fit.fit`).
+    ``tolerance``, ``steps`` is a maximum and each fit stops once its best
+    objective rises by less than ``tolerance`` over 1000 steps (see
+    :func:`~sonore_infer.fit.fit`).
     """
 
     def fit_one(index, init):
@@ -642,7 +643,7 @@ def evaluate(
             steps=steps,
             sigma=sigma,
             log_prior=scene.log_prior,
-            tolerance=tolerance,
+            **({"patience": 1000, "tolerance": tolerance} if tolerance else {}),
         )
 
     fits = [fit_one(index, init) for index, init in enumerate(inits)]

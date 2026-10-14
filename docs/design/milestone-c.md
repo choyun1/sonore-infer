@@ -455,7 +455,7 @@ option (C), and Cho chose it.
   to 1000 steps on all 30 stimuli [measured: `tools/aba_fit_steps.py`,
   `results/data/C2/fit_steps_check/`]. The online thread found the same
   for its batch reference. So ABA fits run until the best log joint rises
-  by less than 0.5 over 1000 steps (`fit(..., tolerance=0.5)`), at most
+  by less than 0.5 over 1000 steps (`fit(..., patience=1000, tolerance=0.5)`; the rule main had added for the online work, which is the same rule), at most
   15000 steps. At 3 and 6 semitones (100 ms), stopping there gives the
   same Laplace evidence as 15000 steps and variational evidence within
   0.6 [measured]. Milestones (a) and (b) have not been rechecked for this.

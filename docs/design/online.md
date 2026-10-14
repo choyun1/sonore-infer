@@ -257,6 +257,35 @@ colleagues; reviewed in Szabó, Denham & Winkler, 2016, Front. Neurosci.).
 fewer steps, it is a measured saving that carries over to real time. The
 margin is set on that one stimulus and reported with the result.
 
+### O10. A decision with finite memory (added and accepted 2026-10-14)
+
+O5 (B) keeps the full sum of the window terms, so the log odds remember
+everything since the start, and with each triplet adding a similar amount
+they keep rising: a lag (O3) limits what the scene can still revise, not
+what the decision counts. Listeners' buildup levels off within seconds, and
+Cho expected the decision to have a finite memory, like the integration
+window of texture averaging (about 2.4 to 2.8 s; McWalter & McDermott,
+2018, 2019).
+
+**Options.**
+
+- **(A) Full sum only** (O5 as accepted).
+- **(B) A leaky decision variable beside the full sum**:
+  d(t) = Σₖ e^(−(t − tₖ)/τ) [termₖ(two) − termₖ(one)], plus the structure
+  prior's log odds at t, where termₖ is window k's term of O5 (B) and tₖ
+  its end. It levels off at about (gain per second) × τ. It is no longer
+  any hypothesis's evidence; it is a decision model on top of the
+  evidence, a leaky accumulator.
+- **(C) Forget inside the inference**: the old sound's likelihood
+  down-weighted (a tempered or discounted likelihood), so the scene and the
+  evidence both forget. A change to the model, and to every term.
+
+**Recommendation: (B), with τ = 2.5 s by default and 1 and 5 s beside it.**
+It needs no new inference (the terms are already logged), keeps the exact
+evidence available, and makes the memory a parameter that can be compared
+with listeners. (C) should wait until (B) shows whether a finite memory
+helps.
+
 ## 5. What counts as success
 
 - **Agreement:** at every triplet boundary, the online log odds lies within
@@ -373,8 +402,12 @@ None of these is addressed here.
    changed only to split latents? (recommended: yes)
 9. **O9** Fixed steps per window by default, with surprise-scaled steps
    run beside it on one stimulus? (recommended: yes)
+10. **O10** A leaky decision variable (τ 2.5 s, also 1 and 5 s) reported
+    beside the full sum? (recommended: yes; added and accepted
+    2026-10-14)
 
 ## 11. Decisions as accepted (2026-10-13)
 
 Cho accepted O1 to O9 as recommended, and the phone-app roadmap (§9) as the
-long-term goal.
+long-term goal. On 2026-10-14 Cho accepted O10 as recommended (leaky
+decision variable, τ 2.5 s, with 1 and 5 s beside it).
