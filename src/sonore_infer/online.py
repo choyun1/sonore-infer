@@ -418,6 +418,23 @@ def run_online(
     return steps_out
 
 
+def leaky_log_odds(
+    ends: Sequence[float], terms_a: Sequence[float], terms_b: Sequence[float], tau: float
+) -> list[float]:
+    """The leaky decision variable of design O10, after each window: the
+    differences of the two hypotheses' window terms (a minus b), each
+    weighted by ``exp(-age / tau)``, summed. ``math.inf`` gives the full sum.
+    The structure prior's log odds are not included."""
+    out, value, previous = [], 0.0, None
+    for end, a, b in zip(ends, terms_a, terms_b, strict=True):
+        if previous is not None and math.isfinite(tau):
+            value *= math.exp(-(end - previous) / tau)
+        value += a - b
+        out.append(value)
+        previous = end
+    return out
+
+
 def batch_laplace(
     scene: Scene, mode: Params, observed: torch.Tensor, cochleagram: Cochleagram, sigma: float = 10.0
 ) -> LaplaceState:
@@ -436,6 +453,7 @@ __all__ = [
     "batch_laplace",
     "extend",
     "lag_free",
+    "leaky_log_odds",
     "laplace",
     "prefix_scene",
     "run_online",

@@ -141,3 +141,13 @@ def test_a_fit_with_patience_stops_when_it_stops_improving():
     assert n < len(full.history)
     assert stopped.history == full.history[:n]  # the same path, cut short
     assert max(stopped.history) - max(stopped.history[: n - 20]) < 1.0
+
+
+def test_leaky_log_odds():
+    from sonore_infer.online import leaky_log_odds
+
+    ends = [0.05 * k for k in range(1, 201)]
+    ones, zeros = [1.0] * 200, [0.0] * 200
+    assert leaky_log_odds(ends, ones, zeros, math.inf)[-1] == pytest.approx(200)
+    # a constant gain of 1 per 50 ms levels off at 1 / (1 - exp(-0.05 / tau)), about 20 tau
+    assert leaky_log_odds(ends, ones, zeros, 0.5)[-1] == pytest.approx(1 / (1 - math.exp(-0.1)))

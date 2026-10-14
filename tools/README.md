@@ -48,6 +48,7 @@ not import the package.
 | Script | What it does |
 |---|---|
 | `online_buildup.py` | Buildup of streaming (App. C.11) in one online pass, against batch fits at each triplet's end |
+| `leaky_odds.py` | Leaky log odds (decision O10) from `online_buildup.py` outputs, no new inference |
 
 ## Measurements of the cochleagram, and readings of the paper
 
