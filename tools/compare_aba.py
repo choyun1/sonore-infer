@@ -19,9 +19,9 @@ import time
 
 import torch
 
-from sonore_inference.cochleagram import FFTCochleagram
-from sonore_inference.scene import Scene, SceneTiming, Whistle, evaluate
-from sonore_inference.stimuli import bistability as ab
+from sonore_infer.cochleagram import FFTCochleagram
+from sonore_infer.scene import Scene, SceneTiming, Whistle, evaluate
+from sonore_infer.stimuli import bistability as ab
 
 TIMING = SceneTiming(fs=ab.FS, total_duration=ab.TOTAL_DURATION, ramp=ab.RAMP)
 DTYPE = torch.float64
