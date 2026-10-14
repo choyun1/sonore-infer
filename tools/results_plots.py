@@ -737,6 +737,123 @@ def atypical_rooms():
     return figure(panels, "R2: RT60 read in atypical rooms", legend)
 
 
+# Online inference
+
+
+TRIPLETS = [1, 2, 3, 4, 5, 6]
+
+
+def online_odds(path):
+    """Online log odds at each triplet's end, from the ``odds:`` lines of online_buildup.py: [(n, odds)]."""
+    with open(path, encoding="utf-8") as file:
+        rows = [line.split() for line in file if re.match(r"odds: [0-9.inf]+ ", line)]
+    return [(int(row[2]), float(row[3])) for row in rows]
+
+
+def batch_evidence(path):
+    """Batch Laplace log evidence plus structure prior from the ``batch:`` lines: {(n, hypothesis): value}."""
+    with open(path, encoding="utf-8") as file:
+        rows = [line.split() for line in file if re.match(r"batch: [0-9]", line)]
+    return {(int(row[1]), row[2]): float(row[3]) + float(row[4]) for row in rows}
+
+
+def batch_odds(path):
+    evidence = batch_evidence(path)
+    return [(n, evidence[n, "two"] - evidence[n, "one"]) for n in TRIPLETS if (n, "two") in evidence]
+
+
+def ten_thousand_steps_odds(semitones):
+    """Batch log odds at 6 triplets with the one-stream fit run to 10,000 steps."""
+    with open(data("O1", f"one_stream_10000_steps_st{semitones}.txt"), encoding="utf-8") as file:
+        one = float(re.search(r"laplace\+structure (\S+)", file.read()).group(1))
+    return batch_evidence(data("O1", f"st{semitones}_batch3000.txt"))[6, "two"] - one
+
+
+def leaky_odds(path, tau, lead=0.05):
+    """Leaky log odds (decision O10) at each triplet's end, structure prior included."""
+    from leaky_odds import read_windows
+
+    from sonore_infer.online import leaky_log_odds
+
+    runs = read_windows(path)
+    (lag,) = {lag for lag, _ in runs}
+    one = {end: (term, structure) for end, term, structure in runs[lag, "one"]}
+    two = {end: (term, structure) for end, term, structure in runs[lag, "two"]}
+    ends = sorted(set(one) & set(two))
+    curve = leaky_log_odds(ends, [two[end][0] for end in ends], [one[end][0] for end in ends], tau)
+    points = []
+    for n in TRIPLETS:
+        end = round(lead + 0.5 * n, 9)
+        if end in ends:
+            k = ends.index(end)
+            points.append((n, curve[k] + two[end][1] - one[end][1]))
+    return points
+
+
+def buildup_panel(title, y_range, y_ticks, width=340, height=230):
+    panel = Panel(width, height, (0.7, 6.3), y_range, left=44)
+    panel.axes(TRIPLETS, y_ticks, x_label="triplets heard", y_label="log odds, two vs one", title=title)
+    panel.horizontal(0)
+    return panel
+
+
+def online_buildup():
+    panels = []
+    axes = ((4, (-5, 20), [-5, 0, 5, 10, 15, 20]), (8, (0, 140), [0, 35, 70, 105, 140]))
+    for semitones, y_range, y_ticks in axes:
+        panel = buildup_panel(f"{semitones} semitones", y_range, y_ticks)
+        series = [
+            (batch_odds(data("O1", f"st{semitones}_batch3000.txt")), "s1", "batch"),
+            (online_odds(data("O1", f"st{semitones}_w50_p50_lag1.txt")), "s2", "online"),
+            (leaky_odds(data("O1", f"st{semitones}_w50_p50_lag1.txt"), 2.5), "s3", "leaky"),
+        ]
+        for points, color, name in series:
+            panel.line(points, color, tip=lambda x, y, name=name: f"{name}, {x:g} triplets: {y:+.1f}")
+        odds = ten_thousand_steps_odds(semitones)
+        panel.items.append(diamond(panel.x(6), panel.y(odds), 5, f"batch, 10,000 steps: {odds:+.1f}"))
+        panels.append(panel)
+    legend = [
+        ("s1", "batch, 3000 steps", "line"),
+        ("s5", "batch, 10,000 steps (one stream)", "diamond"),
+        ("s2", "online, lag 1 s", "line"),
+        ("s3", "online, leaky τ 2.5 s", "line"),
+    ]
+    return figure(panels, "O1: buildup of two streams, batch, online and leaky", legend)
+
+
+def online_sweep():
+    panels = []
+    axes = ((4, (-5, 40), [0, 10, 20, 30, 40]), (8, (0, 200), [0, 50, 100, 150, 200]))
+    for semitones, y_range, y_ticks in axes:
+        panel = buildup_panel(f"{semitones} semitones", y_range, y_ticks)
+        series = [
+            (f"st{semitones}_w50_p50_lag0.5.txt", "s4", False, "lag 0.5 s"),
+            (f"st{semitones}_w50_p50_lag1.txt", "s2", False, "lag 1 s"),
+            (f"st{semitones}_w50_p50_lag2.txt", "s5", False, "lag 2 s"),
+        ]
+        if semitones == 8:
+            series += [
+                ("st8_w10_p50_lag1.txt", "s3", True, "window 10 ms"),
+                ("st8_w100_p50_lag1.txt", "s1", True, "window 100 ms"),
+            ]
+        for name, color, dash, label in series:
+            panel.line(
+                online_odds(data("O1", name)),
+                color,
+                dash=dash,
+                tip=lambda x, y, label=label: f"{label}, {x:g} triplets: {y:+.1f}",
+            )
+        panels.append(panel)
+    legend = [
+        ("s4", "lag 0.5 s", "line"),
+        ("s2", "lag 1 s", "line"),
+        ("s5", "lag 2 s", "line"),
+        ("s3", "window 10 ms (8 st)", "dash"),
+        ("s1", "window 100 ms (8 st)", "dash"),
+    ]
+    return figure(panels, "O1: online log odds by lag and window, windows 50 ms unless named", legend)
+
+
 PLOTS = {
     "milestone-a-thresholds": threshold_ladder,
     "A1-gammatone-baseline": lambda: mistuning_grid("A1"),
@@ -752,6 +869,8 @@ PLOTS = {
     "B3-octave-sigma5": octave_sigma5,
     "B4-two-notes-seeds": two_notes_seeds,
     "C1-kernel-inferred": kernel_inferred,
+    "O1-online-buildup": online_buildup,
+    # "O1-lag-window": online_sweep,  # once the 10 ms window run is in data/O1
     "R1-likelihood-slice": likelihood_slice,
     "R1-interval-coverage": interval_coverage,
     "R2-atypical-rooms": atypical_rooms,
