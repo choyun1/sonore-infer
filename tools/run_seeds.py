@@ -20,6 +20,7 @@ only the sampling in the evidence estimates. Seed 0 is the runs already made.
     python tools/run_seeds.py --out aba_out --only aba --seeds 0   # the ABA map, 30 stimuli
     # the one-stream fits only, each until it converges (at most 15000 steps)
     python tools/run_seeds.py --out aba_one --only aba --seeds 0 --hypotheses one --tolerance 0.5
+    python tools/run_seeds.py --out aba_seeds --only aba --seeds 1 2 3 4 --tolerance 0.5 --stimuli 3:0.083
 """
 
 import argparse
@@ -49,7 +50,7 @@ ABA_SEMITONES = [1, 3, 6, 9, 12]
 ABA_INTERVALS = [0.067, 0.083, 0.1, 0.117, 0.134, 0.15]
 
 
-def jobs(seeds, only, steps=None, hypotheses=None, tolerance=None):
+def jobs(seeds, only, steps=None, hypotheses=None, tolerance=None, stimuli=None):
     """(name, argv) for every job, seed by seed."""
     out = []
     for seed in seeds:
@@ -59,6 +60,8 @@ def jobs(seeds, only, steps=None, hypotheses=None, tolerance=None):
         if only == "aba":
             for semitones in ABA_SEMITONES:
                 for interval in ABA_INTERVALS:
+                    if stimuli and (semitones, interval) not in stimuli:
+                        continue
                     out.append(
                         (
                             f"aba/st{semitones}_dt{interval}_seed{seed}",
@@ -233,6 +236,12 @@ def main():
         help="Adam steps per fit (default: each tool's own, 300); use a new --out for a new value",
     )
     parser.add_argument(
+        "--stimuli",
+        nargs="+",
+        metavar="SEMITONES:INTERVAL",
+        help="ABA only: run only these stimuli, e.g. 3:0.083 (interval in s, as in the job names)",
+    )
+    parser.add_argument(
         "--hypotheses", nargs="+", choices=["one", "two"], help="ABA only: fit only these hypotheses"
     )
     parser.add_argument(
@@ -249,7 +258,8 @@ def main():
         stale.unlink()
     if args.tolerance and not args.steps:
         args.steps = 15000
-    all_jobs = jobs(args.seeds, args.only, args.steps, args.hypotheses, args.tolerance)
+    stimuli = {(int(st), float(dt)) for st, dt in (item.split(":") for item in args.stimuli or [])}
+    all_jobs = jobs(args.seeds, args.only, args.steps, args.hypotheses, args.tolerance, stimuli)
     todo = [(name, argv) for name, argv in all_jobs if not (args.out / f"{name}.txt").exists()]
     done_before = len(all_jobs) - len(todo)
     print(
