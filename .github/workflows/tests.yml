@@ -18,7 +18,7 @@ jobs:
         # Windows because Cho's GPU machine runs it (design D6); oldest and
         # newest supported Python.
         os: [ubuntu-latest, windows-latest]
-        python-version: ["3.10", "3.14"]
+        python-version: ["3.11", "3.14"]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7

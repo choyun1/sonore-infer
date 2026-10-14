@@ -1,6 +1,6 @@
 # sonore-infer
 
-[![tests](https://github.com/choyun1/sonore-infer/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/choyun1/sonore-infer/actions/workflows/tests.yml) [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![tests](https://github.com/choyun1/sonore-infer/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/choyun1/sonore-infer/actions/workflows/tests.yml) [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)](pyproject.toml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 **Hearing a scene by inverting a generative model of sound.**
 
@@ -123,6 +123,7 @@ document lists the further works it draws on.
 
 Bregman, A. S., & Ahad, P. A. (1996). *Demonstrations of auditory scene
 analysis: The perceptual organization of sound* [Audio CD]. MIT Press.
+https://themusiclab.github.io/bregman-archive/downloadstoc.htm
 
 Cusimano, M., Hewitt, L. B., & McDermott, J. H. (2024). Listening with
 generative models. *Cognition*, *253*, 105874.
@@ -150,6 +151,7 @@ Sciences*, *108*(3), 1188–1193. https://doi.org/10.1073/pnas.1004765108
 Moore, B. C. J., Glasberg, B. R., & Peters, R. W. (1986). Thresholds for
 hearing mistuned partials as separate tones in harmonic complexes. *The
 Journal of the Acoustical Society of America*, *80*(2), 479–483.
+https://doi.org/10.1121/1.394043
 
 Thompson, S. K., Carlyon, R. P., & Cusack, R. (2011). An objective
 measurement of the build-up of auditory streaming and of its modulation by
@@ -176,7 +178,7 @@ python -m pytest -q
 ```
 
 CI runs the same commands on every pull request, on Linux and Windows,
-with Python 3.10 and 3.14 (`.github/workflows/tests.yml`). After changing
+with Python 3.11 and 3.14 (`.github/workflows/tests.yml`). After changing
 any output under `results/data/`, rerun `python tools/results_plots.py`
 (`tests/test_results_plots.py` fails until then).
 
