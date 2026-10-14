@@ -4,7 +4,7 @@
 > results. The work was done with AI assistance (Claude) and has not yet been
 > checked carefully. Numbers, methods and interpretations may change.
 
-**Status:** first pass done (2026-10-14). **Paper target:** Fig. 8F (right), App. C.11.
+**Status:** first pass done; online fits per window to convergence added (2026-10-14). **Paper target:** Fig. 8F (right), App. C.11.
 **Code:** `src/sonore_infer/online.py`, `tools/online_buildup.py`,
 `src/sonore_infer/stimuli/buildup.py`. Design:
 [online inference](../docs/design/online.md), step 2.
@@ -34,8 +34,9 @@ frequencies and timings. One seed.
   3000 steps, and the 6-triplet one-stream fits to 10,000.
 - **Online**: one pass in 50 ms windows; each window adds its grid points
   and any tone that has started, takes 30 or 150 Adam steps on the free
-  latents, and adds its term of the evidence. Lag infinite (nothing
-  frozen) or 1 s.
+  latents (or, "to convergence", until the fit gains less than 1 over 50
+  steps, at most 2000: design decision O9), and adds its term of the
+  evidence. Lag infinite (nothing frozen) or 1 s.
 - **Leaky** (design decision O10, accepted 2026-10-14): the online window
   terms summed with weight e^(−age/τ), from the logged terms, no new
   inference.
@@ -48,11 +49,13 @@ Log odds of two streams over one at the end of each triplet (`data/O1/`):
 | --- | --- | --- | --- | --- | --- | --- |
 | 4 st, batch 300 steps | 37.3 | 87.1 | 137.7 | 186.8 | 235.3 | 285.1 |
 | 4 st, batch 3000 steps | −3.6 | −2.1 | 1.0 | 3.9 | 7.6 | 11.6 |
+| 4 st, online, to convergence, lag 1 s | −3.3 | −1.6 | 2.6 | 7.1 | 11.4 | 16.3 |
 | 4 st, online, 150 steps, lag 1 s | −2.9 | −1.4 | 6.2 | 13.0 | 18.8 | 24.7 |
 | 4 st, online, 30 steps, no lag | 148.4 | 106.8 | 119.8 | 112.0 | 118.0 | 64.0 |
 | 4 st, online, 30 steps, lag 1 s | 148.4 | 107.3 | 119.5 | 121.7 | 133.6 | 142.8 |
 | 8 st, batch 300 steps | 680.4 | 1470.0 | 2237.4 | 2988.0 | 3721.8 | 4464.2 |
 | 8 st, batch 3000 steps | 6.1 | 33.1 | 46.3 | 67.4 | 80.4 | 92.5 |
+| 8 st, online, to convergence, lag 1 s | 10.0 | 37.1 | 60.5 | 84.9 | 108.1 | 131.9 |
 | 8 st, online, 150 steps, lag 1 s | 135.7 | 95.9 | 157.8 | 204.0 | 255.7 | 295.0 |
 | 8 st, online, 30 steps, no lag | 1107.5 | 1534.0 | 1569.8 | 1521.5 | 1578.0 | 1471.9 |
 | 8 st, online, 30 steps, lag 1 s | 1107.5 | 1544.5 | 1729.5 | 1832.0 | 1950.9 | 2064.5 |
@@ -63,8 +66,20 @@ step 2,000 at 4 st and from step 5,000 at 8 st, where it gains 5.1 after
 step 3,000 but the Laplace estimate moves by 26: the peak's curvature, not
 the fit (`data/O1/one_stream_10000_steps_*.txt`).
 
-Leaky log odds from the 150-step online runs (lag 1 s), structure prior
-included (`data/O1/leaky_s150_lag1.txt`):
+Leaky log odds (decision O10) from the online runs to convergence (lag
+1 s), structure prior included (`data/O1/leaky_p50_lag1.txt`):
+
+| Triplets | 1 | 2 | 3 | 4 | 5 | 6 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 4 st, τ 1 s | −3.3 | −1.3 | 1.8 | 4.0 | 5.2 | 6.6 |
+| 4 st, τ 2.5 s | −3.3 | −1.5 | 2.3 | 5.7 | 8.2 | 11.1 |
+| 4 st, τ 5 s | −3.3 | −1.5 | 2.4 | 6.4 | 9.7 | 13.4 |
+| 8 st, τ 1 s | 5.5 | 23.0 | 31.0 | 36.9 | 39.7 | 41.7 |
+| 8 st, τ 2.5 s | 8.0 | 30.4 | 45.6 | 59.0 | 68.9 | 77.6 |
+| 8 st, τ 5 s | 9.0 | 33.5 | 52.4 | 70.4 | 85.5 | 99.8 |
+
+The same from the 150-step online runs (`data/O1/leaky_s150_lag1.txt`),
+whose one-stream fits fall short:
 
 | Triplets | 1 | 2 | 3 | 4 | 5 | 6 |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -89,12 +104,19 @@ Checks, from the same outputs:
   is −62223 after 300 steps and −61889 after 3000 (4 st), −66464 and
   −61991 (8 st). One whistle has to follow the A–B jumps against a prior
   with a 2.5 s lengthscale, and the fit climbs slowly.
+- **Online one-stream fits to convergence**, at 6 triplets: 2 below the
+  10,000-step batch at 4 st, 11 below at 8 st; at 1 triplet 0.4 below and
+  4 below the 3000-step batch. Windows took 61 Adam steps on average for
+  two streams (at most 68) and 179 (4 st) and 378 (8 st) for one stream
+  (at most 466 and 1043).
 - **Online one-stream fits, 150 steps per window**, at 6 triplets: 11
   below the 3000-step batch at 4 st, 200 below at 8 st (log joint plus structure);
   the two-stream fits are within 3 of the batch.
 - **Time** on the cloud CPU (2 threads each, two runs at once), for the
   3.05 s sequence: online no lag 2214 s (one) and 4450 s (two), lag 1 s
   1052 and 2040 s; with 150 steps per window and lag 1 s 1787 and 5368 s;
+  to convergence with lag 1 s 2074 (4 st) and 3026 s (8 st) for one,
+  2537 and 2572 s for two;
   batch at 6 triplets with 3000 steps 652 and 797 s.
   Most of the online time is the Hessian of each window.
 
@@ -104,20 +126,23 @@ Checks, from the same outputs:
   of triplets at both separations, faster at 8 st, and start near 0 at
   4 st: the shape of Fig. 8F. With 300 steps the rise was mostly the
   one-stream fit falling further behind on longer sequences.
-- Online with 150 steps per window and a 1 s lag tracks the batch curve
-  at 4 st: near 0 for 1–2 triplets, then rising, though about twice as
-  steep (24.7 against 12.0 at 6 triplets), because one stream is still 11
-  short of its batch fit. At 8 st one stream is far short (200 at 6
-  triplets, and 136 against 6 already at 1 triplet), so the odds are too
-  high. With 30 steps per window both are worse. More effort on one
-  stream is needed, at least at the first A–B jumps.
-- Online is not yet cheaper than batch: 590 to 1760 s of computing per
-  second of sound with 150 steps and a 1 s lag, most of it in each
+- Online in one pass, with each window fitted until it stops improving
+  and a 1 s lag, reproduces the batch curve: at 4 st −3.3 to 16.3 against
+  −3.6 to 12.0, at 8 st 10.0 to 131.9 against 6.1 to 118.5, rising at
+  every triplet, faster at 8 st. The differences are within the
+  Laplace estimate's own sensitivity (26 at 8 st, 6 triplets) and mostly
+  the one-stream fit being 2 to 11 short. With a fixed 30 or 150 steps
+  per window, one stream fell far behind at the A–B jumps and the online
+  odds were too high.
+- The stopping rule puts the effort where the sound is surprising: one
+  stream takes up to 1043 steps in a window and two streams never more
+  than 68.
+- Online is not yet cheaper than batch: 680 to 990 s of computing per
+  second of sound per hypothesis with a 1 s lag, most of it in each
   window's Hessian.
-- With a leaky decision (τ 2.5 s) the 4 st odds rise and begin to level
-  off near 12, and the 8 st odds dip after the first triplet, then rise
-  to about 92 and level off. These rest on the online fits above, so
-  their 8 st values carry the same one-stream shortfall.
+- With the leaky decision (τ 2.5 s), the odds still rise over 6 triplets
+  but more slowly each triplet, at 4 st from −3.3 to 11.1 and at 8 st
+  from 8.0 to 77.6; with τ 1 s, 8 st levels off near 40.
 - The bookkeeping of the evidence over windows is exact, and a 1 s lag
   adds little error on this stimulus, although a toy model shows a lag
   shorter than the kernel's lengthscale can fail badly when the past is
@@ -134,7 +159,9 @@ python tools/online_buildup.py --semitones 4 --triplets 6 --lag \
     --batch-steps 3000 > st4_batch3000.txt
 python tools/online_buildup.py --semitones 4 --triplets 6 --lag 1 \
     --steps 150 > st4_w50_s150_lag1.txt
-python tools/leaky_odds.py st4_w50_s150_lag1.txt st8_w50_s150_lag1.txt
+python tools/online_buildup.py --semitones 4 --triplets 6 --lag 1 \
+    --steps 2000 --window-patience 50 > st4_w50_p50_lag1.txt
+python tools/leaky_odds.py st4_w50_p50_lag1.txt st8_w50_p50_lag1.txt
 ```
 
 The 10,000-step one-stream fits came from a session script (Adam on the
@@ -146,9 +173,8 @@ and the same with `--semitones 8`.
 
 ## Open
 
-- More online effort where one stream needs it: surprise-scaled steps
-  (decision O9) or more steps per window; whether a stopping rule
-  (`--patience`) reaches the converged batch fits at lower cost.
+- Sweeps of the lag, window and stopping rule (design step 3), and what
+  makes each window's Hessian cheaper.
 - Whether the Laplace estimate's sensitivity to curvature (26 at 8 st
   for a gain of 5) needs importance sampling or variational checks.
 - One seed; whether 3000 steps is converged for every prefix (the

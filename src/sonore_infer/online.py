@@ -144,10 +144,16 @@ def adam_free(
     free: Free,
     learning_rates: dict[str, float],
     steps: int,
+    patience: int | None = None,
+    tolerance: float = 1.0,
 ) -> tuple[Params, list[float]]:
     """Adam on the free entries of ``init`` for ``steps`` steps; the best point seen and the history.
 
     A fresh optimizer each call: frozen entries get no gradient, so they never move.
+    With ``patience``, ``steps`` is a maximum, as in :func:`sonore_infer.fit.fit`:
+    the fit stops once the best value has risen by less than ``tolerance``
+    over the last ``patience`` steps, so a surprising window gets more steps
+    than a predictable one (design decision O9).
     """
     params = {name: value.detach().clone() for name, value in init.items()}
     names = [name for name in free if bool(free[name].any())]
@@ -164,6 +170,9 @@ def adam_free(
         if value.item() > best_value:
             best_value = value.item()
             best = {k: v.detach().clone() for k, v in params.items()}
+        if patience is not None and len(history) > patience:
+            if best_value - max(history[:-patience]) < tolerance:
+                break
         (-value).backward()
         for name in names:
             params[name].grad.mul_(free[name].to(params[name].dtype))
@@ -180,6 +189,7 @@ class WindowTerm:
     floored: int
     log_joint: float  # at the mode
     seconds: float
+    adam_steps: int = 0
 
 
 class FixedLagEvidence:
@@ -357,6 +367,8 @@ def run_online(
     window: float = 0.05,
     lag: float = 1.0,
     steps: int = 30,
+    patience: int | None = None,
+    tolerance: float = 1.0,
     sigma: float = 10.0,
     ends: Sequence[float] | None = None,
     report: Callable[[OnlineStep], None] | None = None,
@@ -366,7 +378,8 @@ def run_online(
     ``ends`` overrides the window ends [s]; by default they are multiples of
     ``window`` up to the waveform's duration (and the duration itself).
     Before the first tone the scene is silence, with no latents, so its log
-    likelihood is the starting total.
+    likelihood is the starting total. With ``patience``, ``steps`` is the
+    most Adam steps a window may take (see :func:`adam_free`).
     """
     total = waveform.shape[-1] / fs
     if ends is None:
@@ -400,13 +413,20 @@ def run_online(
         init = extend(scene, fresh, previous, hypothesis) if previous else fresh
         free = lag_free(scene, init, end, lag)
         log_joint = scene.log_joint(observed, cochleagram, sigma)
-        mode, _ = adam_free(log_joint, init, free, scene.learning_rates(), steps)
+        mode, history = adam_free(log_joint, init, free, scene.learning_rates(), steps, patience, tolerance)
         # what is free is decided before the fit and kept: the evidence's terms need one set
         state = laplace(log_joint, mode, free)
         term, floored = evidence.add(state)
         step = OnlineStep(
             WindowTerm(
-                end, term, evidence.total, len(state.keys), floored, state.peak, time.perf_counter() - begin
+                end,
+                term,
+                evidence.total,
+                len(state.keys),
+                floored,
+                state.peak,
+                time.perf_counter() - begin,
+                len(history) - 1,
             ),
             scene.structure_log_prior(),
             mode,
