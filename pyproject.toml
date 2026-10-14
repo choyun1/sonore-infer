@@ -7,7 +7,7 @@ name = "sonore-infer"
 dynamic = ["version"]
 description = "Inferring auditory scenes by inverting a generative model of sound (analysis by synthesis)."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 authors = [{ name = "Adrian Cho", email = "choyun1@gmail.com" }]
 license = "MIT"
 license-files = ["LICENSE"]
