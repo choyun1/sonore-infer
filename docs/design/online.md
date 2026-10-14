@@ -257,7 +257,7 @@ colleagues; reviewed in Szabó, Denham & Winkler, 2016, Front. Neurosci.).
 fewer steps, it is a measured saving that carries over to real time. The
 margin is set on that one stimulus and reported with the result.
 
-### O10. A decision with finite memory (added 2026-10-14)
+### O10. A decision with finite memory (added and accepted 2026-10-14)
 
 O5 (B) keeps the full sum of the window terms, so the log odds remember
 everything since the start, and with each triplet adding a similar amount
@@ -403,10 +403,11 @@ None of these is addressed here.
 9. **O9** Fixed steps per window by default, with surprise-scaled steps
    run beside it on one stimulus? (recommended: yes)
 10. **O10** A leaky decision variable (τ 2.5 s, also 1 and 5 s) reported
-    beside the full sum? (recommended: yes; added 2026-10-14, not yet
-    accepted)
+    beside the full sum? (recommended: yes; added and accepted
+    2026-10-14)
 
 ## 11. Decisions as accepted (2026-10-13)
 
 Cho accepted O1 to O9 as recommended, and the phone-app roadmap (§9) as the
-long-term goal.
+long-term goal. On 2026-10-14 Cho accepted O10 as recommended (leaky
+decision variable, τ 2.5 s, with 1 and 5 s beside it).

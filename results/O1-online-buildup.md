@@ -36,7 +36,7 @@ frequencies and timings. One seed.
   and any tone that has started, takes 30 or 150 Adam steps on the free
   latents, and adds its term of the evidence. Lag infinite (nothing
   frozen) or 1 s.
-- **Leaky** (design decision O10, not yet accepted): the online window
+- **Leaky** (design decision O10, accepted 2026-10-14): the online window
   terms summed with weight e^(−age/τ), from the logged terms, no new
   inference.
 
