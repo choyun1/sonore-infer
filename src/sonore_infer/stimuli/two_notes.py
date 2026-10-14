@@ -68,7 +68,7 @@ def harmonic_levels_db(f0: float, falling: bool = False) -> np.ndarray:
 def unshared_upper_harmonics(interval: str) -> np.ndarray:
     """Harmonic numbers of the upper note that do not coincide with a harmonic of the lower note.
 
-    These are the components hypothesis B2 (B) explains as whistles: all 8 for
+    These are the components hypothesis (B) of decision B2 explains as whistles: all 8 for
     the tritone, 1, 3, 5 and 7 for the just fifth, none for the octave.
     """
     upper = UPPER_F0S[interval]

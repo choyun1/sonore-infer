@@ -328,7 +328,7 @@ Each step is one PR; nothing past step 1 starts before Cho accepts this.
   training signal that needs no labeled data: a proposal network could
   learn from how sounds actually continue, rather than from 100,000
   sampled scenes [paper App. B.2.1]. That would remove the reason given in
-  milestone (c)'s C1 for leaving a learned network out, and bears on the
+  milestone (c)'s decision C1 for leaving a learned network out, and bears on the
   long-term goal of separating parts in real recordings without labels.
 
 ## 9. Roadmap: a phone app

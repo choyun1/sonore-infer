@@ -1,7 +1,7 @@
 """One note or two for milestone (b)'s stimuli, by marginal likelihood (docs/design/milestone-b.md).
 
-For each stimulus, three hypotheses (B2), each fitted from known starting
-points (B3) and the best posterior mode kept:
+For each stimulus, three hypotheses (decision B2), each fitted from known
+starting points (decision B3) and the best posterior mode kept:
 
 - ``one``: one harmonic source, started at 200 Hz, at the upper note's f0,
   and at 100 Hz (every component of the just fifth is a harmonic of 100 Hz);

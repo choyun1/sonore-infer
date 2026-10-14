@@ -13,7 +13,7 @@ its §4.3 names reverberation as one of the aspects of sound generation a
 model of scenes should include, citing Traer & McDermott (2016). A
 comparison with Traer & McDermott's listeners is optional and, if done, will
 be labelled a comparison, not a validation. Design:
-[source and room](../docs/design/source-reverb.md) (R1–R8, accepted by Cho
+[source and room](../docs/design/source-reverb.md) (decisions R1–R8, accepted by Cho
 2026-10-10).
 
 ## Question
@@ -24,7 +24,7 @@ Shared background: [how the experiments work](README.md#how-the-experiments-work
 One source plays in one room. From the single sound that results, can the
 model infer the source's spectrotemporal statistics and the room's RT60?
 This page is
-experiment (a), recovery, from the design (R7): sounds the model could have
+experiment (a), recovery, from the design (decision R7): sounds the model could have
 made, 10 seeds × RT60 in {0.2, 0.4, 0.8} s × three source settings. Success
 is the truth falling in the 90% posterior interval in about 90% of runs,
 per parameter. Experiment (b) is [R2](R2-atypical-rooms.md).
@@ -39,7 +39,7 @@ per parameter. Experiment (b) is [R2](R2-atypical-rooms.md).
 | 3 | Likelihood slices through the truth, one sound (RT60 0.4 s, DRR 10 dB) | At floors 60 and 40 dB every slice peaks at the truth; at a 20 dB floor (BASS's) RT60 is nearly flat (0.1 s costs 1.3 nats) | `data/R1/likelihood_slices.txt` (`tools/likelihood_slices.py`) |
 | 4 | RT60 prior from Traer & McDermott's survey (270 IRs, run by Cho) | Gamma, shape 1.97, scale 0.220 s (median 0.362 s), better than a lognormal by 18 AIC; typical DRR 9.9 dB | PR [#22](https://github.com/choyun1/sonore-infer/pull/22); constants in `src/sonore_infer/room.py` (`tools/rt60_prior_fit.py`) |
 | 4 | Band RT60s of the 270 survey IRs against sonore's regression (relative to synth_ir rooms) | Median within 0.94–1.06 from 200 Hz to 5 kHz; 1.13–1.21 at 82–158 Hz and 1.14–1.17 at 5.7–7.1 kHz; outdoor rooms deviate most. Matters only for real rooms, not for experiments (a) and (b), whose sounds use synth_ir | Cho's rerun; step record row 18 in the project files (`source-reverb/evaluation.md`) |
-| 5 | Inference over RT60 and the source's statistics (`sourceroom.infer`) | Exact Hessian, 3–5 s per RT60 point. The posterior is far narrower than the design's RT60 grid (on one test sound RT60 sd about 1.5%, against 24% between grid points), so the grid is refined around the peak, and the source settings are integrated in closed form plus Laplace. This departs from design R5. Tests: Hessian and Laplace match autograd and `log_evidence` | PR [#26](https://github.com/choyun1/sonore-infer/pull/26) (merged); `tests/test_sourceroom.py` |
+| 5 | Inference over RT60 and the source's statistics (`sourceroom.infer`) | Exact Hessian, 3–5 s per RT60 point. The posterior is far narrower than the design's RT60 grid (on one test sound RT60 sd about 1.5%, against 24% between grid points), so the grid is refined around the peak, and the source settings are integrated in closed form plus Laplace. This departs from decision R5. Tests: Hessian and Laplace match autograd and `log_evidence` | PR [#26](https://github.com/choyun1/sonore-infer/pull/26) (merged); `tests/test_sourceroom.py` |
 | 5 | Fit fix: the loud setting's 10 sounds returned the prior unchanged on the first run (the fit started so far below the sound's level that the likelihood was flat); fits now start at the sound's overall level, and those 10 were rerun | Two of 180 inferences left out (degenerate interval) | PR [#35](https://github.com/choyun1/sonore-infer/pull/35) (`e3c7fb7`) |
 
 The survey files are not redistributed; the prior fit runs where they are
