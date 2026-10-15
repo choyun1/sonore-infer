@@ -55,6 +55,14 @@ stimuli ran on Cho's PC (CPU), three at once with two threads each.
 
 ## Results
 
+Log posteriors on this page are shifted by a constant so they read as
+misfit plus prior. The likelihood scores each cochleagram bin with a Gaussian
+of SD 10 dB, and its normalising term costs log(10·√(2π)) = 3.222 nats per
+bin even for a perfect fit: 9896.5 for a 0.5 s (b) stimulus (64 channels ×
+48 frames) and 63502.7 for an ABA sequence (64 × 308). That term is added
+back here. It is the same for every hypothesis of a stimulus, so it cancels in
+every comparison; the raw outputs in `data/` are not shifted.
+
 Log posterior of the best structure, variational importance estimate
 (`data/C3/`), against B2's enumerative values (`data/B2/`: `vi_importance` plus
 `structure`). B2 predates the n! labelling count (decision C6), which adds
@@ -62,10 +70,10 @@ Log posterior of the best structure, variational importance estimate
 
 | Stimulus | Search's best | Its log posterior | Enumerative winner | Its log posterior | Same structure? | Fitted | Time (min) |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Control, 200 Hz | one note | −9961.2 | one note | −9961.5 | yes | 5 | 20 |
-| Octave, 40 ms | one note | −9983.1 | one note | −9981.7 | yes | 5 | 21 |
-| Tritone, 40 ms | two notes | −10020.8 | two notes | −10015.8 | yes | 23 | 74 |
-| Just fifth, 0 ms | note + whistle | −10014.0 | two notes | −10011.9 | **no** | 12 | 37 |
+| Control, 200 Hz | one note | −64.7 | one note | −65.0 | yes | 5 | 20 |
+| Octave, 40 ms | one note | −86.6 | one note | −85.2 | yes | 5 | 21 |
+| Tritone, 40 ms | two notes | −124.3 | two notes | −119.3 | yes | 23 | 74 |
+| Just fifth, 0 ms | note + whistle | −117.5 | two notes | −115.4 | **no** | 12 | 37 |
 
 "Fitted" counts hypotheses fitted to their mode, before the 5 finalists'
 variational fits. Time is wall clock for the whole search.
@@ -81,11 +89,11 @@ same model.
 
 | Stimulus | Search's best | Its log posterior | Enumerative winner | Its log posterior | Same structure? | Fitted | Time (h) |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 st | one stream, 12 tones | −63647.9 | one stream | −63648.5 | yes | 82 | 5.7 |
-| 6 st | two streams, A×8 and B×4 | −63667.5 | two streams | −63666.3 | yes | 99 | 8.1 |
-| 12 st | two streams, A×8 and B×4 | −63667.9 | two streams | −63667.7 | yes | 100 | 9.2 |
+| 1 st | one stream, 12 tones | −145.2 | one stream | −145.8 | yes | 82 | 5.7 |
+| 6 st | two streams, A×8 and B×4 | −164.8 | two streams | −163.6 | yes | 99 | 8.1 |
+| 12 st | two streams, A×8 and B×4 | −165.2 | two streams | −165.0 | yes | 100 | 9.2 |
 
-At 1 semitone the best two-source hypothesis the search kept (−63658.7, the
+At 1 semitone the best two-source hypothesis the search kept (−156.0, the
 last tone split off) is 10.8 below one stream; C2's two streams are 18.4
 below. At 6 and 12 semitones no one-stream hypothesis reached the finalists.
 The fitted streams sit at 1000 and 1414 Hz, and 1000 and 2000 Hz, with every
@@ -104,11 +112,11 @@ tone in the right stream (`fitted:` lines).
   choose between them.
 - **The tritone needed cleanup.** The rounds' best was two notes plus a
   whistle at 1715 Hz; cleanup removed the whistle, and that hypothesis came
-  first (−10020.8, against −10042.2 with the whistle).
+  first (−124.3, against −145.7 with the whistle).
 - **The fifth at 0 ms does not match.** The search did fit two notes, but
-  its fit reached −10022.3, about 10 below B2's −10011.9 for the same
+  its fit reached −125.8, about 10 below B2's −115.4 for the same
   structure. A note at 197 Hz plus a whistle at 304 Hz then scored higher
-  (−10014.0). The gap between the two-note fits is not explained yet; the
+  (−117.5). The gap between the two-note fits is not explained yet; the
   search's starting values (f0 197 Hz from the detector, its spectra from
   the peaks) are the first suspect, not checked.
 - **Cost.** 5 to 23 hypotheses and 20 to 74 minutes per 0.5 s stimulus on
