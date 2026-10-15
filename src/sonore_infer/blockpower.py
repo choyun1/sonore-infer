@@ -28,7 +28,7 @@ length, and the analysis filter's after it. In the lowest bands both last
 tens of ms.
 
 What is left out is the carrier's fluctuation inside each block, and the
-room's (R3). tools/block_power_check.py measures both against renders; the
+room's (R3). tools/block_power_error.py measures both against renders; the
 likelihood takes them as a bias and a noise in dB.
 """
 
@@ -332,7 +332,7 @@ class BlockPower:
 
 
 # Single renders against the model at experiment (a)'s setting (RT60 0.4 s,
-# DRR 10 dB), pooled over cells within 60 dB of the peak: tools/block_power_check.py,
+# DRR 10 dB), pooled over cells within 60 dB of the peak: tools/block_power_error.py,
 # 4 spectrograms x 16 draws. Both grow toward the low bands (-1.9 and 4.3 dB
 # below 400 Hz, -0.6 and 2.5 dB above 1.4 kHz) and with less direct sound.
 BIAS_DB = -1.3

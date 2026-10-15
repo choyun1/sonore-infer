@@ -540,7 +540,7 @@ class Posterior:
         return result
 
 
-def importance_check(
+def importance_estimate(
     model: Model, point: RT60Point, n_samples: int = 128, generator: torch.Generator | None = None
 ) -> tuple[float, float]:
     """Importance-sampling estimate of ``log p(y | r, theta_hat)`` at one
