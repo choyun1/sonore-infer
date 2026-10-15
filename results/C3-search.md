@@ -4,7 +4,7 @@
 > results. The work was done with AI assistance (Claude) and has not yet been
 > checked carefully. Numbers, methods and interpretations may change.
 
-**Status:** first pass on four (b) stimuli; ABA pending. **Paper target:**
+**Status:** first pass on four (b) stimuli and three ABA stimuli. **Paper target:**
 App. B.2 (sequential inference); no figure. **Code:**
 `src/sonore_infer/detect.py`, `src/sonore_infer/search.py`,
 `tools/search_scene.py`, milestone (c) step 5. Design:
@@ -50,7 +50,8 @@ used.
   importance estimate, as in [B2](B2-two-notes-variational.md).
 
 Model as B2: FFT cochleagram, fixed kernels, likelihood SD 10 dB. One
-seed, one thread per stimulus on the cloud CPU.
+seed. The (b) stimuli ran with one thread each on the cloud CPU; the ABA
+stimuli ran on Cho's PC (CPU), three at once with two threads each.
 
 ## Results
 
@@ -69,10 +70,33 @@ Log posterior of the best structure, variational importance estimate
 "Fitted" counts hypotheses fitted to their mode, before the 5 finalists'
 variational fits. Time is wall clock for the whole search.
 
+### ABA sequences
+
+1, 6 and 12 semitones at 100 ms onset to onset, 12 tones (`data/C3/aba_pc/`),
+against [C2](C2-aba-streaming.md)'s enumerative values (`data/C2/`: the
+one-stream fit from `one_converged/`, two streams from `run_300steps/`,
+`vi_importance` plus `structure`). C2 inferred each Gaussian process's sigma
+and lengthscale; this search kept them fixed, so the two are not exactly the
+same model.
+
+| Stimulus | Search's best | Its log posterior | Enumerative winner | Its log posterior | Same structure? | Fitted | Time (h) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 st | one stream, 12 tones | −63647.9 | one stream | −63648.5 | yes | 82 | 5.7 |
+| 6 st | two streams, A×8 and B×4 | −63667.5 | two streams | −63666.3 | yes | 99 | 8.1 |
+| 12 st | two streams, A×8 and B×4 | −63667.9 | two streams | −63667.7 | yes | 100 | 9.2 |
+
+At 1 semitone the best two-source hypothesis the search kept (−63658.7, the
+last tone split off) is 10.8 below one stream; C2's two streams are 18.4
+below. At 6 and 12 semitones no one-stream hypothesis reached the finalists.
+The fitted streams sit at 1000 and 1414 Hz, and 1000 and 2000 Hz, with every
+tone in the right stream (`fitted:` lines).
+
 ## What it says
 
-- **Three of four match.** The control, the octave and the tritone end with
-  the enumerative winner's structure.
+- **Six of seven match.** The control, the octave, the tritone and all
+  three ABA sequences end with the enumerative winner's structure. On ABA
+  the search's log posteriors are within 1.2 of C2's, despite the kernel
+  difference.
 - **The octave matches for the wrong reason.** The detector does not find
   the upper note's onset (its harmonics coincide with the lower note's even
   harmonics), so two notes were never offered. The enumerative comparison
@@ -88,7 +112,10 @@ variational fits. Time is wall clock for the whole search.
   search's starting values (f0 197 Hz from the detector, its spectra from
   the peaks) are the first suspect, not checked.
 - **Cost.** 5 to 23 hypotheses and 20 to 74 minutes per 0.5 s stimulus on
-  one cloud CPU, within decision C9's estimate of 1 to 3 hours.
+  one cloud CPU, within decision C9's estimate of 1 to 3 hours. The ABA
+  sequences (3.1 s with the 12 tones in the first 1.5 s, 12 rounds) took 82 to 100 hypotheses and 5.7 to 9.2
+  hours each on the PC. Every round refits its hypotheses from scratch on the
+  sound so far; starting each round from the previous fit would cut this.
 
 ## Reproduce
 
@@ -97,6 +124,9 @@ python tools/search_scene.py control:200
 python tools/search_scene.py two:octave:0.04
 python tools/search_scene.py two:tritone:0.04
 python tools/search_scene.py two:just_fifth:0.0
+python tools/search_scene.py aba:1:0.1 --threads 2
+python tools/search_scene.py aba:6:0.1 --threads 2
+python tools/search_scene.py aba:12:0.1 --threads 2
 ```
 
 Defaults: `--steps 15000 --tolerance 0.5 --variational-steps 2000 --keep 5
@@ -104,8 +134,9 @@ Defaults: `--steps 15000 --tolerance 0.5 --variational-steps 2000 --keep 5
 
 ## Open
 
-- ABA stimuli (C11 asks for them too): 12 onsets, so 12 rounds on a growing
-  sound; being timed.
+- ABA at 3 semitones, where C2's preference for two streams (+8 to +13)
+  disagrees with the paper; and the search with the kernel inferred, as C2.
+- Warm starts between rounds, to bring the ABA cost down.
 - The octave's upper onset: the detector would need a cue other than a rise
   in level at new frequencies, or the residual pass would need to find it.
 - The fifth's two-note fit: start it from the true f0s to see whether the
