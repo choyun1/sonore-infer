@@ -4,7 +4,7 @@
 > results. The work was done with AI assistance (Claude) and has not yet been
 > checked carefully. Numbers, methods and interpretations may change.
 
-**Status:** first pass done; online fits per window to convergence added (2026-10-14). **Paper target:** Fig. 8F (right), App. C.11.
+**Status:** first pass done; online fits per window to convergence added (2026-10-14); sweeps of lag and window added (2026-10-15). **Paper target:** Fig. 8F (right), App. C.11.
 **Code:** `src/sonore_infer/online.py`, `tools/online_buildup.py`,
 `src/sonore_infer/stimuli/buildup.py`. Design:
 [online inference](../docs/design/online.md), step 2.
@@ -36,7 +36,9 @@ frequencies and timings. One seed.
   and any tone that has started, takes 30 or 150 Adam steps on the free
   latents (or, "to convergence", until the fit gains less than 1 over 50
   steps, at most 2000: design decision O9), and adds its term of the
-  evidence. Lag infinite (nothing frozen) or 1 s.
+  evidence. Lag infinite (nothing frozen) or 1 s; in the sweep below,
+  0.5, 1 and 2 s, and windows of 10, 50 and 100 ms. A tone's event enters
+  the scene once 20 ms of the tone has arrived (see the sweep).
 - **Leaky** (design decision O10, accepted 2026-10-14): the online window
   terms summed with weight e^(−age/τ), from the logged terms, no new
   inference.
@@ -60,8 +62,15 @@ Log odds of two streams over one at the end of each triplet (`data/O1/`):
 | 8 st, online, 30 steps, no lag | 1107.5 | 1534.0 | 1569.8 | 1521.5 | 1578.0 | 1471.9 |
 | 8 st, online, 30 steps, lag 1 s | 1107.5 | 1544.5 | 1729.5 | 1832.0 | 1950.9 | 2064.5 |
 
+![O1-online-buildup](plots/O1-online-buildup.svg)
+
+*Log odds of two streams over one after each triplet: batch with 3000
+Adam steps (the diamond: the one-stream fit run to 10,000 steps), online
+with each window fitted to convergence and a 1 s lag, and the leaky
+decision (τ 2.5 s) from the same online run. 50 ms windows.*
+
 At 6 triplets with the one-stream fit run to 10,000 steps, the batch odds
-are 12.0 (4 st) and 118.5 (8 st). The one-stream log joint is flat from
+are 11.9 (4 st) and 118.5 (8 st). The one-stream log joint is flat from
 step 2,000 at 4 st and from step 5,000 at 8 st, where it gains 5.1 after
 step 3,000 but the Laplace estimate moves by 26: the peak's curvature, not
 the fit (`data/O1/one_stream_10000_steps_*.txt`).
@@ -89,6 +98,70 @@ whose one-stream fits fall short:
 | 8 st, τ 1 s | 58.3 | −24.3 | −7.9 | −10.5 | −11.2 | −19.0 |
 | 8 st, τ 2.5 s | 102.7 | 36.2 | 67.7 | 79.0 | 91.9 | 92.3 |
 | 8 st, τ 5 s | 118.9 | 63.7 | 107.2 | 131.7 | 158.2 | 171.0 |
+
+### Lag and window
+
+Online, each window fitted to convergence (decision O9), log odds at the
+end of each triplet, and the leaky odds (τ 2.5 s) at 6 triplets
+(`data/O1/st*_p50_*.txt`):
+
+| Run | 1 | 2 | 3 | 4 | 5 | 6 | leaky at 6 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 4 st, lag 0.5 s | −3.2 | −0.4 | 9.3 | 17.9 | 27.3 | 35.8 | 23.5 |
+| 4 st, lag 1 s | −3.3 | −1.6 | 2.6 | 7.1 | 11.4 | 16.3 | 11.1 |
+| 4 st, lag 2 s | −3.3 | −1.5 | 1.4 | 5.0 | 9.2 | 5.5 | 1.1 |
+| 8 st, lag 0.5 s | 17.6 | 45.3 | 87.5 | 122.5 | 158.7 | 193.8 | 116.7 |
+| 8 st, lag 1 s | 10.0 | 37.1 | 60.5 | 84.9 | 108.1 | 131.9 | 77.6 |
+| 8 st, lag 2 s | 10.0 | 37.1 | 57.9 | 71.8 | 101.9 | 125.7 | 73.7 |
+| 8 st, lag 1 s, 10 ms windows | 29.2 | 40.3 | 64.3 | 88.2 | 111.5 | 135.9 | 76.1 |
+| 8 st, lag 1 s, 100 ms windows | 17.0 | 36.6 | 59.1 | 82.4 | 105.5 | 129.2 | 78.3 |
+
+Windows are 50 ms unless named.
+
+![O1-lag-window](plots/O1-lag-window.svg)
+
+*Online log odds after each triplet by lag (50 ms windows) and, at 8 st
+with a 1 s lag, by window length.*
+
+- **A shorter lag gives a steeper buildup.** With a 0.5 s lag the odds at
+  6 triplets are twice those with 1 s (35.8 against 16.3 at 4 st, 193.8
+  against 131.9 at 8 st). The one-stream past is frozen sooner, so each
+  new A–B jump is paid for again instead of being absorbed by revising
+  the whistle. A 2 s lag is close to 1 s, except where noted below.
+- **Window length barely matters after the first triplet.** At 8 st the
+  10, 50 and 100 ms runs are within 7 of each other from triplet 2 on,
+  and the leaky odds at 6 triplets within 3 (76.1, 77.6, 78.3). They
+  differ at triplet 1 (29.2, 10.0, 17.0), where the fits of the first
+  tones depend on how much of each tone the first window held.
+- **The two drops with a 2 s lag are the Hessian floor.** At 4 st the
+  odds fall from 9.2 to 5.5 at 6 triplets: in the last one-stream window
+  a direction of the posterior had no curvature and was floored, and
+  that window's term came out 8.8 above the 1 s run's. A floored term is
+  undone by the next window's, as at 2.60 s (+8.5, then −8.2 at 2.65 s),
+  but after the last window there is none. At 8 st the dip at 4 triplets
+  (71.8 against 84.9 with 1 s) comes mostly from three floored one-stream
+  windows in a row (1.95 to 2.05 s), whose terms add 9.8 to one stream
+  over the 1 s run from 1.6 to 2.05 s.
+- **Events must not enter on their ramp alone.** First run with 10 ms
+  windows, a tone's event entered the scene as soon as its onset had
+  arrived, with only its 10 ms ramp heard. The fit then pushed the
+  event's timing off the tone (the A whistle's rest became 0.45 s instead
+  of 0.2 s) and never pulled it back, and the log odds fell to −413 at 6
+  triplets (`data/O1/st8_w10_p50_lag1_ramp_entry.txt`). Lowering the
+  stopping tolerance from 1 to 0.2 did not help. Events now enter once
+  20 ms of their tone has arrived (`--heard`). The 50 and 100 ms runs are
+  unaffected: on these stimuli every event entered with at least 25 ms of
+  its tone heard.
+- **Time per window** (cloud CPU, s, one stream / two streams): lag
+  0.5 s 27 / 26 (4 st), 49 / 26 (8 st); lag 1 s 35 / 42, 50 / 43; lag 2 s
+  52 / 74, 69 / 75; at 8 st, lag 1 s, 10 ms windows 28 / 43 (300 windows),
+  100 ms 58 / 41 (36 windows, triplet ends included). Per second of sound
+  and hypothesis, 10 ms windows cost about 3 to 5 times 50 ms windows, and
+  100 ms windows about 30% less: most of the time is each window's
+  Hessian, whatever the window's length. The one-stream fit took up to
+  1556 Adam steps in a window (8 st, lag 0.5 s), and with 10 ms windows
+  reached the cap of 2000 once; two streams took at most 79 with 50 ms
+  windows and 210 with 10 ms.
 
 Checks, from the same outputs:
 
@@ -143,6 +216,11 @@ Checks, from the same outputs:
 - With the leaky decision (τ 2.5 s), the odds still rise over 6 triplets
   but more slowly each triplet, at 4 st from −3.3 to 11.1 and at 8 st
   from 8.0 to 77.6; with τ 1 s, 8 st levels off near 40.
+- The lag, not the window, sets how fast the online odds build up: a
+  0.5 s lag doubles the slope of a 1 s lag, while 10, 50 and 100 ms
+  windows give the same curve after the first triplet. Online is
+  cheapest with long windows, because each window's Hessian costs about
+  the same whatever its length.
 - The bookkeeping of the evidence over windows is exact, and a 1 s lag
   adds little error on this stimulus, although a toy model shows a lag
   shorter than the kernel's lengthscale can fail badly when the past is
@@ -162,19 +240,34 @@ python tools/online_buildup.py --semitones 4 --triplets 6 --lag 1 \
 python tools/online_buildup.py --semitones 4 --triplets 6 --lag 1 \
     --steps 2000 --window-patience 50 > st4_w50_p50_lag1.txt
 python tools/leaky_odds.py st4_w50_p50_lag1.txt st8_w50_p50_lag1.txt
+python tools/online_buildup.py --semitones 4 --triplets 6 --lag 0.5 \
+    --steps 2000 --window-patience 50 > st4_w50_p50_lag0.5.txt
+python tools/online_buildup.py --semitones 8 --triplets 6 --lag 1 \
+    --window 0.01 --steps 2000 --window-patience 50 > st8_w10_p50_lag1.txt
+python tools/results_plots.py
 ```
+
+and the same with `--semitones 8`, and likewise for the other lags and
+windows (lag 2; `--window 0.1`). The run with events entering on their
+ramp is `--heard 0`.
 
 The 10,000-step one-stream fits came from a session script (Adam on the
 6-triplet one-stream scene, log joint printed at checkpoints, then
 Laplace), not committed; `--batch-steps 10000` is the tool's equivalent,
 not run here.
 
-and the same with `--semitones 8`.
-
 ## Open
 
-- Sweeps of the lag, window and stopping rule (design step 3), and what
-  makes each window's Hessian cheaper.
+- What makes each window's Hessian cheaper; this decides whether online
+  can be cheaper than batch.
+- Floored Hessian directions in single windows (the 2 s lag drops): a
+  floor that is undone a window later suggests a better treatment of
+  near-flat directions.
+- With 10 ms windows and a stopping tolerance of 0.2, the one-stream run
+  of the first triplet went wrong (window terms near −4000, four floored
+  directions); not looked into.
+- Whether 20 ms is the right time for an event to enter, and whether a
+  real detector (milestone (c), decision C9) gives the same.
 - Whether the Laplace estimate's sensitivity to curvature (26 at 8 st
   for a gain of 5) needs importance sampling or variational checks.
 - One seed; whether 3000 steps is converged for every prefix (the
