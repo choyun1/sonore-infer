@@ -19,6 +19,7 @@ has its own design documents, tools and results.
 | **Our own scene grammar** | [design/milestone-c.md](design/milestone-c.md): milestone (c), several events per source, inferred GP kernels, search over structures, ABA streaming | C1-C11 | 2026-10-11 |
 | **Online inference** | [design/online.md](design/online.md): evidence accumulated window by window, and a phone-app roadmap | O1-O10 | 2026-10-13, O10 2026-10-14 |
 | | [design/online-realtime.md](design/online-realtime.md): what real time would take, measured on the buildup runs | none | n/a |
+| | [design/online-speed.md](design/online-speed.md): faster online inference, each change checked against O1 | S1-S6 | draft |
 | | [design/order-effects.md](design/order-effects.md): reset after silence and the previous trial's context, run online | E1-E6 | draft |
 | **Source and room** | [design/source-reverb.md](design/source-reverb.md): a random spectrogram and its room's RT60, inferred together | R1-R8 | 2026-10-10 |
 
@@ -32,7 +33,7 @@ has its own design documents, tools and results.
   not milestones (a) and (b).
 - **Decision numbers** carry the letter of their document: D (design-v1),
   B (milestone-b), R (source-reverb), C (milestone-c), O (online),
-  E (order-effects).
+  S (online-speed), E (order-effects).
 - **Experiment IDs** (A1–A8, B1–B4, C1, R1, R2; pages in
   [`results/`](../results/README.md)) share letters with decision numbers,
   so outside their own document both are written with their word: "experiment B1" is a result
