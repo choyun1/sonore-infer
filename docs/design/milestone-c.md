@@ -207,7 +207,7 @@ Across seeds 0 to 4, the evidence estimates vary by an SD of 2 to 5
 are below that noise. The just fifth's whistles against one source is a tie
 across seeds, and two notes beat both by about 50. For (c) it matters more: one stream of
 12 whistle events is one source and two streams are two (log 2 = 0.69 in
-favour of two streams), and a search will compare scenes of several same-type
+favor of two streams), and a search will compare scenes of several same-type
 sources, where log c! grows quickly (log 4! = 3.2). The fix is one
 line plus a test on a toy model where the evidence is exact. Asking Maddie
 whether BASS's omission was intended goes on the design v1 §6 list.

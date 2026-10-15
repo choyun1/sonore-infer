@@ -175,13 +175,15 @@ class _Events:
         """Each event's onset and duration [s], from the source's timing sites [App. A.2, Eqns A.8-A.12]:
         the first onset uniform over the scene, then log durations and log rests
         whose shared (mu, lambda) are integrated out (design C2, C3 (D))."""
-        p = source.key
-        onset = sample(p("onset"), BoundedUniform(0.0, timing.total_duration, dtype), TERM_TIMING)
+        key = source.key
+        onset = sample(key("onset"), BoundedUniform(0.0, timing.total_duration, dtype), TERM_TIMING)
         if source.n_events == 1:
-            log_duration = sample(p("log_duration"), log_duration_distribution(dtype), TERM_TIMING)
+            log_duration = sample(key("log_duration"), log_duration_distribution(dtype), TERM_TIMING)
             return [onset], [log_duration.exp()]
-        durations = sample(p("log_duration"), NormalGammaMarginal(source.n_events, dtype), TERM_TIMING).exp()
-        rests = sample(p("log_rest"), NormalGammaMarginal(source.n_events - 1, dtype), TERM_TIMING).exp()
+        durations = sample(
+            key("log_duration"), NormalGammaMarginal(source.n_events, dtype), TERM_TIMING
+        ).exp()
+        rests = sample(key("log_rest"), NormalGammaMarginal(source.n_events - 1, dtype), TERM_TIMING).exp()
         onsets = [onset]
         for j in range(source.n_events - 1):
             onsets.append(onsets[-1] + durations[j] + rests[j])
@@ -416,15 +418,17 @@ class Harmonic(_Source):
 
     def f0_erb(self, params: Params) -> torch.Tensor:
         """The f0 trajectory [ERB number] on the grid."""
-        p = self.key
-        return F0_TRAJECTORY.trajectory(params[p("f0_mean")], params[p("f0_deviation")])
+        key = self.key
+        return F0_TRAJECTORY.trajectory(params[key("f0_mean")], params[key("f0_deviation")])
 
     def render(self, params: Params, timing: SceneTiming) -> torch.Tensor:
         """The source's waveform: every event's harmonics, summed."""
-        p = self.key
+        key = self.key
         f0 = erb_to_freq(self.f0_erb(params))
-        level = HARMONIC_LEVEL_TRAJECTORY.trajectory(params[p("level_mean")], params[p("level_deviation")])
-        spectrum = params[p("spectrum_db")]
+        level = HARMONIC_LEVEL_TRAJECTORY.trajectory(
+            params[key("level_mean")], params[key("level_deviation")]
+        )
+        spectrum = params[key("spectrum_db")]
         numbers = torch.arange(1, spectrum.shape[-1] + 1, dtype=f0.dtype)
         return self._render_events(params, timing, numbers[:, None] * f0, level + spectrum[:, None])
 
@@ -504,9 +508,9 @@ class Whistle(_Source):
 
     def render(self, params: Params, timing: SceneTiming) -> torch.Tensor:
         """The source's waveform: every event's tone, summed."""
-        p = self.key
-        freq = erb_to_freq(F0_TRAJECTORY.trajectory(params[p("freq_mean")], params[p("freq_deviation")]))
-        level = WHISTLE_LEVEL_TRAJECTORY.trajectory(params[p("level_mean")], params[p("level_deviation")])
+        key = self.key
+        freq = erb_to_freq(F0_TRAJECTORY.trajectory(params[key("freq_mean")], params[key("freq_deviation")]))
+        level = WHISTLE_LEVEL_TRAJECTORY.trajectory(params[key("level_mean")], params[key("level_deviation")])
         return self._render_events(params, timing, freq[None], level[None])
 
     def program(self, sample: Sample, timing: SceneTiming, dtype: torch.dtype = torch.float64) -> None:

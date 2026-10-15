@@ -18,7 +18,7 @@ Every start takes its levels and timing from the stimulus: each harmonic's
 level is that of the stimulus component at its frequency (coinciding
 components add in phase), or 30 dB below the note's level where the
 stimulus has none. Prints one line per fit and, per stimulus, the log
-posterior odds of ``two`` and ``whistles`` over ``one`` (positive favours the
+posterior odds of ``two`` and ``whistles`` over ``one`` (positive favors the
 alternative), by the Laplace and the importance-sampling estimates.
 
     python tools/compare_two_notes.py --interval octave --asynchronies 0 0.02

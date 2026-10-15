@@ -43,7 +43,7 @@ def window_costs(scene, params, observed, cochleagram, end, lag, repeats):
         rendered = scene.render(params)
         heard = cochleagram(rendered)
         render = median_seconds(lambda: scene.render(params), repeats)
-        analyse = median_seconds(lambda: cochleagram(rendered), repeats)
+        analysis = median_seconds(lambda: cochleagram(rendered), repeats)
         likelihood = median_seconds(lambda: gaussian_log_likelihood(observed, heard, 10.0), repeats)
         prior = median_seconds(lambda: scene.log_prior(params), repeats)
         forward = median_seconds(lambda: log_joint(params), repeats)
@@ -55,7 +55,7 @@ def window_costs(scene, params, observed, cochleagram, end, lag, repeats):
     step = median_seconds(adam_step, repeats)
     hessian = median_seconds(lambda: laplace(log_joint, params, free), max(1, repeats // 5))
     n_free = free_vector(params, free)[0].numel()
-    return n_free, render, analyse, likelihood, prior, forward, step, hessian
+    return n_free, render, analysis, likelihood, prior, forward, step, hessian
 
 
 def main():
@@ -81,10 +81,10 @@ def main():
         for name, spec in hypotheses(args.semitones, triplets).items():
             scene, params = prefix_scene(spec, end, bu.FS, bu.RAMP, heard=0.02)
             costs = window_costs(scene, params, observed, cochleagram, end, args.lag, args.repeats)
-            n_free, render, analyse, likelihood, prior, forward, step, hessian = costs
+            n_free, render, analysis, likelihood, prior, forward, step, hessian = costs
             n_grid = next(value.shape[0] for key, value in params.items() if key.endswith("freq_deviation"))
             print(
-                f"cost: {name}  {end:.2f}  {n_grid}  {n_free}  {1000 * render:.1f}  {1000 * analyse:.1f}"
+                f"cost: {name}  {end:.2f}  {n_grid}  {n_free}  {1000 * render:.1f}  {1000 * analysis:.1f}"
                 f"  {1000 * likelihood:.2f}  {1000 * prior:.1f}  {1000 * forward:.1f}  {1000 * step:.1f}"
                 f"  {hessian:.2f}",
                 flush=True,

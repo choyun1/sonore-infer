@@ -20,7 +20,7 @@ step 2 the gain was the impulse response's energy in each block, which puts
 every echo half a block early: 0.4 to 1.4 dB too little energy in the tail
 for RT60s of 0.8 to 0.2 s.)
 
-Only the natural room is modelled (exponential decay, ecological frequency
+Only the natural room is modeled (exponential decay, ecological frequency
 profile and onset levels); the atypical rooms appear only in observations.
 """
 

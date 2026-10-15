@@ -286,38 +286,38 @@ def extend(scene: Scene, fresh: Params, previous: Params, hypothesis: Hypothesis
     """
     params: Params = {}
     for source in scene.sources:
-        p = source.key
-        if p("onset") not in previous:  # a new source
+        key = source.key
+        if key("onset") not in previous:  # a new source
             params |= {name: value for name, value in fresh.items() if name.startswith(source.name + ".")}
             continue
         for gp in ("freq", "level"):
-            mean, deviation = previous[p(f"{gp}_mean")], previous[p(f"{gp}_deviation")]
-            fresh_total = fresh[p(f"{gp}_mean")] + fresh[p(f"{gp}_deviation")]
+            mean, deviation = previous[key(f"{gp}_mean")], previous[key(f"{gp}_deviation")]
+            fresh_total = fresh[key(f"{gp}_mean")] + fresh[key(f"{gp}_deviation")]
             n_old = deviation.shape[0]
-            params[p(f"{gp}_mean")] = mean.clone()
-            params[p(f"{gp}_deviation")] = torch.cat([deviation, fresh_total[n_old:] - mean])
-        params[p("onset")] = previous[p("onset")].clone()
-        old_durations = previous[p("log_duration")].reshape(-1)
+            params[key(f"{gp}_mean")] = mean.clone()
+            params[key(f"{gp}_deviation")] = torch.cat([deviation, fresh_total[n_old:] - mean])
+        params[key("onset")] = previous[key("onset")].clone()
+        old_durations = previous[key("log_duration")].reshape(-1)
         n_old = old_durations.shape[0]
         if source.n_events == 1:
-            params[p("log_duration")] = previous[p("log_duration")].clone()
+            params[key("log_duration")] = previous[key("log_duration")].clone()
             continue
-        durations = torch.cat([old_durations, fresh[p("log_duration")][n_old:]])
-        old_rests = previous.get(p("log_rest"), torch.zeros(0, dtype=durations.dtype))
+        durations = torch.cat([old_durations, fresh[key("log_duration")][n_old:]])
+        old_rests = previous.get(key("log_rest"), torch.zeros(0, dtype=durations.dtype))
         rests = [old_rests]
         tones = next(spec for spec in hypothesis if spec.name == source.name).tones
-        onset = previous[p("onset")].item()
+        onset = previous[key("onset")].item()
         for j in range(n_old - 1):
             onset += old_durations[j].exp().item() + old_rests[j].exp().item()
         for j in range(n_old - 1, source.n_events - 1):
             end_of_j = onset + durations[j].exp().item()
             rest = tones[j + 1].onset - end_of_j
             if rest <= 0:
-                rest = fresh[p("log_rest")][j].exp().item()
+                rest = fresh[key("log_rest")][j].exp().item()
             rests.append(torch.tensor([math.log(rest)], dtype=durations.dtype))
             onset = end_of_j + rest
-        params[p("log_duration")] = durations
-        params[p("log_rest")] = torch.cat(rests)
+        params[key("log_duration")] = durations
+        params[key("log_rest")] = torch.cat(rests)
     return params
 
 
@@ -326,9 +326,9 @@ def lag_free(scene: Scene, params: Params, end: float, lag: float) -> Free:
     free: Free = {}
     start = end - lag
     for source in scene.sources:
-        p = source.key
+        key = source.key
         names = source.learning_rates()
-        n_grid = params[p("freq_deviation")].shape[0]
+        n_grid = params[key("freq_deviation")].shape[0]
         recent = torch.arange(n_grid, dtype=torch.float64) * GRID_STEP >= start - 1e-9
         onsets, durations = source.event_times(params, scene.timing)
         event_free = [float(o + d) >= start for o, d in zip(onsets, durations, strict=True)]

@@ -7,7 +7,7 @@ can be combined with the other from an earlier run:
     python tools/aba_map.py results/aba/pc_one_converged results/aba/pc_300steps
 
 Prints, for each evidence estimate, a table of semitones by onset-to-onset
-interval (positive favours two streams), then the fit steps and evidence
+interval (positive favors two streams), then the fit steps and evidence
 of each hypothesis and the folder it came from.
 """
 
