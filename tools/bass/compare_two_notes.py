@@ -21,8 +21,8 @@ stimulus has none. Prints one line per fit and, per stimulus, the log
 posterior odds of ``two`` and ``whistles`` over ``one`` (positive favors the
 alternative), by the Laplace and the importance-sampling estimates.
 
-    python tools/compare_two_notes.py --interval octave --asynchronies 0 0.02
-    python tools/compare_two_notes.py --controls
+    python tools/bass/compare_two_notes.py --interval octave --asynchronies 0 0.02
+    python tools/bass/compare_two_notes.py --controls
 """
 
 import argparse

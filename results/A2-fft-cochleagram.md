@@ -24,7 +24,7 @@ calibration is removed in A4). Mistuning on a 22-level grid (0–10% in 1%
 steps, then 12–20 in 2s, then 25–50 in 5s).
 
 Measured effect on channel width (`data/A2/bandwidths.txt`, from
-`tools/channel_bandwidths.py`): below about 600 Hz the FFT channels are
+`tools/measurements/channel_bandwidths.py`): below about 600 Hz the FFT channels are
 2.1–3.6 times wider than true half-ERB channels (64.4 Hz against 18.0 Hz
 at 104 Hz; 72.1 Hz against 34.0 Hz at 401 Hz).
 
@@ -65,9 +65,9 @@ On today's main, `--cochleagram fft-calibrated` selects this cochleagram
 (`fft` now means A4's uncalibrated version). Not re-run on today's main.
 
 ```
-python tools/compare_mistuned_harmonic.py --f0 100 --harmonic 1 --cochleagram fft-calibrated \
+python tools/bass/compare_mistuned_harmonic.py --f0 100 --harmonic 1 --cochleagram fft-calibrated \
     --percents 0 1 2 3 4 5 6 7 8 9 10 12 14 16 18 20 25 30 35 40 45 50
-python tools/mistuning_thresholds.py data/A2/f0-*.txt
+python tools/bass/mistuning_thresholds.py data/A2/f0-*.txt
 ```
 
 Raw outputs: [`data/A2/`](data/A2/). The first run of 400 Hz harmonic 2

@@ -8,7 +8,7 @@
 (2024); see [R1](R1-source-and-room.md). The design's experiment (b) (decision R7),
 after Traer & McDermott (2016), who found listeners' judgments of
 reverberation biased by atypical rooms. Listeners are not compared here.
-**Code:** `tools/atypical_rooms.py`, PR
+**Code:** `tools/source_room/atypical_rooms.py`, PR
 [#37](https://github.com/choyun1/sonore-infer/pull/37) (`d03e2ef`), using
 R1's inference. Design: [source and room](../docs/design/source-reverb.md).
 
@@ -92,8 +92,8 @@ at floors 60 and 40: time-reversed −2,141 to −34,458 nats; the other rooms
 ## Reproduce
 
 ```
-python tools/atypical_rooms.py --out atypical_rooms.jsonl --shard 0 --shards 4   # and shards 1-3
-python tools/atypical_rooms.py --summary atypical_rooms.jsonl
+python tools/source_room/atypical_rooms.py --out atypical_rooms.jsonl --shard 0 --shards 4   # and shards 1-3
+python tools/source_room/atypical_rooms.py --summary atypical_rooms.jsonl
 ```
 
 Raw outputs: `data/R2/atypical_rooms.jsonl` (one line per inference) and

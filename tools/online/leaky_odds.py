@@ -1,11 +1,11 @@
-"""Leaky log odds (design online, decision O10) from the output of ``tools/online_buildup.py``.
+"""Leaky log odds (design online, decision O10) from the output of ``tools/online/online_buildup.py``.
 
 Reads the ``window:`` lines of one or more outputs and prints, at the end
 of each triplet, the log odds of two streams over one with the full sum of
 window terms and with each ``--tau``, plus the structure prior's log odds.
 No inference is run.
 
-    python tools/leaky_odds.py st8_w50_s150_lag1.txt --tau 1 2.5 5
+    python tools/online/leaky_odds.py st8_w50_s150_lag1.txt --tau 1 2.5 5
 """
 
 import argparse

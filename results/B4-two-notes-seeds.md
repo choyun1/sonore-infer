@@ -6,7 +6,7 @@
 
 **Status:** done (2026-10-12). **Paper target:** none (see
 [B1](B1-two-notes-laplace.md)); the paper averaged its model over 10 seeds.
-**Code:** `--seed` in `tools/compare_two_notes.py`, PR
+**Code:** `--seed` in `tools/bass/compare_two_notes.py`, PR
 [#28](https://github.com/choyun1/sonore-infer/pull/28) (`5e840c2`);
 `tools/run_seeds.py`, PRs [#30](https://github.com/choyun1/sonore-infer/pull/30)
 and [#33](https://github.com/choyun1/sonore-infer/pull/33); the n!
@@ -81,9 +81,9 @@ Five seeds on the close cases (`data/B4/`, seed 0 from `data/B2/`): octave
 
 ```
 python tools/run_seeds.py --out seeds_out --seeds 0 1 2 3 4 5 6 7 8 9
-python tools/compare_two_notes.py --seed 1 --variational-steps 2000 \
+python tools/bass/compare_two_notes.py --seed 1 --variational-steps 2000 \
     --interval octave --asynchronies 0 0.24 --only one@200 two > octave_seed1.txt
-python tools/compare_two_notes.py --seed 1 --variational-steps 2000 \
+python tools/bass/compare_two_notes.py --seed 1 --variational-steps 2000 \
     --interval just_fifth --asynchronies 0.01 0.08 --only one@100 one@200 whistles > fifth_seed1.txt
 ```
 

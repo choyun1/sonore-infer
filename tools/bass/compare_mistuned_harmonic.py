@@ -19,7 +19,7 @@ constant; ``--whistle-timing inferred``, ``--trajectories`` and
 ``--harmonic-timing inferred`` bring in the corresponding parts of BASS's
 sources, and ``--cochleagram fft-calibrated`` drops BASS's uncalibrated levels.
 
-    python tools/compare_mistuned_harmonic.py --f0 200 --harmonic 3
+    python tools/bass/compare_mistuned_harmonic.py --f0 200 --harmonic 3
 """
 
 import argparse

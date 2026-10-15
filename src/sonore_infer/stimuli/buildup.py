@@ -12,7 +12,7 @@ Assumed, because the text does not say:
   triplets is the first ``lead + 0.5 n`` s of the one with 6, and the batch
   runs are prefixes of one sound (design online O2).
 - ``lead`` s of silence before the first tone (0 by default, as in the
-  paper). The model's runs use 50 ms, as ``tools/compare_aba.py`` does for
+  paper). The model's runs use 50 ms, as ``tools/grammar/compare_aba.py`` does for
   C.10: the onset prior starts at 0, and a fit cannot move an onset that
   starts exactly there.
 """

@@ -41,7 +41,7 @@ online inference; and inferring a source together with its room.
 | `src/sonore_infer/` | The package (map below). |
 | `src/sonore_infer/stimuli/` | Stimuli from App. C of the paper (mistuned harmonic, asynchronous onsets, ABA bistability and buildup), and milestone (b)'s two notes, made with sonore. |
 | `tests/` | One test file per module, plus `tests/stimuli/`. |
-| `tools/` | Standalone scripts: experiment runners and measurements. Every number in the design documents comes from one of them or is marked as an estimate. Index: [tools/README.md](tools/README.md). |
+| `tools/` | Standalone scripts: experiment runners and measurements, one folder per direction. Every number in the design documents comes from one of them or is marked as an estimate. Index: [tools/README.md](tools/README.md). |
 | `notebooks/` | `appendix_c_stimuli.ipynb`: listen to and plot the stimuli. |
 
 The package holds two models that share no code beyond the ERB scale

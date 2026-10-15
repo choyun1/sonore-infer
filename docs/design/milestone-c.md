@@ -425,7 +425,7 @@ option (C), and Cho chose it.
 - **C3 (B), the f0 lengthscale's lower bound.** Table A.2 prints 0.1–10 s.
   Its own quartiles come out with 0.01 s instead (Q2 2.52 and Q3 5.52
   against the printed 2.5 and 5.5; with 0.1 s they are 3.23 and 5.96)
-  [measured: `tools/table_a2_quartiles.py`]. BASS's config also has 0.01 s.
+  [measured: `tools/measurements/table_a2_quartiles.py`]. BASS's config also has 0.01 s.
   The code uses 0.01 s.
 - **C3 (B), the second "Dist. param.".** Read as the inverse softplus of
   the normal's SD, it reproduces Table A.2's quartiles to about their
@@ -452,7 +452,7 @@ option (C), and Cho chose it.
   (b), leave the ABA one-stream fit far from its mode. Its log joint at
   6 semitones and 100 ms is −63313 after 300 steps and −62875 after 7500,
   and it stays there to 15000. The two-stream fit gains only 0.2 from 300
-  to 1000 steps on all 30 stimuli [measured: `tools/aba_fit_steps.py`,
+  to 1000 steps on all 30 stimuli [measured: `tools/grammar/aba_fit_steps.py`,
   `results/data/C2/fit_steps_check/`]. The online work found the same
   for its batch reference (`results/O1-online-buildup.md`). So ABA fits
   run until the best log joint rises by less than 0.5 over 1000 steps

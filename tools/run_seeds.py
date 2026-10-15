@@ -65,7 +65,13 @@ def jobs(seeds, only, steps=None, hypotheses=None, tolerance=None, stimuli=None)
                     out.append(
                         (
                             f"aba/st{semitones}_dt{interval}_seed{seed}",
-                            ["compare_aba.py", "--semitones", str(semitones), "--intervals", str(interval)]
+                            [
+                                "grammar/compare_aba.py",
+                                "--semitones",
+                                str(semitones),
+                                "--intervals",
+                                str(interval),
+                            ]
                             + ["--infer-kernel"]
                             + (["--hypotheses", *hypotheses] if hypotheses else [])
                             + (["--tolerance", str(tolerance)] if tolerance else [])
@@ -78,7 +84,7 @@ def jobs(seeds, only, steps=None, hypotheses=None, tolerance=None, stimuli=None)
                     out.append(
                         (
                             f"a/f0-{f0}_h{harmonic}_p{percent}_seed{seed}",
-                            ["scene_mistuned_harmonic.py", "--f0", str(f0), "--harmonic", str(harmonic)]
+                            ["bass/scene_mistuned_harmonic.py", "--f0", str(f0), "--harmonic", str(harmonic)]
                             + ["--percents", str(percent)]
                             + common,
                         )
@@ -91,7 +97,7 @@ def jobs(seeds, only, steps=None, hypotheses=None, tolerance=None, stimuli=None)
                         (
                             f"b/{interval}_{round(1000 * asynchrony)}ms_seed{seed}",
                             [
-                                "compare_two_notes.py",
+                                "bass/compare_two_notes.py",
                                 "--interval",
                                 interval,
                                 "--asynchronies",
@@ -104,7 +110,7 @@ def jobs(seeds, only, steps=None, hypotheses=None, tolerance=None, stimuli=None)
                 out.append(
                     (
                         f"b/control_{f0:.1f}Hz_seed{seed}",
-                        ["compare_two_notes.py", "--controls", repr(f0)] + common,
+                        ["bass/compare_two_notes.py", "--controls", repr(f0)] + common,
                     )
                 )
     return out

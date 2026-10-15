@@ -60,7 +60,7 @@ def test_fast_source_energy_equals_the_direct_one(short):
 def test_source_energy_matches_renders_on_average(short):
     # 16 carriers on one spectrogram: the mean of the renders' block energies
     # against the model, over cells within 60 dB of the peak. Measured in full
-    # by tools/block_power_error.py.
+    # by tools/source_room/block_power_error.py.
     seed = 2
     env = so.gaussian_spectrogram(short.duration, FS, rng=seed)
     model = short.source_energy(torch.from_numpy(drawn_levels(short, seed))).numpy()

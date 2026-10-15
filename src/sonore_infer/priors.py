@@ -425,7 +425,7 @@ class KernelParameterPrior:
     the parameter stays within ``bounds``. Table A.2 gives two numbers per
     parameter; the first is the normal's mean and the second, ``raw_scale``,
     is read as the inverse softplus of its SD. That reading is checked
-    against the table's quartiles by ``tools/table_a2_quartiles.py``: it
+    against the table's quartiles by ``tools/measurements/table_a2_quartiles.py``: it
     reproduces them to about their printed precision, where reading the
     second number as the SD itself does not (whistle level sigma and
     lengthscale, noise level sigma).

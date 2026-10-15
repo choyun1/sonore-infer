@@ -8,7 +8,7 @@ parameters to a waveform, the log prior of those parameters, their step
 sizes, and the log prior of the scene's discrete structure.
 
 The sources are BASS's full ones, as milestone (a) ended up using them
-(``tools/compare_mistuned_harmonic.py --trajectories --harmonic-timing
+(``tools/bass/compare_mistuned_harmonic.py --trajectories --harmonic-timing
 inferred --whistle-timing inferred``):
 
 - :class:`Harmonic`: f0 and overall level follow Gaussian-process

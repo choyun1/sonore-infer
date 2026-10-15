@@ -66,11 +66,11 @@ the kernel fixed (`data/C1/thresholds.txt`).
 ## Reproduce
 
 ```
-python tools/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --percents 30 \
+python tools/bass/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --percents 30 \
     --infer-kernel --variational-steps 2000 > a_30.txt      # one mistuning per job
-python tools/compare_two_notes.py --interval octave --asynchronies 0.24 \
+python tools/bass/compare_two_notes.py --interval octave --asynchronies 0.24 \
     --only one@200 two --infer-kernel --variational-steps 2000 > octave_0.24.txt
-python tools/two_notes_summary.py data/C1/octave_*.txt
+python tools/bass/two_notes_summary.py data/C1/octave_*.txt
 ```
 
 `thresholds.txt` is made by a local script that also computes BASS's rule

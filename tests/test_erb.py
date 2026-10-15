@@ -37,7 +37,7 @@ def test_inverse_and_derivative():
 
 
 def test_float_version():
-    # what scene.py and tools/compare_mistuned_harmonic.py computed before this module
+    # what scene.py and tools/bass/compare_mistuned_harmonic.py computed before this module
     for freq in FREQS:
         freq = float(freq)
         assert freq_to_erb_float(freq) == 9.265 * math.log1p(freq / (24.7 * 9.265))

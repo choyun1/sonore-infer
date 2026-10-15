@@ -10,7 +10,7 @@ and durations), as the paper did:
 Prints one line per fit and, per stimulus, the log posterior odds of ``two``
 over ``one`` (positive favors two streams) by each evidence estimate.
 
-    python tools/compare_aba.py --semitones 6 --intervals 0.1 --variational-steps 2000
+    python tools/grammar/compare_aba.py --semitones 6 --intervals 0.1 --variational-steps 2000
 """
 
 import argparse

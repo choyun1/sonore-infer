@@ -19,7 +19,7 @@ energy in block ``j``. The direct impulse is a gain of 1 in block 0. (Up to
 step 2 the gain was the impulse response's energy in each block, which puts
 every echo half a block early: 0.4 to 1.4 dB too little energy in the tail
 for RT60s of 0.8 to 0.2 s, as found in commit 9d29ac9; RoomGain is now
-measured against renders by tools/room_gain_error.py.)
+measured against renders by tools/source_room/room_gain_error.py.)
 
 Only the natural room is modeled (exponential decay, ecological frequency
 profile and onset levels); the atypical rooms appear only in observations.
@@ -161,7 +161,7 @@ FIT_ONSET_DB = np.array(
 
 # The room prior, from Traer & McDermott's survey of 271 everyday spaces
 # (PNAS 2016; https://mcdermottlab.mit.edu/Reverb/IR_Survey.html), measured by
-# tools/rt60_prior_fit.py on 270 of its IRs (the files are not redistributed):
+# tools/source_room/rt60_prior_fit.py on 270 of its IRs (the files are not redistributed):
 # median RT60 over 30 ERB bands (T20 x 3) mapped to synth_ir's RT60, then a
 # gamma fit, which beat a lognormal by 18 AIC and an exponential by 58. 11%
 # of the spaces (outdoors) fall below 0.1 s. DRR is the energy of the 5 ms

@@ -8,7 +8,7 @@ script samples each entry under four readings of it, as the normal's scale
 directly, its absolute value, softplus of it, and exp of it, and prints the
 quartiles of softplus(x) truncated to the bounds next to the paper's.
 
-    python tools/table_a2_quartiles.py [--draws 200000]
+    python tools/measurements/table_a2_quartiles.py [--draws 200000]
 """
 
 import argparse

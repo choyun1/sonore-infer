@@ -21,14 +21,19 @@ import html
 import math
 import os
 import re
-
-import aba_map
-import mistuning_thresholds
-import two_notes_summary
+import sys
 
 from sonore_infer.thresholds import probability_from_log_odds, threshold
 
-RESULTS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "results")
+TOOLS = os.path.dirname(os.path.abspath(__file__))
+# the summaries this script draws from live with their experiments' scripts
+sys.path[:0] = [os.path.join(TOOLS, folder) for folder in ("bass", "grammar", "online")]
+
+import aba_map  # noqa: E402
+import mistuning_thresholds  # noqa: E402
+import two_notes_summary  # noqa: E402
+
+RESULTS = os.path.join(TOOLS, "..", "results")
 DATA = os.path.join(RESULTS, "data")
 
 # Paper's model thresholds (% of f0), Fig. 7D read by eye; None is not measurable.

@@ -6,7 +6,7 @@ equivalent rectangular bandwidth is the integral of the channel's power
 response divided by its peak. Compares :class:`Cochleagram` (gammatone
 filtering) with :class:`FFTCochleagram` (BASS's FFT approximation).
 
-    python tools/channel_bandwidths.py
+    python tools/measurements/channel_bandwidths.py
 """
 
 import numpy as np

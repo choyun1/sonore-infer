@@ -26,8 +26,8 @@ has its own design documents, tools and results.
 - **Milestones (a), (b), (c)**: the mistuned harmonic (App. C.6 of the
   paper), two simultaneous notes, and the scene grammar with ABA streaming
   (App. C.10). Defined in design-v1 D3 and the milestone documents.
-- **Experiments (a) and (b)** in `tools/recovery.py` and
-  `tools/atypical_rooms.py` are the two experiments of source-reverb.md R7,
+- **Experiments (a) and (b)** in `tools/source_room/recovery.py` and
+  `tools/source_room/atypical_rooms.py` are the two experiments of source-reverb.md R7,
   not milestones (a) and (b).
 - **Decision numbers** carry the letter of their document: D (design-v1),
   B (milestone-b), R (source-reverb), C (milestone-c), O (online).

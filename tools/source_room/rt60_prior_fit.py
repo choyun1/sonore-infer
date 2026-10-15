@@ -27,8 +27,8 @@ quartiles.
 ``--synthetic`` runs the same measurement on ``synth_ir`` rooms of known
 RT60 and DRR instead, to show what it recovers.
 
-    python tools/rt60_prior_fit.py PATH/TO/IR_FOLDER [--save rt60s.csv]
-    python tools/rt60_prior_fit.py --synthetic
+    python tools/source_room/rt60_prior_fit.py PATH/TO/IR_FOLDER [--save rt60s.csv]
+    python tools/source_room/rt60_prior_fit.py --synthetic
 """
 
 import argparse

@@ -56,8 +56,8 @@ machine and are recorded in PR #13, not in committed outputs here.
 today's main.
 
 ```
-python tools/compare_mistuned_harmonic.py --f0 100 --harmonic 1 --whistle-timing inferred --percents 0 1 2 3 4 5 6 7 8 9 10 12 14 16 18 20 22 24 26 28 30 35 40 45 50
-python tools/mistuning_thresholds.py data/A4/f0-*.txt
+python tools/bass/compare_mistuned_harmonic.py --f0 100 --harmonic 1 --whistle-timing inferred --percents 0 1 2 3 4 5 6 7 8 9 10 12 14 16 18 20 22 24 26 28 30 35 40 45 50
+python tools/bass/mistuning_thresholds.py data/A4/f0-*.txt
 ```
 
 Raw outputs: [`data/A4/`](data/A4/).

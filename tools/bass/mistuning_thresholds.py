@@ -1,4 +1,4 @@
-"""Mistuning thresholds from the output of tools/compare_mistuned_harmonic.py.
+"""Mistuning thresholds from the output of tools/bass/compare_mistuned_harmonic.py.
 
 Rows for the same f0 and harmonic are merged across files (so a finer grid
 can be run separately and added), sorted by mistuning; then it converts the log posterior odds
@@ -12,7 +12,7 @@ the Laplace approximation had to floor a Hessian eigenvalue (a flat
 direction, where its Gaussian is far wider than the posterior), or the
 importance-sampling estimate is not finite.
 
-    python tools/mistuning_thresholds.py coarse/f0-*_h*.txt fine/f0-*_h*.txt
+    python tools/bass/mistuning_thresholds.py coarse/f0-*_h*.txt fine/f0-*_h*.txt
 """
 
 import argparse
@@ -47,7 +47,7 @@ def read(path):
             elif (match := FLOORED.match(line)) and (int(match[1]) or int(match[2])):
                 left_out.append(percent)
     if f0 is None:
-        raise ValueError(f"{path} is not an output of tools/compare_mistuned_harmonic.py")
+        raise ValueError(f"{path} is not an output of tools/bass/compare_mistuned_harmonic.py")
     for percent in left_out:
         rows.pop(percent, None)
     return f0, harmonic, rows, sorted(set(left_out))

@@ -15,7 +15,7 @@ more parameters than H1, so the difference is not evidence for two sources
 on its own (see ``sonore_infer.fit``). The number of harmonics, the
 onset and the duration are given, not inferred.
 
-    python tools/fit_mistuned_harmonic.py --f0 200 --harmonic 3
+    python tools/bass/fit_mistuned_harmonic.py --f0 200 --harmonic 3
 """
 
 import argparse

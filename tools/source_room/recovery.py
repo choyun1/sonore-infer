@@ -22,8 +22,8 @@ at the best RT60 point (ESS out of 128). ``--summary`` prints, per setting
 and sigma, how often the truth falls in the 90% interval and the median
 interval width (ratio of the 95% to the 5% quantile).
 
-    python tools/recovery.py --out runs.jsonl [--shard 0 --shards 1] [--runs 3 7]
-    python tools/recovery.py --summary runs.jsonl
+    python tools/source_room/recovery.py --out runs.jsonl [--shard 0 --shards 1] [--runs 3 7]
+    python tools/source_room/recovery.py --summary runs.jsonl
 """
 
 import argparse

@@ -2,7 +2,7 @@
 
 The stimulus is App. C.11's: ``--triplets`` ABA triplets, A at 500 Hz, B
 ``--semitones`` higher, after 50 ms of silence (``LEAD``, as
-``tools/compare_aba.py``). Both hypotheses of the paper are run online, each
+``tools/grammar/compare_aba.py``). Both hypotheses of the paper are run online, each
 in one pass with :func:`sonore_infer.online.run_online`:
 
 - ``one``: one whistle source with every tone as its events;
@@ -12,12 +12,12 @@ in one pass with :func:`sonore_infer.online.run_online`:
 Prints one line per window and hypothesis, then, at the end of each triplet,
 the log odds of two streams over one from the online run and, with
 ``--batch-steps``, from the batch method on the same prefix (O5 (A)): Adam
-from the tones (as ``tools/compare_aba.py``), then Laplace. ``batch@online``
+from the tones (as ``tools/grammar/compare_aba.py``), then Laplace. ``batch@online``
 is the batch Laplace estimate at the online run's mode, so the online
 total minus it is the error of the window terms alone (zero with an infinite
 lag), and it minus ``batch`` is the difference the fits make.
 
-    python tools/online_buildup.py --semitones 8 --triplets 6 --lag inf 1 --batch-steps 300
+    python tools/online/online_buildup.py --semitones 8 --triplets 6 --lag inf 1 --batch-steps 300
 """
 
 import argparse

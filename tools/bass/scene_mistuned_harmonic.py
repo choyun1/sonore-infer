@@ -1,11 +1,11 @@
 """Milestone (a)'s full model re-run through ``sonore_infer.scene``, as its test.
 
-Does what ``tools/compare_mistuned_harmonic.py --trajectories
+Does what ``tools/bass/compare_mistuned_harmonic.py --trajectories
 --harmonic-timing inferred --whistle-timing inferred`` does (same
 initializations, step sizes, parameter order and random draws) and prints
 the same table, so the two outputs can be compared line by line.
 
-    python tools/scene_mistuned_harmonic.py --f0 200 --harmonic 3
+    python tools/bass/scene_mistuned_harmonic.py --f0 200 --harmonic 3
 """
 
 import argparse
