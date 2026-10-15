@@ -181,9 +181,14 @@ def trajectory_event(
     # is chosen without gradient; the gate keeps its gradient inside it and is
     # exactly zero, gradient included, outside.
     position = onset * fs
-    low = int(position.detach().floor().clamp(0, n_samples - 2))
+    low = int(position.detach().floor().long().clamp(0, n_samples - 2))
     offset_samples = float(torch.as_tensor(onset + duration).detach()) * fs
-    stop = min(n_samples, max(low + 2, math.ceil(offset_samples) + 1))
+    # importance sampling can draw an infinite or undefined duration: then
+    # the whole rest of the sound, as before S1
+    if math.isfinite(offset_samples) and offset_samples < n_samples:
+        stop = min(n_samples, max(low + 2, math.ceil(offset_samples) + 1))
+    else:
+        stop = n_samples
     span = stop - low
     freqs = upsample(freqs_hz, grid_step, span, fs, start=low)
     levels = upsample(levels_db, grid_step, span, fs, start=low)

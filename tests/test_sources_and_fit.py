@@ -1,5 +1,7 @@
 """The renderers against the stimuli, and the fit on a case with a known answer."""
 
+import math
+
 import numpy as np
 import pytest
 import torch
@@ -175,3 +177,32 @@ def test_rendering_each_event_over_its_span_equals_the_whole_sound(onset, durati
     for ours, whole in zip(*results, strict=True):
         scale = whole.abs().max().item()
         np.testing.assert_allclose(ours.numpy(), whole.numpy(), rtol=0, atol=1e-9 * scale + 1e-300)
+
+
+@pytest.mark.parametrize(
+    "onset, duration",
+    [
+        (0.2, float("inf")),
+        (0.2, float("nan")),
+        (float("nan"), 0.1),
+        (-float("inf"), 0.1),
+        (0.2, -float("inf")),
+    ],
+)
+def test_rendering_each_event_over_its_span_takes_non_finite_times(onset, duration):
+    """Importance sampling can draw an infinite duration (exp of a large log
+    duration); the render then equals the whole-sound one. An undefined
+    duration leaves zeros before the onset where the whole-sound render had
+    NaN; both sounds contain NaN, so the log likelihood is NaN either way."""
+    from sonore_infer.sources import trajectory_event
+
+    freqs = torch.full((1, 101), 440.0, dtype=torch.float64)
+    levels = torch.full((1, 101), 50.0, dtype=torch.float64)
+    kwargs = dict(grid_step=0.01, fs=FS, total_duration=1.0, ramp=0.01)
+    times = [torch.tensor(onset, dtype=torch.float64), torch.tensor(duration, dtype=torch.float64)]
+    ours = trajectory_event(freqs, levels, *times, **kwargs)
+    whole = _trajectory_event_whole_sound(freqs, levels, *times, **kwargs)
+    if math.isnan(duration):
+        assert ours.isnan().any() and whole.isnan().all()
+        return
+    np.testing.assert_allclose(ours.numpy(), whole.numpy(), rtol=0, atol=1e-15, equal_nan=True)
