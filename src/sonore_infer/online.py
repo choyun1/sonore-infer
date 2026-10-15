@@ -249,14 +249,17 @@ def _scalar_or_list(values: list[float]) -> float | list[float]:
     return values[0] if len(values) == 1 else values
 
 
-def prefix_scene(hypothesis: Hypothesis, end: float, fs: float, ramp: float) -> tuple[Scene | None, Params]:
+def prefix_scene(
+    hypothesis: Hypothesis, end: float, fs: float, ramp: float, heard: float = 0.0
+) -> tuple[Scene | None, Params]:
     """The hypothesis on the sound's first ``end`` seconds, with the tones whose onsets
-    have arrived, and its batch-style initialization (as ``tools/compare_aba.py``)."""
+    have arrived (at least ``heard`` seconds before ``end``), and its batch-style
+    initialization (as ``tools/compare_aba.py``)."""
     timing = SceneTiming(fs=fs, total_duration=end, ramp=ramp)
     sources: list[Whistle] = []
     init: Params = {}
     for spec in hypothesis:
-        tones = [tone for tone in spec.tones if tone.onset < end]
+        tones = [tone for tone in spec.tones if tone.onset < end and tone.onset <= end - heard + 1e-9]
         if not tones:
             continue
         source = Whistle(spec.name, n_events=len(tones))
@@ -381,6 +384,7 @@ def run_online(
     steps: int = 30,
     patience: int | None = None,
     tolerance: float = 1.0,
+    heard: float = 0.0,
     sigma: float = 10.0,
     ends: Sequence[float] | None = None,
     report: Callable[[OnlineStep], None] | None = None,
@@ -391,7 +395,10 @@ def run_online(
     ``window`` up to the waveform's duration (and the duration itself).
     Before the first tone the scene is silence, with no latents, so its log
     likelihood is the starting total. With ``patience``, ``steps`` is the
-    most Adam steps a window may take (see :func:`adam_free`).
+    most Adam steps a window may take (see :func:`adam_free`). A tone's event
+    enters once ``heard`` seconds of it have arrived: with windows much
+    shorter than a tone, an event that enters on its ramp alone can have its
+    timing pushed away from the tone, where the fit cannot pull it back.
     """
     total = waveform.shape[-1] / fs
     if ends is None:
@@ -406,8 +413,10 @@ def run_online(
     for end in ends:
         begin = time.perf_counter()
         n_samples = round(end * fs)
+        if n_samples < cochleagram.frame_samples:
+            continue  # not one whole frame yet: nothing heard, nothing to update
         observed = cochleagram(waveform[:n_samples])
-        scene, fresh = prefix_scene(hypothesis, end, fs, ramp)
+        scene, fresh = prefix_scene(hypothesis, end, fs, ramp, heard)
         if scene is None:
             last_silent_end = end
             continue
