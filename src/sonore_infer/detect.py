@@ -17,6 +17,9 @@ module reads candidates off the cochleagram by hand:
 - **Continuations** are left out: a peak at a partial an earlier onset
   started and that is still sounding, no more than 3 dB louder, is beating
   or fluctuation (two notes a tritone apart beat enough to look like onsets).
+  The 3 dB, and the 0.3 ERB within which two peaks count as one tone, are
+  not measured: they were set when the detector was written (commit
+  e9f5649), and no tool or decision records why.
 - **Durations** run from the onset until the event's channels fall by
   ``drop_db`` from their peak, or another onset raises them again.
 

@@ -217,8 +217,9 @@ class FFTCochleagram(Cochleagram):
     By default (``bass_gain=True``) the channels are not calibrated: as in
     BASS's ``gammatonegram``, the pooled magnitudes are divided by
     ``fft_size`` and read in dB re ``REFERENCE_RMS`` directly, so a sinusoid
-    reads below its level, by more at low center frequencies (about 13 dB at
-    100 Hz, 4 dB at 3 kHz for the defaults), and nearer the floor. With
+    reads below its level, by more at low center frequencies, and nearer the
+    floor: for the defaults, 12.8 dB in the channel at 104 Hz and 3.3 dB in
+    the one at 2974 Hz [measured by :func:`sonore_infer.detect.channel_gains`]. With
     ``bass_gain=False`` each channel is calibrated instead, so a sinusoid at
     its center frequency reads its level, as in :class:`Cochleagram`.
     """
