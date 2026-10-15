@@ -7,7 +7,7 @@
 **Status:** first pass on four (b) stimuli and three ABA stimuli. **Paper target:**
 App. B.2 (sequential inference); no figure. **Code:**
 `src/sonore_infer/detect.py`, `src/sonore_infer/search.py`,
-`tools/search_scene.py`, milestone (c) step 5. Design:
+`tools/grammar/search_scene.py`, milestone (c) step 5. Design:
 [milestone (c)](../docs/design/milestone-c.md), decisions C9 to C11.
 
 ## Question
@@ -128,13 +128,13 @@ tone in the right stream (`fitted:` lines).
 ## Reproduce
 
 ```
-python tools/search_scene.py control:200
-python tools/search_scene.py two:octave:0.04
-python tools/search_scene.py two:tritone:0.04
-python tools/search_scene.py two:just_fifth:0.0
-python tools/search_scene.py aba:1:0.1 --threads 2
-python tools/search_scene.py aba:6:0.1 --threads 2
-python tools/search_scene.py aba:12:0.1 --threads 2
+python tools/grammar/search_scene.py control:200
+python tools/grammar/search_scene.py two:octave:0.04
+python tools/grammar/search_scene.py two:tritone:0.04
+python tools/grammar/search_scene.py two:just_fifth:0.0
+python tools/grammar/search_scene.py aba:1:0.1 --threads 2
+python tools/grammar/search_scene.py aba:6:0.1 --threads 2
+python tools/grammar/search_scene.py aba:12:0.1 --threads 2
 ```
 
 Defaults: `--steps 15000 --tolerance 0.5 --variational-steps 2000 --keep 5

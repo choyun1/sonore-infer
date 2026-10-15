@@ -64,10 +64,10 @@ the threshold rule, and 100 Hz harmonic 1 from the model.
 Re-run on main through the scene module (identical outputs, PR #15):
 
 ```
-python tools/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --percents 0 1 2 3 4 5 6 7 8 9 10 12 14 16 18 20 22 24 26 28 30 35 40 45 50
-python tools/compare_mistuned_harmonic.py --f0 100 --harmonic 1 --whistle-timing inferred \
+python tools/bass/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --percents 0 1 2 3 4 5 6 7 8 9 10 12 14 16 18 20 22 24 26 28 30 35 40 45 50
+python tools/bass/compare_mistuned_harmonic.py --f0 100 --harmonic 1 --whistle-timing inferred \
     --trajectories --harmonic-timing inferred --percents 0 1 2 3 4 5 6 7 8 9 10 12 14 16 18 20 22 24 26 28 30 35 40 45 50     # the original script
-python tools/mistuning_thresholds.py data/A5/f0-*.txt
+python tools/bass/mistuning_thresholds.py data/A5/f0-*.txt
 ```
 
 Raw outputs: [`data/A5/`](data/A5/).

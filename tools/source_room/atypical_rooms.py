@@ -16,15 +16,15 @@ The posterior is :func:`sonore_infer.sourceroom.infer` at floors of 20,
 Each line written holds: the condition, true RT60, floor, the posterior's
 5/50/95% RT60 quantiles, the log marginal likelihood, and
 ``measure_rt60``'s Schroeder T20 x 3 reading of the same IR (median over
-bands, after the direct sound; tools/rt60_prior_fit.py's ``measure``).
+bands, after the direct sound; tools/source_room/rt60_prior_fit.py's ``measure``).
 ``--summary`` prints, per condition and floor, the median over seeds of
 posterior median / true RT60, next to T20 x 3 / true RT60, and the log
 marginal likelihood relative to the control (same seed, RT60 and floor).
 
 Default: 5 seeds x RT60 {0.4, 0.8} s x 7 conditions x 3 floors.
 
-    python tools/atypical_rooms.py --out rooms.jsonl [--shard 0 --shards 1] [--floors 20]
-    python tools/atypical_rooms.py --summary rooms.jsonl
+    python tools/source_room/atypical_rooms.py --out rooms.jsonl [--shard 0 --shards 1] [--floors 20]
+    python tools/source_room/atypical_rooms.py --summary rooms.jsonl
 """
 
 import argparse
@@ -71,7 +71,7 @@ def sounds(n_seeds):
 
 def observe(power: BlockPower, index: int, rt60: float, condition: str) -> tuple[torch.Tensor, float]:
     """Block energies of one sound in one condition's room, and T20 x 3 of that room."""
-    # an offset of 10**4 keeps these seeds apart from tools/recovery.py's
+    # an offset of 10**4 keeps these seeds apart from tools/source_room/recovery.py's
     seeds = np.random.SeedSequence(10**4 + index).generate_state(3)
     env_seed, carrier_seed, ir_seed = (int(s) for s in seeds)
     env = so.gaussian_spectrogram(power.duration, FS, rng=env_seed)

@@ -43,7 +43,7 @@ including 3 rows where a Laplace Hessian was floored. The Eqn 2 values are
 `sonore_infer.thresholds` applied to those four columns (checked again
 for this page). The BASS-rule values come from a local script in the
 project's files that re-implements BASS's rule, so it is not committed.
-`tools/mistuning_thresholds.py` does not read the extra columns and drops
+`tools/bass/mistuning_thresholds.py` does not read the extra columns and drops
 floored rows, so it is not used here.
 
 ## Plots
@@ -62,7 +62,7 @@ sampling from Laplace +22578, from the variational fit +59).
 ## Reproduce
 
 ```
-python tools/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --variational-steps 2000
+python tools/bass/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --variational-steps 2000
 ```
 
 ## Open

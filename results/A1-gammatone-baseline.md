@@ -65,10 +65,10 @@ On today's main the gammatone cochleagram is no longer the default; select
 it with `--cochleagram gammatone`. Not re-run on today's main.
 
 ```
-python tools/compare_mistuned_harmonic.py --f0 200 --harmonic 3 --cochleagram gammatone > f0-200_h3.txt
-python tools/compare_mistuned_harmonic.py --f0 200 --harmonic 3 --cochleagram gammatone \
+python tools/bass/compare_mistuned_harmonic.py --f0 200 --harmonic 3 --cochleagram gammatone > f0-200_h3.txt
+python tools/bass/compare_mistuned_harmonic.py --f0 200 --harmonic 3 --cochleagram gammatone \
     --percents 11 12 13 14 15 16 17 18 19 > f0-200_h3_fine.txt
-python tools/mistuning_thresholds.py data/A1/coarse/f0-*.txt data/A1/fine/f0-*.txt
+python tools/bass/mistuning_thresholds.py data/A1/coarse/f0-*.txt data/A1/fine/f0-*.txt
 ```
 
 Raw outputs: [`data/A1/coarse/`](data/A1//coarse) (7 levels) and

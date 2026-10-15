@@ -5,8 +5,8 @@ every 10 ms) on white noise of each duration, with a backward pass through
 the Gaussian likelihood, as one optimization step would need. Prints the
 median of ``--repeats`` runs after one warm-up run.
 
-    python tools/time_cochleagram.py                 # CPU
-    python tools/time_cochleagram.py --device cuda   # an NVIDIA GPU
+    python tools/measurements/time_cochleagram.py                 # CPU
+    python tools/measurements/time_cochleagram.py --device cuda   # an NVIDIA GPU
 """
 
 import argparse

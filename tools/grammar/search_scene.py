@@ -9,8 +9,8 @@ Stimuli are named ``aba:<semitones>:<interval s>``, ``two:<interval>:<asynchrony
 (``tritone``, ``tritone_different_spectra``, ``just_fifth``, ``octave``) or
 ``control:<f0>``:
 
-    python tools/search_scene.py two:tritone:0.04 --variational-steps 2000
-    python tools/search_scene.py aba:6:0.1
+    python tools/grammar/search_scene.py two:tritone:0.04 --variational-steps 2000
+    python tools/grammar/search_scene.py aba:6:0.1
 """
 
 import argparse
@@ -26,7 +26,7 @@ from sonore_infer.stimuli import two_notes as tn
 
 DTYPE = torch.float64
 FS = 20_000
-LEAD = 0.05  # as tools/compare_aba.py
+LEAD = 0.05  # as tools/grammar/compare_aba.py
 
 
 def stimulus(name):

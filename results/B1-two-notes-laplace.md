@@ -10,7 +10,7 @@ the octave's margins here are within Laplace's own run-to-run noise.
 are its simultaneous-grouping illusions (§3.1.2, Fig. 7) and onset
 asynchrony (Fig. 7E–F, App. C.7), which use different stimuli, so no values
 are compared. **Code:** stimuli PR [#16](https://github.com/choyun1/sonore-infer/pull/16), scene module
-PR [#15](https://github.com/choyun1/sonore-infer/pull/15), tool `tools/compare_two_notes.py` (on main since
+PR [#15](https://github.com/choyun1/sonore-infer/pull/15), tool `tools/bass/compare_two_notes.py` (on main since
 PR [#23](https://github.com/choyun1/sonore-infer/pull/23), `121aab4`). Design: [milestone (b)](../docs/design/milestone-b.md).
 
 ## Question
@@ -76,9 +76,9 @@ evidence (Cho's choice, 2026-10-10).
 ## Reproduce
 
 ```
-python tools/compare_two_notes.py --interval octave --steps 3000 > octave.txt
-python tools/compare_two_notes.py --controls --steps 3000 > controls.txt
-python tools/two_notes_summary.py data/B1/*.txt
+python tools/bass/compare_two_notes.py --interval octave --steps 3000 > octave.txt
+python tools/bass/compare_two_notes.py --controls --steps 3000 > controls.txt
+python tools/bass/two_notes_summary.py data/B1/*.txt
 ```
 
 Raw outputs: [`data/B1/`](data/B1/). The 300-step pass is in the project's

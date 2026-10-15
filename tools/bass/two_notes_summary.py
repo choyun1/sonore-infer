@@ -1,4 +1,4 @@
-"""Tables of log odds from the output of tools/compare_two_notes.py.
+"""Tables of log odds from the output of tools/bass/compare_two_notes.py.
 
 Reads any number of its outputs (fits of the same stimulus may be split across
 files, for example the harmonic-plus-whistles fits run separately) and prints,
@@ -12,7 +12,7 @@ For each interval it also prints the asynchrony threshold by Eqn 2
 (``sonore_infer.thresholds``), with ``one`` as H0 and ``two`` as H1; the
 largest asynchrony means two sources were never preferred (not measurable).
 
-    python tools/two_notes_summary.py results/*.txt
+    python tools/bass/two_notes_summary.py results/*.txt
 """
 
 import argparse

@@ -6,7 +6,7 @@
 
 **Status:** map done (2026-10-14); seeds 0–4 for the two cells under 10
 done (2026-10-14). **Paper target:** Fig. 8D (right), App. C.10. **Code:**
-`tools/compare_aba.py`, milestone (c) step 4. Design:
+`tools/grammar/compare_aba.py`, milestone (c) step 4. Design:
 [milestone (c)](../docs/design/milestone-c.md), decision C8.
 
 ## Question
@@ -118,9 +118,9 @@ within 0.6, checked at 3 and 6 semitones, 100 ms
 ```
 python tools/run_seeds.py --out aba_out --only aba --seeds 0          # both hypotheses, 300 steps
 python tools/run_seeds.py --out aba_one --only aba --seeds 0 --hypotheses one --tolerance 0.5
-python tools/aba_map.py aba_one/aba aba_out/aba > map.txt             # one from the rerun, two from the first
+python tools/grammar/aba_map.py aba_one/aba aba_out/aba > map.txt             # one from the rerun, two from the first
 python tools/run_seeds.py --out aba_seeds --only aba --seeds 1 2 3 4 --tolerance 0.5 --stimuli 3:0.083 3:0.15
-python tools/aba_fit_steps.py --semitones 6 --interval 0.1 --hypothesis one --steps 15000
+python tools/grammar/aba_fit_steps.py --semitones 6 --interval 0.1 --hypothesis one --steps 15000
 ```
 
 Each `compare_aba.py` hypothesis takes about 1 to 1.5 h on one thread of

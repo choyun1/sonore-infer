@@ -4,7 +4,7 @@ Each hypothesis is read from the first folder that has it, in the order
 given, so a rerun of one hypothesis (``compare_aba.py --hypotheses one``)
 can be combined with the other from an earlier run:
 
-    python tools/aba_map.py results/aba/pc_one_converged results/aba/pc_300steps
+    python tools/grammar/aba_map.py results/aba/pc_one_converged results/aba/pc_300steps
 
 Prints, for each evidence estimate, a table of semitones by onset-to-onset
 interval (positive favors two streams), then the fit steps and evidence

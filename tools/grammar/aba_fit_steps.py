@@ -4,7 +4,7 @@ Fits one hypothesis of one stimulus (as ``compare_aba.py`` builds it, GP
 sigma and lengthscale inferred) for ``--steps`` steps and prints the best log
 joint seen by each checkpoint:
 
-    python tools/aba_fit_steps.py --semitones 6 --interval 0.1 --hypothesis one --steps 15000
+    python tools/grammar/aba_fit_steps.py --semitones 6 --interval 0.1 --hypothesis one --steps 15000
 """
 
 import argparse

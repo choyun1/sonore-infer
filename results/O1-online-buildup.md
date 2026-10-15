@@ -5,7 +5,7 @@
 > checked carefully. Numbers, methods and interpretations may change.
 
 **Status:** first pass done; online fits per window to convergence added (2026-10-14); sweeps of lag and window added (2026-10-15). **Paper target:** Fig. 8F (right), App. C.11.
-**Code:** `src/sonore_infer/online.py`, `tools/online_buildup.py`,
+**Code:** `src/sonore_infer/online.py`, `tools/online/online_buildup.py`,
 `src/sonore_infer/stimuli/buildup.py`. Design:
 [online inference](../docs/design/online.md), step 2.
 
@@ -231,18 +231,18 @@ Checks, from the same outputs:
 ## Reproduce
 
 ```
-python tools/online_buildup.py --semitones 4 --triplets 6 --lag inf 1 \
+python tools/online/online_buildup.py --semitones 4 --triplets 6 --lag inf 1 \
     --batch-steps 300 > st4_w50_s30.txt
-python tools/online_buildup.py --semitones 4 --triplets 6 --lag \
+python tools/online/online_buildup.py --semitones 4 --triplets 6 --lag \
     --batch-steps 3000 > st4_batch3000.txt
-python tools/online_buildup.py --semitones 4 --triplets 6 --lag 1 \
+python tools/online/online_buildup.py --semitones 4 --triplets 6 --lag 1 \
     --steps 150 > st4_w50_s150_lag1.txt
-python tools/online_buildup.py --semitones 4 --triplets 6 --lag 1 \
+python tools/online/online_buildup.py --semitones 4 --triplets 6 --lag 1 \
     --steps 2000 --window-patience 50 > st4_w50_p50_lag1.txt
-python tools/leaky_odds.py st4_w50_p50_lag1.txt st8_w50_p50_lag1.txt
-python tools/online_buildup.py --semitones 4 --triplets 6 --lag 0.5 \
+python tools/online/leaky_odds.py st4_w50_p50_lag1.txt st8_w50_p50_lag1.txt
+python tools/online/online_buildup.py --semitones 4 --triplets 6 --lag 0.5 \
     --steps 2000 --window-patience 50 > st4_w50_p50_lag0.5.txt
-python tools/online_buildup.py --semitones 8 --triplets 6 --lag 1 \
+python tools/online/online_buildup.py --semitones 8 --triplets 6 --lag 1 \
     --window 0.01 --steps 2000 --window-patience 50 > st8_w10_p50_lag1.txt
 python tools/results_plots.py
 ```

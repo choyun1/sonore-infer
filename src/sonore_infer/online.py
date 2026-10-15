@@ -254,7 +254,7 @@ def prefix_scene(
 ) -> tuple[Scene | None, Params]:
     """The hypothesis on the sound's first ``end`` seconds, with the tones whose onsets
     have arrived (at least ``heard`` seconds before ``end``), and its batch-style
-    initialization (as ``tools/compare_aba.py``)."""
+    initialization (as ``tools/grammar/compare_aba.py``)."""
     timing = SceneTiming(fs=fs, total_duration=end, ramp=ramp)
     sources: list[Whistle] = []
     init: Params = {}

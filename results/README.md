@@ -163,7 +163,7 @@ the paper reports it.
 | 400 | 3 | about 13 | 7.1 | 9.5 | 12.9 | 12.5 | 13.0 |
 
 Each column is the `threshold_laplace` column of that experiment's
-`thresholds.txt`, made by `tools/mistuning_thresholds.py` from the committed
+`thresholds.txt`, made by `tools/bass/mistuning_thresholds.py` from the committed
 outputs. Rows whose evidence estimate was unreliable are left out first;
 each page says how many.
 

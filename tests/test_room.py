@@ -42,7 +42,7 @@ def test_gain_predicts_reverberant_noise_on_average():
 
     # A noise burst through 16 rooms: the mean of the reverberant band
     # energies matches the burst's energies convolved with the expected gain.
-    # tools/room_gain_error.py measures this in full (0.2-0.3 dB mean error).
+    # tools/source_room/room_gain_error.py measures this in full (0.2-0.3 dB mean error).
     rt60, drr, block, n_blocks = 0.4, 10.0, round(0.01 * FS), 88
     bank = so.cosine_filterbank(39, 20.0, 4000.0)
     gain = RoomGain(fs=FS, n_blocks=n_blocks, drr_db=drr).gain(torch.tensor(rt60)).numpy()

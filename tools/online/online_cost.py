@@ -8,7 +8,7 @@ free with the given lag. The scene is at its batch initialization from the
 tones, which costs the same as any other point. Each time is the median of
 ``--repeats`` runs, on however many threads torch uses.
 
-    python tools/online_cost.py --semitones 8 --ends 0.55 1.05 2.05 3.05
+    python tools/online/online_cost.py --semitones 8 --ends 0.55 1.05 2.05 3.05
 """
 
 import argparse

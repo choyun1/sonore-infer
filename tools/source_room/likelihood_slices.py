@@ -14,9 +14,9 @@ truth, the rest held there:
 
 Printed: log likelihood relative to the truth [nats], at floors of 60, 40
 and 20 dB below the observation's peak and at the measured noise sigma and
-twice it (design R4). Bias and sigma are from tools/block_power_error.py.
+twice it (design R4). Bias and sigma are from tools/source_room/block_power_error.py.
 
-    python tools/likelihood_slices.py [--seed 0] [--plot slices.png]
+    python tools/source_room/likelihood_slices.py [--seed 0] [--plot slices.png]
 """
 
 import argparse

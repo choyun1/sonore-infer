@@ -34,10 +34,10 @@ per parameter. Experiment (b) is [R2](R2-atypical-rooms.md).
 | Step | What | Result | Evidence |
 | --- | --- | --- | --- |
 | 1 | Source prior (`SpectrogramPrior`), matching sonore's `gaussian_spectrogram` | Whitening sonore's drawn levels gives back its standard normals (to 1e-9, 3 seeds) | PR [#18](https://github.com/choyun1/sonore-infer/pull/18), tests |
-| 2 | Room's expected band energy (`RoomGain`) | Mean of 64 rendered noise bursts within 0.1 dB of the model on average (after the fix found in step 3); a single draw is off by −0.7 to −1.6 dB on average, sd 2.8–4.2 dB | PR [#19](https://github.com/choyun1/sonore-infer/pull/19); `data/R1/room_gain_error.txt` (`tools/room_gain_error.py`) |
-| 3 | Block-power likelihood (`BlockPower`) | One render against the model at RT60 0.4 s, DRR 10 dB, all cells: bias −1.3 dB, sd 3.6 dB (the likelihood uses these) | PR [#21](https://github.com/choyun1/sonore-infer/pull/21); `data/R1/block_power_error.txt` (`tools/block_power_error.py`) |
-| 3 | Likelihood slices through the truth, one sound (RT60 0.4 s, DRR 10 dB) | At floors 60 and 40 dB every slice peaks at the truth; at a 20 dB floor (BASS's) RT60 is nearly flat (0.1 s costs 1.3 nats) | `data/R1/likelihood_slices.txt` (`tools/likelihood_slices.py`) |
-| 4 | RT60 prior from Traer & McDermott's survey (270 IRs, run by Cho) | Gamma, shape 1.97, scale 0.220 s (median 0.362 s), better than a lognormal by 18 AIC; typical DRR 9.9 dB | PR [#22](https://github.com/choyun1/sonore-infer/pull/22); constants in `src/sonore_infer/room.py` (`tools/rt60_prior_fit.py`) |
+| 2 | Room's expected band energy (`RoomGain`) | Mean of 64 rendered noise bursts within 0.1 dB of the model on average (after the fix found in step 3); a single draw is off by −0.7 to −1.6 dB on average, sd 2.8–4.2 dB | PR [#19](https://github.com/choyun1/sonore-infer/pull/19); `data/R1/room_gain_error.txt` (`tools/source_room/room_gain_error.py`) |
+| 3 | Block-power likelihood (`BlockPower`) | One render against the model at RT60 0.4 s, DRR 10 dB, all cells: bias −1.3 dB, sd 3.6 dB (the likelihood uses these) | PR [#21](https://github.com/choyun1/sonore-infer/pull/21); `data/R1/block_power_error.txt` (`tools/source_room/block_power_error.py`) |
+| 3 | Likelihood slices through the truth, one sound (RT60 0.4 s, DRR 10 dB) | At floors 60 and 40 dB every slice peaks at the truth; at a 20 dB floor (BASS's) RT60 is nearly flat (0.1 s costs 1.3 nats) | `data/R1/likelihood_slices.txt` (`tools/source_room/likelihood_slices.py`) |
+| 4 | RT60 prior from Traer & McDermott's survey (270 IRs, run by Cho) | Gamma, shape 1.97, scale 0.220 s (median 0.362 s), better than a lognormal by 18 AIC; typical DRR 9.9 dB | PR [#22](https://github.com/choyun1/sonore-infer/pull/22); constants in `src/sonore_infer/room.py` (`tools/source_room/rt60_prior_fit.py`) |
 | 4 | Band RT60s of the 270 survey IRs against sonore's regression (relative to synth_ir rooms) | Median within 0.94–1.06 from 200 Hz to 5 kHz; 1.13–1.21 at 82–158 Hz and 1.14–1.17 at 5.7–7.1 kHz; outdoor rooms deviate most. Matters only for real rooms, not for experiments (a) and (b), whose sounds use synth_ir | Cho's rerun; step record row 18 in the project files (`source-reverb/evaluation.md`) |
 | 5 | Inference over RT60 and the source's statistics (`sourceroom.infer`) | Exact Hessian, 3–5 s per RT60 point. The posterior is far narrower than the design's RT60 grid (on one test sound RT60 sd about 1.5%, against 24% between grid points), so the grid is refined around the peak, and the source settings are integrated in closed form plus Laplace. This departs from decision R5. Tests: Hessian and Laplace match autograd and `log_evidence` | PR [#26](https://github.com/choyun1/sonore-infer/pull/26) (merged); `tests/test_sourceroom.py` |
 | 5 | Fit fix: the loud setting's 10 sounds returned the prior unchanged on the first run (the fit started so far below the sound's level that the likelihood was flat); fits now start at the sound's overall level, and those 10 were rerun | Two of 180 inferences left out (degenerate interval) | PR [#35](https://github.com/choyun1/sonore-infer/pull/35) (`e3c7fb7`) |
@@ -53,7 +53,7 @@ downloaded, so its raw output is not here.
 
 ## Experiment (a): recovery
 
-Run by `tools/recovery.py`: 10 seeds × RT60 {0.2, 0.4, 0.8} s × three
+Run by `tools/source_room/recovery.py`: 10 seeds × RT60 {0.2, 0.4, 0.8} s × three
 source settings (sonore's defaults, and two corners inside the prior box:
 fine and slow with a small sd, coarse and fast with a large one), each
 400 ms, at a 60 dB floor, and inferred at the measured likelihood sigma
@@ -98,8 +98,8 @@ over truth for RT60 is 0.98 to 1.03, and the 90% interval's width (95% over
 ## Reproduce
 
 ```
-python tools/recovery.py --out recovery.jsonl --shard 0 --shards 4   # and shards 1-3
-python tools/recovery.py --summary recovery.jsonl
+python tools/source_room/recovery.py --out recovery.jsonl --shard 0 --shards 4   # and shards 1-3
+python tools/source_room/recovery.py --summary recovery.jsonl
 ```
 
 Raw outputs: `data/R1/recovery.jsonl` (one line per inference) and

@@ -29,7 +29,7 @@ slower than real time at 3 s.
 
 ## 3. Where the time goes
 
-`tools/online_cost.py` times the parts of one window at four points in the
+`tools/online/online_cost.py` times the parts of one window at four points in the
 sound [measured: `results/data/O1/online_cost_st8.txt`, 8 st, lag 1 s,
 4 threads, median of 5]:
 
@@ -140,5 +140,5 @@ results; I would do them first, in that order, and measure after each.
 ## Reproduce
 
 ```
-python tools/online_cost.py --semitones 8 --ends 0.55 1.05 2.05 3.05 > online_cost_st8.txt
+python tools/online/online_cost.py --semitones 8 --ends 0.55 1.05 2.05 3.05 > online_cost_st8.txt
 ```

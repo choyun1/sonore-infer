@@ -72,7 +72,7 @@ approximation loses.
 | Likelihood | Gaussian on the whole cochleagram (25 ms time windows every 10 ms) [code: `Cochleagram.win_dur`, `hop_dur`; `scene.py` `log_joint`] | the same, summed over the new time windows only |
 | Fit | Adam on all latents at once [code: `scene.py` `evaluate`] | a few steps per window on the free latents |
 | Evidence | Laplace, importance sampling, variational, all on the whole sound [code: `evidence.py`] | an estimate that grows window by window (O5) |
-| Hypotheses | written by hand from the stimulus's tones [code: `tools/compare_aba.py`, milestone (c) branch] | the same, with sources and events appearing as their tones arrive (O7) |
+| Hypotheses | written by hand from the stimulus's tones [code: `tools/grammar/compare_aba.py`, milestone (c) branch] | the same, with sources and events appearing as their tones arrive (O7) |
 
 **Cost now.** One ABA hypothesis (3.1 s, 12 whistle tones) takes
 5,704–5,774 s for one stream and 6,621–6,695 s for two on the cloud CPU,
@@ -229,7 +229,7 @@ in every enumerative run so far.
 **Recommendation:** a new module `src/sonore_infer/online.py` that
 holds the fixed-lag loop over an existing `Scene` (which latents are free,
 the conditioning of O4 (A), the evidence of O5 (B)), and a tool
-`tools/online_buildup.py` that runs it on the C.11 stimuli. Existing
+`tools/online/online_buildup.py` that runs it on the C.11 stimuli. Existing
 modules change only where a latent vector has to be split into fixed and
 free parts (each trajectory's deviations are now one vector over the whole
 grid [code: `scene.py` `_trajectory`, line 273]). Pyro's `SMCFilter` is not
@@ -398,7 +398,7 @@ None of these is addressed here.
    set by agreement with the reference? (recommended: yes)
 7. **O7** The paper's two hypotheses, events entering at their onsets, the
    B source born with the first B tone? (recommended: yes)
-8. **O8** New `online.py` and `tools/online_buildup.py`, existing modules
+8. **O8** New `online.py` and `tools/online/online_buildup.py`, existing modules
    changed only to split latents? (recommended: yes)
 9. **O9** Fixed steps per window by default, with surprise-scaled steps
    run beside it on one stimulus? (recommended: yes)

@@ -6,7 +6,7 @@
 
 **Status:** done (2026-10-10). **Paper target:** none (see
 [B1](B1-two-notes-laplace.md)); no paper values are compared.
-**Code:** `tools/compare_two_notes.py --variational-steps`, PR
+**Code:** `tools/bass/compare_two_notes.py --variational-steps`, PR
 [#23](https://github.com/choyun1/sonore-infer/pull/23) (`121aab4`), using the variational evidence of
 PR [#20](https://github.com/choyun1/sonore-infer/pull/20). Design: [milestone (b)](../docs/design/milestone-b.md).
 
@@ -76,12 +76,12 @@ asynchrony (milestone (b), B5). Up to 240 ms it did not.
 ## Reproduce
 
 ```
-python tools/compare_two_notes.py --interval octave --variational-steps 2000 \
+python tools/bass/compare_two_notes.py --interval octave --variational-steps 2000 \
     --only one@400 one@200 one@100 two > octave.txt
-python tools/compare_two_notes.py --interval octave --asynchronies 0.12 0.16 0.24 \
+python tools/bass/compare_two_notes.py --interval octave --asynchronies 0.12 0.16 0.24 \
     --variational-steps 2000 --only one@400 one@200 one@100 two > octave_long.txt
-python tools/compare_two_notes.py --interval just_fifth --variational-steps 2000 --only whistles > just_fifth_whistles.txt
-python tools/two_notes_summary.py data/B2/*.txt
+python tools/bass/compare_two_notes.py --interval just_fifth --variational-steps 2000 --only whistles > just_fifth_whistles.txt
+python tools/bass/two_notes_summary.py data/B2/*.txt
 ```
 
 Raw outputs: [`data/B2/`](data/B2/).

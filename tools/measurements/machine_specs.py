@@ -5,7 +5,7 @@ if they are installed, torch and any NVIDIA GPU with its memory. Uses only
 the standard library, so it also runs before the package is installed; torch
 and nvidia-smi are reported when present.
 
-    python tools/machine_specs.py
+    python tools/measurements/machine_specs.py
 """
 
 import os
