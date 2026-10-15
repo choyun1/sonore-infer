@@ -1,6 +1,6 @@
 # R1. Source and room (RT60) from one reverberant sound
 
-> **Under review by Adrian Cho.** This is a working record, not reviewed
+> **Under review.** This is a working record, not reviewed
 > results. The work was done with AI assistance (Claude) and has not yet been
 > checked carefully. Numbers, methods and interpretations may change.
 

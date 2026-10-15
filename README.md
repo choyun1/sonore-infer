@@ -1,5 +1,7 @@
 # sonore-infer
 
+[![tests](https://github.com/choyun1/sonore-infer/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/choyun1/sonore-infer/actions/workflows/tests.yml) [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)](pyproject.toml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
 Inferring what is in an auditory scene by inverting a generative model of
 sound (analysis by synthesis), building on Cusimano, Hewitt & McDermott (2024),
 *Listening with generative models*, Cognition 253, 105874, and using
@@ -74,8 +76,8 @@ to (c), and online inference: mistuned harmonic, two notes, ABA streaming)
 ## Results
 
 [`results/`](results/README.md) has one page per experiment, with the
-committed outputs each number comes from. These pages are under review by
-Adrian Cho and may change.
+committed outputs each number comes from. These pages are under review
+and may change.
 
 ## License
 
