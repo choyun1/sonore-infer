@@ -1,16 +1,15 @@
 # Faster online inference — design
 
-Status: **draft for Cho, 2026-10-15.** Nothing is accepted yet; §7 lists the
-questions in short form. Cho chose on 2026-10-15 to do the speed-ups before
-the order-effects runs ([order-effects.md](order-effects.md), parked), since
+Status: **accepted by Cho, 2026-10-15** (all six recommendations, S1 to
+S6). §7 keeps the questions as they were asked. Cho chose on 2026-10-15
+to do the speed-ups before the order-effects runs ([order-effects.md](order-effects.md), parked), since
 speed compounds across every later experiment.
 
 ## Decisions at a glance
 
-Recommendations; nothing is accepted yet. The options and reasons are in
-§2, and the questions in §7.
+All six accepted by Cho on 2026-10-15. The options and reasons are in §2.
 
-| Decision | Recommended |
+| Decision | Accepted |
 |---|---|
 | S1. Render each event over its own span | Yes: exact, no approximation; first |
 | S2. Take the evidence less often than the fit | Every 0.5 s and at each triplet's end; fit still every 50 ms |
