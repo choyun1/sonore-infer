@@ -33,6 +33,7 @@ not import the package.
 | `compare_aba.py` | One stream or two for an ABA sequence by marginal likelihood (App. C.10) |
 | `aba_map.py` | The ABA map of log odds from `compare_aba.py` outputs, combining reruns of one hypothesis |
 | `aba_fit_steps.py` | How far one ABA hypothesis's fit has got after a given number of Adam steps |
+| `search_scene.py` | Searches for a stimulus's best hypothesis without being given its structure (decisions C9, C10) |
 
 ## Source and room (docs/design/source-reverb.md)
 

@@ -1,0 +1,24 @@
+two:just_fifth:0.0: steps 15000, tolerance 0.5, seed 0
+onset groups: 1
+  0.047 s: w[206x1] + w[304x1] + w[397x1] + w[602x1] + w[922x1] + w[1201x1] + w[1525x1] + w[1796x1] + w[2183x1] | w[206x1] + h[304x1] + w[397x1] | w[206x1] + w[397x1] + h[608x1] | h[152x1] + w[206x1] + w[397x1] | h[197x1] + h[304x1]
+stage                 end_s  fit_steps  laplace_posterior  structure
+round 1 of 1          0.500       3195           -10021.6  h[197x1] + h[304x1]
+round 1 of 1          0.500       1614           -10078.3  w[206x1] + h[304x1] + w[397x1]
+round 1 of 1          0.500       4614           -10117.1  h[152x1] + w[206x1] + w[397x1]
+round 1 of 1          0.500       2950           -10815.6  w[206x1] + w[397x1] + h[608x1]
+cleanup               0.500       3265           -10016.3  h[197x1] + w[304x1]
+cleanup               0.500       1608           -10080.6  w[206x1] + h[304x1] + h[397x1]
+cleanup               0.500       1604           -10081.1  h[206x1] + h[304x1] + w[397x1]
+cleanup               0.500       3166           -10102.7  h[197x1]
+cleanup               0.500       1210           -10197.2  w[197x1] + h[304x1]
+cleanup               0.500       1388           -10391.8  h[304x1]
+cleanup               0.500       1547           -14484.3  w[206x1] + w[304x1] + w[397x1]
+cleanup               0.500       1589           -14825.3  w[206x1] + w[397x1]
+final               laplace_posterior  variational_posterior  elbo_posterior  structure
+                              -10016.3               -10014.0        -10013.3  h[197x1] + w[304x1]
+                              -10021.6               -10022.3        -10028.2  h[197x1] + h[304x1]
+                              -10078.3               -10068.8        -10071.1  w[206x1] + h[304x1] + w[397x1]
+                              -10080.6               -10070.2        -10073.6  w[206x1] + h[304x1] + h[397x1]
+                              -10081.1               -10075.7        -10075.8  h[206x1] + h[304x1] + w[397x1]
+best: h[197x1] + w[304x1]
+hypotheses fitted: 12, seconds: 2223
