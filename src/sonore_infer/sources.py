@@ -136,10 +136,14 @@ def _gate(
     return rise(midpoints - onset) * rise(onset + duration - midpoints)
 
 
-def upsample(grid_values: torch.Tensor, grid_step: float, n_samples: int, fs: float) -> torch.Tensor:
+def upsample(
+    grid_values: torch.Tensor, grid_step: float, n_samples: int, fs: float, start: int = 0
+) -> torch.Tensor:
     """Linear interpolation of values on a grid ``0, grid_step, 2 grid_step, ...`` [s]
-    (last dimension) to the times ``n / fs`` of ``n_samples`` samples, held flat past the last point."""
-    position = (torch.arange(n_samples, dtype=grid_values.dtype, device=grid_values.device) / fs) / grid_step
+    (last dimension) to the times ``n / fs`` of the ``n_samples`` samples from
+    sample ``start`` on, held flat past the last point."""
+    samples = torch.arange(start, start + n_samples, dtype=grid_values.dtype, device=grid_values.device)
+    position = (samples / fs) / grid_step
     position = position.clamp(max=grid_values.shape[-1] - 1)
     low = position.floor().long().clamp(max=grid_values.shape[-1] - 2)
     weight = position - low
@@ -169,16 +173,27 @@ def trajectory_event(
     ``onset`` and ``duration`` [s] may be tensors, to be inferred.
     """
     n_samples = round(total_duration * fs)
-    freqs = upsample(freqs_hz, grid_step, n_samples, fs)
-    levels = upsample(levels_db, grid_step, n_samples, fs)
-    # integral of frequency up to each sample time n / fs (left Riemann sum)
+    dtype = freqs_hz.dtype
+    onset = torch.as_tensor(onset, dtype=dtype)
+    # Only the samples where the gate can be non-zero are rendered (design
+    # online-speed S1): from the sample at or before the onset, which the
+    # phase at the onset needs, to the first sample past the offset. The span
+    # is chosen without gradient; the gate keeps its gradient inside it and is
+    # exactly zero, gradient included, outside.
+    position = onset * fs
+    low = int(position.detach().floor().clamp(0, n_samples - 2))
+    offset_samples = float(torch.as_tensor(onset + duration).detach()) * fs
+    stop = min(n_samples, max(low + 2, math.ceil(offset_samples) + 1))
+    span = stop - low
+    freqs = upsample(freqs_hz, grid_step, span, fs, start=low)
+    levels = upsample(levels_db, grid_step, span, fs, start=low)
+    # integral of frequency from sample ``low`` to each sample (left Riemann
+    # sum); the phase is a difference of these, so where the sum starts cancels
     cycles = torch.nn.functional.pad(freqs.cumsum(-1)[..., :-1], (1, 0)) / fs
     # cycles at the onset, by linear interpolation, so the onset can move smoothly
-    position = torch.as_tensor(onset, dtype=freqs.dtype) * fs
-    low = position.detach().floor().long().clamp(0, n_samples - 2)
     weight = position - low
-    cycles_at_onset = cycles[..., low] * (1 - weight) + cycles[..., low + 1] * weight
+    cycles_at_onset = cycles[..., 0] * (1 - weight) + cycles[..., 1] * weight
     amplitudes = math.sqrt(2) * REFERENCE_RMS * 10 ** (levels / 20)
     tones = amplitudes * torch.cos(2 * math.pi * (cycles - cycles_at_onset[..., None]))
-    midpoints = (torch.arange(n_samples, dtype=freqs.dtype, device=freqs.device) + 0.5) / fs
-    return tones.sum(0) * _gate(midpoints, onset, duration, ramp)
+    midpoints = (torch.arange(low, stop, dtype=dtype, device=freqs.device) + 0.5) / fs
+    return _place(tones.sum(0) * _gate(midpoints, onset, duration, ramp), low, n_samples)

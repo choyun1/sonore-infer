@@ -122,3 +122,56 @@ def test_a_frequency_glide_has_the_integrated_phase():
     # the phase is a left Riemann sum of the frequency: exact for a constant
     # frequency, off by a few hundredths of a radian here
     np.testing.assert_allclose(sound.numpy(), expected.numpy(), atol=0.02 * np.sqrt(2) * 1e-3)
+
+
+def _trajectory_event_whole_sound(
+    freqs_hz, levels_db, onset, duration, *, grid_step, fs, total_duration, ramp
+):
+    """:func:`trajectory_event` as it was before design online-speed S1: every
+    event rendered over the whole sound, then gated."""
+    from sonore_infer.sources import REFERENCE_RMS, _gate, upsample
+
+    n_samples = round(total_duration * fs)
+    freqs = upsample(freqs_hz, grid_step, n_samples, fs)
+    levels = upsample(levels_db, grid_step, n_samples, fs)
+    cycles = torch.nn.functional.pad(freqs.cumsum(-1)[..., :-1], (1, 0)) / fs
+    position = torch.as_tensor(onset, dtype=freqs.dtype) * fs
+    low = position.detach().floor().long().clamp(0, n_samples - 2)
+    weight = position - low
+    cycles_at_onset = cycles[..., low] * (1 - weight) + cycles[..., low + 1] * weight
+    amplitudes = np.sqrt(2) * REFERENCE_RMS * 10 ** (levels / 20)
+    tones = amplitudes * torch.cos(2 * np.pi * (cycles - cycles_at_onset[..., None]))
+    midpoints = (torch.arange(n_samples, dtype=freqs.dtype) + 0.5) / fs
+    return tones.sum(0) * _gate(midpoints, onset, duration, ramp)
+
+
+@pytest.mark.parametrize(
+    "onset, duration",
+    [(0.0, 0.05), (0.31234, 0.05), (0.1, 0.4567), (0.5, 0.2), (0.0123, 0.9), (0.95, 0.3), (0.40001, 0.02)],
+)
+def test_rendering_each_event_over_its_span_equals_the_whole_sound(onset, duration):
+    """Design online-speed S1: the waveform and its gradients equal the
+    whole-sound render up to rounding, including events at either end."""
+    from sonore_infer.sources import trajectory_event
+
+    generator = torch.Generator().manual_seed(round(onset * 1e5) + round(duration * 1e4))
+    n_grid, kwargs = 101, dict(grid_step=0.01, fs=FS, total_duration=1.0, ramp=0.01)
+
+    def inputs():
+        freqs = (300 + 400 * torch.rand(3, n_grid, generator=generator, dtype=torch.float64)).requires_grad_()
+        levels = (40 + 20 * torch.rand(3, n_grid, generator=generator, dtype=torch.float64)).requires_grad_()
+        times = torch.tensor([onset, duration], dtype=torch.float64, requires_grad=True)
+        return freqs, levels, times
+
+    freqs, levels, times = inputs()
+    weights = torch.randn(FS, generator=generator, dtype=torch.float64)
+    results = []
+    for render in (trajectory_event, _trajectory_event_whole_sound):
+        for tensor in (freqs, levels, times):
+            tensor.grad = None
+        sound = render(freqs, levels, times[0], times[1], **kwargs)
+        (sound * weights).sum().backward()
+        results.append([sound.detach(), freqs.grad.clone(), levels.grad.clone(), times.grad.clone()])
+    for ours, whole in zip(*results, strict=True):
+        scale = whole.abs().max().item()
+        np.testing.assert_allclose(ours.numpy(), whole.numpy(), rtol=0, atol=1e-9 * scale + 1e-300)
