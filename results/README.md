@@ -135,6 +135,7 @@ What every experiment here shares unless its page says otherwise:
 | [B4](B4-two-notes-seeds.md) | B2 over seeds (5 on close cases, then 10 on all) | none | done | Every sign unchanged; seed SD 1–5 |
 | [C1](C1-kernel-inferred.md) | GP sigma and lengthscale inferred (100/1 and octave) | Fig. 7D, Table A.2 | done | 100/1 still 25%; octave still one source |
 | [C2](C2-aba-streaming.md) | ABA sequences, one stream or two (30 stimuli) | Fig. 8D, App. C.10 | map done; seeds 0–4 on the 2 cells under 10 | One stream at 1 semitone, two from 3 up (paper: from about 6) |
+| [C3](C3-search.md) | Search over structures from detected events | App. B.2 | first pass on 4 (b) stimuli; ABA pending | Same structure as enumerated on 3 of 4; fifth at 0 ms gives note + whistle |
 | [O1](O1-online-buildup.md) | Buildup of streaming, batch and online | Fig. 8F, App. C.11 | first pass | Converged batch odds rise with triplets; online with per-window convergence reproduces them in one pass |
 | [R1](R1-source-and-room.md) | Source and room (RT60) from one sound | none in this paper | done | RT60 within 3%; 90% intervals cover 66% (overconfident) |
 | [R2](R2-atypical-rooms.md) | Atypical rooms, exponential room model | none in this paper | done | Biased like T20 × 3; time-reversed rooms do not fit |

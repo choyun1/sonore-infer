@@ -77,6 +77,8 @@ to (c), and online inference: mistuned harmonic, two notes, ABA streaming)
 | `sources.py` | Renderers: harmonic tone, whistle, events with inferred timing, trajectories |
 | `priors.py` | The paper's priors (App. A, Tables A.1-A.2) |
 | `scene.py` | A hypothesis as a list of sources; fitting and evidence for it |
+| `detect.py` | Candidate events from the cochleagram: onsets, spectral peaks, harmonic f0s |
+| `search.py` | Search over hypotheses in rounds of onsets, with a residual pass and cleanup moves |
 | `fit.py` | Posterior mode by Adam |
 | `evidence.py` | Marginal likelihood: Laplace, importance sampling, variational |
 | `thresholds.py` | Thresholds from posterior probabilities (the paper's Eqn 2) |
