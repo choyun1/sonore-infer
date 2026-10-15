@@ -240,7 +240,7 @@ def test_lbfgs_finds_the_mode_of_a_quadratic_and_leaves_frozen_entries():
 
     init = {"x": torch.zeros(12, dtype=F64)}
     free = {"x": torch.arange(12) >= 4}
-    mode, history, evaluations = lbfgs_free(log_joint, init, free, iterations=100)
+    mode, history, evaluations = lbfgs_free(log_joint, init, free, {"x": 0.1}, iterations=100)
     assert torch.equal(mode["x"][:4], init["x"][:4])
     # the exact conditional mode of the free entries, the frozen ones at zero
     exact = torch.linalg.solve(
@@ -250,10 +250,23 @@ def test_lbfgs_finds_the_mode_of_a_quadratic_and_leaves_frozen_entries():
     assert history[-1] >= history[0] and evaluations >= len(history)
 
 
+def test_lbfgs_fits_a_window_in_fewer_evaluations_than_adam():
+    """Design online-speed S3, on the toy hypothesis's whole 0.3 s: from the
+    same start, 10 L-BFGS iterations reach a higher log joint than 40 Adam
+    steps, with fewer evaluations of the log joint and its gradient."""
+    from sonore_infer.online import adam_free, lag_free, lbfgs_free
+
+    waveform = torch.tensor(bu.buildup_stimulus(1, 8, lead=0.05).data[:, 0], dtype=F64)[: round(0.3 * bu.FS)]
+    cochleagram = FFTCochleagram()
+    scene, init = prefix_scene((WhistleSpec("w0", TONES),), 0.3, bu.FS, bu.RAMP)
+    log_joint = scene.log_joint(cochleagram(waveform), cochleagram, 10.0)
+    free = lag_free(scene, init, 0.3, math.inf)
+    _, adam = adam_free(log_joint, init, free, scene.learning_rates(), 40)
+    _, lbfgs, evaluations = lbfgs_free(log_joint, init, free, scene.learning_rates(), 10)
+    assert max(lbfgs) > max(adam) and evaluations < len(adam)
+
+
 def test_online_runs_with_lbfgs():
-    steps = short_run_with(optimizer="lbfgs", steps=20, patience=5)
-    adam = short_run_with(steps=5)
-    assert len(steps) == len(adam)
-    assert all(step.window.evaluations >= step.window.adam_steps for step in steps)
-    # L-BFGS reaches at least Adam's log joint after 5 steps, window by window
-    assert all(a.window.log_joint >= b.window.log_joint - 1e-6 for a, b in zip(steps, adam, strict=True))
+    steps = short_run_with(optimizer="lbfgs", steps=3, evidence_ends=[0.15])
+    assert [round(step.window.end, 3) for step in steps] == [0.15, 0.3]
+    assert all(step.window.evaluations >= step.window.adam_steps > 0 for step in steps)

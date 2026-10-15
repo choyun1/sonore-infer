@@ -195,6 +195,7 @@ def lbfgs_free(
     log_joint: Callable[[Params], torch.Tensor],
     init: Params,
     free: Free,
+    learning_rates: dict[str, float],
     iterations: int,
     patience: int | None = None,
     tolerance: float = 1.0,
@@ -204,47 +205,69 @@ def lbfgs_free(
     after each iteration, and the number of evaluations of the log joint and
     its gradient, line searches included.
 
-    The free entries are optimized as one vector, so frozen ones never move.
-    Each iteration uses a strong Wolfe line search, so no learning rates are
-    needed. With ``patience``, the fit stops as :func:`adam_free` does, counted
-    in iterations, and also when L-BFGS itself finds no further change.
+    The free entries are optimized as one vector, so frozen ones never move,
+    each measured in units of its Adam learning rate: the latents' scales
+    differ by thousands (onset against level), and without this the first
+    line search steps far out of the prior's range. Each iteration uses a
+    strong Wolfe line search. With ``patience``, the fit stops as
+    :func:`adam_free` does, counted in iterations, and also when L-BFGS
+    itself takes no step.
     """
-    vector, keys, unflatten = free_vector(init, free)
+    start, keys, unflatten = free_vector(init, free)
     if not keys:
         with torch.no_grad():
-            return dict(unflatten(vector)), [log_joint(unflatten(vector)).item()], 1
-    vector = vector.clone().requires_grad_()
+            return dict(unflatten(start)), [log_joint(unflatten(start)).item()], 1
+    scale = torch.tensor([learning_rates[name] for name, _ in keys], dtype=start.dtype)
+    steps = torch.zeros_like(start, requires_grad=True)
     optimizer = torch.optim.LBFGS(
-        [vector], lr=1.0, max_iter=1, history_size=20, line_search_fn="strong_wolfe"
+        # one iteration per step, so the stopping rule sees each; torch's default
+        # evaluation budget for one iteration (1.25) would stop every line search
+        # after its first trial point
+        [steps],
+        lr=1.0,
+        max_iter=1,
+        max_eval=25,
+        history_size=20,
+        line_search_fn="strong_wolfe",
     )
     evaluations = 0
+
+    def value_at(flat: torch.Tensor) -> torch.Tensor:
+        return log_joint(unflatten(start + scale * flat))
 
     def closure() -> torch.Tensor:
         nonlocal evaluations
         evaluations += 1
         optimizer.zero_grad()
-        loss = -log_joint(unflatten(vector))
+        try:
+            loss = -value_at(steps)
+        except ValueError:  # a trial point outside a prior's support
+            loss = torch.tensor(math.nan, dtype=steps.dtype)
+        if not torch.isfinite(loss):
+            # a finite stand-in far worse than the start, so the line search backs off
+            steps.grad = torch.zeros_like(steps)
+            return torch.tensor(abs(best_value) * 10 + 1e6, dtype=steps.dtype)
         loss.backward()
         return loss
 
     with torch.no_grad():
-        best_value = log_joint(unflatten(vector)).item()
-    best_vector, history = vector.detach().clone(), [best_value]
+        best_value = value_at(steps).item()
+    best_steps, history = steps.detach().clone(), [best_value]
     for _ in range(iterations):
-        before = vector.detach().clone()
+        before = steps.detach().clone()
         optimizer.step(closure)
         with torch.no_grad():
-            value = log_joint(unflatten(vector)).item()
+            value = value_at(steps).item()
         evaluations += 1
         history.append(value)
         if value > best_value:
-            best_value, best_vector = value, vector.detach().clone()
-        if torch.equal(before, vector.detach()):
+            best_value, best_steps = value, steps.detach().clone()
+        if torch.equal(before, steps.detach()):
             break  # no step taken: converged to L-BFGS's own tolerances
         if patience is not None and len(history) > patience:
             if best_value - max(history[:-patience]) < tolerance:
                 break
-    best = {name: value.detach().clone() for name, value in unflatten(best_vector).items()}
+    best = {name: value.detach().clone() for name, value in unflatten(start + scale * best_steps).items()}
     return best, history, evaluations
 
 
@@ -518,7 +541,9 @@ def run_online(
             )
             evaluations = len(history)
         else:
-            mode, history, evaluations = lbfgs_free(log_joint, init, free, steps, patience, tolerance)
+            mode, history, evaluations = lbfgs_free(
+                log_joint, init, free, scene.learning_rates(), steps, patience, tolerance
+            )
         previous = mode
         fit_steps += len(history) - 1
         fit_evaluations += evaluations
