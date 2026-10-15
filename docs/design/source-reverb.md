@@ -17,6 +17,22 @@ this.
 - **[code]**: read in the archive's `sri/sigtools.py` or sonore 0.5.0.
 - **[estimate]**: my estimate, with its basis next to it.
 
+## Decisions at a glance
+
+What Cho accepted on 2026-10-10. The options and reasons are in §4, and the
+answers in §7.
+
+| Decision | Accepted |
+|---|---|
+| R1. Source model | McDermott, Wrobleski & Oxenham's spectrotemporal source (log power a Gaussian process on an ERB band by time-window grid); natural sounds later, as an out-of-model test |
+| R2. Room model | `sonore.synth_ir` for observations; core reimplements only its expected band energy |
+| R3. Forward model | Expected band power: the source's band power convolved with the room's expected band energy |
+| R4. Likelihood | Block band power in dB, a new class; σ from the measured model-to-render residual, the floor a parameter |
+| R5. Inference | A grid over the source's hyperparameters and RT60, the source integrated out by Laplace at each point |
+| R6. Placement | PyTorch; new modules `spectrotemporal.py`, `room.py`, `blockpower.py`; milestone (b)'s modules reused unchanged |
+| R7. Experiments | (a) recovery over seeds, RT60s and source settings; (b) atypical rooms; (c) listeners, optional |
+| R8. Priors | A gamma RT60 prior fitted to the survey's IRs; the survey files are not redistributed |
+
 ---
 
 ## 1. Problem and scope
