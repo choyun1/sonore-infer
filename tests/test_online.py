@@ -202,3 +202,58 @@ def test_with_short_windows_an_event_enters_once_its_tone_is_heard():
     )
     # the tone starts at 0.05: nothing enters until 0.07, so the scene is silence before
     assert [round(step.window.end, 3) for step in steps] == [0.07, 0.08, 0.09, 0.1]
+
+
+def short_run_with(**kwargs):
+    waveform = torch.tensor(bu.buildup_stimulus(1, 8, lead=0.05).data[:, 0], dtype=F64)[: round(0.3 * bu.FS)]
+    options = dict(fs=bu.FS, ramp=bu.RAMP, window=0.05, lag=math.inf, steps=5) | kwargs
+    return run_online(waveform, (WhistleSpec("w0", TONES),), FFTCochleagram(), **options)
+
+
+def test_evidence_taken_less_often_keeps_the_fits_and_still_telescopes():
+    """Design online-speed S2: the fits are the same windows' fits; only the
+    evidence is taken at fewer ends (and the last), and with no lag the total
+    is still the batch Laplace estimate at the final mode."""
+    every = short_run_with()
+    sparse = short_run_with(evidence_ends=[0.15])
+    assert [round(step.window.end, 3) for step in sparse] == [0.15, 0.3]
+    final = every[-1]
+    assert torch.equal(sparse[-1].params["w0.freq_deviation"], final.params["w0.freq_deviation"])
+    assert sparse[-1].window.total == pytest.approx(final.window.total, abs=1e-6)
+    later = [step for step in every if step.window.end > 0.15 + 1e-9]
+    assert sparse[-1].window.adam_steps == sum(step.window.adam_steps for step in later)
+
+
+def test_lbfgs_finds_the_mode_of_a_quadratic_and_leaves_frozen_entries():
+    from sonore_infer.online import lbfgs_free
+
+    generator = torch.Generator().manual_seed(1)
+    a = torch.randn(12, 12, generator=generator, dtype=F64)
+    precision, target = (
+        a @ a.T + 12 * torch.eye(12, dtype=F64),
+        torch.randn(12, generator=generator, dtype=F64),
+    )
+
+    def log_joint(params):
+        d = params["x"] - target
+        return -0.5 * d @ precision @ d
+
+    init = {"x": torch.zeros(12, dtype=F64)}
+    free = {"x": torch.arange(12) >= 4}
+    mode, history, evaluations = lbfgs_free(log_joint, init, free, iterations=100)
+    assert torch.equal(mode["x"][:4], init["x"][:4])
+    # the exact conditional mode of the free entries, the frozen ones at zero
+    exact = torch.linalg.solve(
+        precision[4:, 4:], precision[4:, 4:] @ target[4:] + precision[4:, :4] @ target[:4]
+    )
+    torch.testing.assert_close(mode["x"][4:], exact, rtol=0, atol=1e-6)
+    assert history[-1] >= history[0] and evaluations >= len(history)
+
+
+def test_online_runs_with_lbfgs():
+    steps = short_run_with(optimizer="lbfgs", steps=20, patience=5)
+    adam = short_run_with(steps=5)
+    assert len(steps) == len(adam)
+    assert all(step.window.evaluations >= step.window.adam_steps for step in steps)
+    # L-BFGS reaches at least Adam's log joint after 5 steps, window by window
+    assert all(a.window.log_joint >= b.window.log_joint - 1e-6 for a, b in zip(steps, adam, strict=True))

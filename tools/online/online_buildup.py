@@ -17,6 +17,10 @@ is the batch Laplace estimate at the online run's mode, so the online
 total minus it is the error of the window terms alone (zero with an infinite
 lag), and it minus ``batch`` is the difference the fits make.
 
+``--evidence-every`` and ``--optimizer lbfgs`` are the speed-ups S2 and S3
+of docs/design/online-speed.md; with S2, a window line is printed only at
+the evidence times, with the seconds, steps and evaluations since the last.
+
     python tools/online/online_buildup.py --semitones 8 --triplets 6 --lag inf 1 --batch-steps 300
 """
 
@@ -71,6 +75,18 @@ def main():
     parser.add_argument(
         "--heard", type=float, default=0.02, help="s of a tone heard before its event enters the scene"
     )
+    parser.add_argument(
+        "--evidence-every",
+        type=float,
+        default=None,
+        help="s between evidence times, plus each triplet's end (online-speed S2); default every window",
+    )
+    parser.add_argument(
+        "--optimizer",
+        choices=["adam", "lbfgs"],
+        default="adam",
+        help="each window's fit (S3); with lbfgs, --steps and --window-patience count iterations",
+    )
     parser.add_argument("--batch-steps", type=int, default=0, help="batch reference at each triplet's end")
     parser.add_argument(
         "--patience",
@@ -88,9 +104,16 @@ def main():
     total = bu.duration(args.triplets, LEAD)
     grid = [round((k + 1) * args.window, 9) for k in range(int(total / args.window + 1e-9))]
     ends = sorted(set(grid) | set(checkpoints))
+    evidence_ends = None
+    if args.evidence_every:
+        n_evidence = int(total / args.evidence_every + 1e-9)
+        every = [round((k + 1) * args.evidence_every, 9) for k in range(n_evidence)]
+        evidence_ends = sorted(set(every) | set(checkpoints))
     print(
         f"{args.semitones:g} st, {args.triplets} triplets, window {1000 * args.window:g} ms, "
-        f"{args.steps} Adam steps per window, fft-bass-gain cochleagram, all timing inferred"
+        f"{args.steps} {'L-BFGS iterations' if args.optimizer == 'lbfgs' else 'Adam steps'} per window"
+        + (f", evidence every {args.evidence_every:g} s and at each triplet's end" if evidence_ends else "")
+        + ", fft-bass-gain cochleagram, all timing inferred"
     )
 
     batch = {}
@@ -123,6 +146,7 @@ def main():
         print(f"lag {lag:g} s")
         print(
             "window: lag  hypothesis  end  n_free  term  total  structure  floored  log_joint  seconds  steps"
+            "  evaluations"
         )
         runs = {}
         for name, spec in specs.items():
@@ -132,7 +156,7 @@ def main():
                 print(
                     f"window: {lag:g}  {name}  {w.end:.3f}  {w.n_free:4d}  {w.term:9.2f}"
                     f"  {w.total:10.2f}  {step.structure_log_prior:6.2f}  {w.floored:2d}"
-                    f"  {w.log_joint:10.2f}  {w.seconds:6.2f}  {w.adam_steps}",
+                    f"  {w.log_joint:10.2f}  {w.seconds:6.2f}  {w.adam_steps}  {w.evaluations}",
                     flush=True,
                 )
 
@@ -151,6 +175,8 @@ def main():
                     tolerance=args.window_tolerance,
                     heard=args.heard,
                     ends=ends,
+                    evidence_ends=evidence_ends,
+                    optimizer=args.optimizer,
                     report=report,
                 )
             }

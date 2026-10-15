@@ -29,6 +29,13 @@ the terms telescope, and the total is the batch Laplace estimate of the
 whole prefix at the final mode; with a finite lag the frozen past enters as
 a point value instead of being integrated out, which is the approximation
 whose cost the experiment measures.
+
+**Faster options (docs/design/online-speed.md).** With ``evidence_ends``
+(S2), the fit still runs every window but the Laplace estimate is taken
+only at those ends: a term is then the same difference over a longer step,
+from the last evidence time, and with an infinite lag the terms still
+telescope to the batch estimate. With ``optimizer="lbfgs"`` (S3), each
+window's fit is L-BFGS on the free latents instead of Adam.
 """
 
 from __future__ import annotations
@@ -184,6 +191,63 @@ def adam_free(
     return best, history
 
 
+def lbfgs_free(
+    log_joint: Callable[[Params], torch.Tensor],
+    init: Params,
+    free: Free,
+    iterations: int,
+    patience: int | None = None,
+    tolerance: float = 1.0,
+) -> tuple[Params, list[float], int]:
+    """L-BFGS on the free entries of ``init`` for at most ``iterations``
+    iterations (design online-speed S3); the best point seen, the log joint
+    after each iteration, and the number of evaluations of the log joint and
+    its gradient, line searches included.
+
+    The free entries are optimized as one vector, so frozen ones never move.
+    Each iteration uses a strong Wolfe line search, so no learning rates are
+    needed. With ``patience``, the fit stops as :func:`adam_free` does, counted
+    in iterations, and also when L-BFGS itself finds no further change.
+    """
+    vector, keys, unflatten = free_vector(init, free)
+    if not keys:
+        with torch.no_grad():
+            return dict(unflatten(vector)), [log_joint(unflatten(vector)).item()], 1
+    vector = vector.clone().requires_grad_()
+    optimizer = torch.optim.LBFGS(
+        [vector], lr=1.0, max_iter=1, history_size=20, line_search_fn="strong_wolfe"
+    )
+    evaluations = 0
+
+    def closure() -> torch.Tensor:
+        nonlocal evaluations
+        evaluations += 1
+        optimizer.zero_grad()
+        loss = -log_joint(unflatten(vector))
+        loss.backward()
+        return loss
+
+    with torch.no_grad():
+        best_value = log_joint(unflatten(vector)).item()
+    best_vector, history = vector.detach().clone(), [best_value]
+    for _ in range(iterations):
+        before = vector.detach().clone()
+        optimizer.step(closure)
+        with torch.no_grad():
+            value = log_joint(unflatten(vector)).item()
+        evaluations += 1
+        history.append(value)
+        if value > best_value:
+            best_value, best_vector = value, vector.detach().clone()
+        if torch.equal(before, vector.detach()):
+            break  # no step taken: converged to L-BFGS's own tolerances
+        if patience is not None and len(history) > patience:
+            if best_value - max(history[:-patience]) < tolerance:
+                break
+    best = {name: value.detach().clone() for name, value in unflatten(best_vector).items()}
+    return best, history, evaluations
+
+
 @dataclass
 class WindowTerm:
     """One window's term of the evidence and what it took: the free latents,
@@ -196,7 +260,8 @@ class WindowTerm:
     floored: int
     log_joint: float  # at the mode
     seconds: float
-    adam_steps: int = 0
+    adam_steps: int = 0  # optimizer steps (L-BFGS iterations with S3)
+    evaluations: int = 0  # evaluations of the log joint and its gradient in the fit
 
 
 class FixedLagEvidence:
@@ -387,6 +452,8 @@ def run_online(
     heard: float = 0.0,
     sigma: float = 10.0,
     ends: Sequence[float] | None = None,
+    evidence_ends: Sequence[float] | None = None,
+    optimizer: str = "adam",
     report: Callable[[OnlineStep], None] | None = None,
 ) -> list[OnlineStep]:
     """One pass over ``waveform``, updating ``hypothesis`` every ``window`` seconds.
@@ -399,7 +466,16 @@ def run_online(
     enters once ``heard`` seconds of it have arrived: with windows much
     shorter than a tone, an event that enters on its ramp alone can have its
     timing pushed away from the tone, where the fit cannot pull it back.
+
+    ``evidence_ends`` [s] are the window ends at which the evidence is taken
+    (design online-speed S2); the last window is always one. Between them
+    the fit runs as usual and nothing is returned; each returned window's
+    seconds, steps and evaluations count everything since the last one. By
+    default the evidence is taken at every window. ``optimizer`` is ``"adam"`` or ``"lbfgs"``
+    (S3); with L-BFGS, ``steps`` and ``patience`` count iterations.
     """
+    if optimizer not in ("adam", "lbfgs"):
+        raise ValueError(f"optimizer: expected 'adam' or 'lbfgs', got {optimizer!r}")
     total = waveform.shape[-1] / fs
     if ends is None:
         n = int(math.floor(total / window + 1e-9))
@@ -410,8 +486,10 @@ def run_online(
     previous: Params = {}
     steps_out: list[OnlineStep] = []
     last_silent_end = 0.0
+    final = ends[-1]
+    # since the last evidence time: seconds, optimizer steps and evaluations
+    begin, fit_steps, fit_evaluations = time.perf_counter(), 0, 0
     for end in ends:
-        begin = time.perf_counter()
         n_samples = round(end * fs)
         if n_samples < cochleagram.win_samples:
             continue  # not one whole cochleagram time window yet: nothing heard, nothing to update
@@ -434,7 +512,18 @@ def run_online(
         init = extend(scene, fresh, previous, hypothesis) if previous else fresh
         free = lag_free(scene, init, end, lag)
         log_joint = scene.log_joint(observed, cochleagram, sigma)
-        mode, history = adam_free(log_joint, init, free, scene.learning_rates(), steps, patience, tolerance)
+        if optimizer == "adam":
+            mode, history = adam_free(
+                log_joint, init, free, scene.learning_rates(), steps, patience, tolerance
+            )
+            evaluations = len(history)
+        else:
+            mode, history, evaluations = lbfgs_free(log_joint, init, free, steps, patience, tolerance)
+        previous = mode
+        fit_steps += len(history) - 1
+        fit_evaluations += evaluations
+        if evidence_ends is not None and end != final and not any(abs(end - e) < 1e-9 for e in evidence_ends):
+            continue
         # what is free is decided before the fit and kept: the evidence's terms need one set
         state = laplace(log_joint, mode, free)
         term, floored = evidence.add(state)
@@ -447,7 +536,8 @@ def run_online(
                 floored,
                 state.peak,
                 time.perf_counter() - begin,
-                len(history) - 1,
+                fit_steps,
+                fit_evaluations,
             ),
             scene.structure_log_prior(),
             mode,
@@ -455,7 +545,7 @@ def run_online(
         steps_out.append(step)
         if report:
             report(step)
-        previous = mode
+        begin, fit_steps, fit_evaluations = time.perf_counter(), 0, 0
     return steps_out
 
 
@@ -494,6 +584,7 @@ __all__ = [
     "batch_laplace",
     "extend",
     "lag_free",
+    "lbfgs_free",
     "leaky_log_odds",
     "laplace",
     "prefix_scene",
