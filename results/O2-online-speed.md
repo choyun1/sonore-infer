@@ -4,7 +4,7 @@
 > results. The work was done with AI assistance (Claude) and has not yet been
 > checked carefully. Numbers, methods and interpretations may change.
 
-**Status:** S1 and S2 checked (2026-10-15); S3 failed its check.
+**Status:** S1 and S2 checked (2026-10-15); S3 tried in two forms, both failed its check, dropped.
 **Paper target:** none; this is about cost, checked against
 [O1](O1-online-buildup.md). **Code:** `src/sonore_infer/sources.py`
 (`trajectory_event`), `src/sonore_infer/online.py` (`run_online`),
@@ -30,8 +30,12 @@ their tone. One seed, the cloud CPU (4 threads), as O1.
   a test checks (`tests/test_sources_and_fit.py`); it is on by default.
 - **S2**: the fit still every 50 ms, the Laplace evidence only every 0.5 s
   and at each triplet's end (`--evidence-every 0.5`); opt-in.
-- **S3**: each window fitted by L-BFGS instead of Adam, stopping once it
-  gains less than 1 over 5 iterations, at most 200 (`--optimizer lbfgs`).
+- **S3**: each window fitted by L-BFGS instead of Adam, in two forms, both
+  since removed from the code (branch history, commits 5e93e86 to
+  the one before this page's): plain L-BFGS stopping once it gains less
+  than 1 over 5 iterations, at most 200; then L-BFGS held near the
+  window's start by a quadratic pull (radius 100 Adam learning rates),
+  followed by the usual Adam fit from its point.
 
 ## Results
 
@@ -87,26 +91,56 @@ check again. The windows took 835 s in all at 8 semitones (O1: 5,598) and
 559 s at 4 (O1: 4,611), six to eight times less; the whole run took
 1,108 and 833 s.
 
-### S3 fails S6
+### S3 fails S6, in both forms
 
-With L-BFGS the online log odds at 6 triplets were −1.4 million against
-O1's 132 [`data/O2/st8_w50_lbfgs_p5_lag1.txt`]. Tracing the first windows
-of the one-stream run shows why. Each window's L-BFGS fit moves far along
+**Plain L-BFGS.** The online log odds at 6 triplets were −1.4 million
+against O1's 132 [`data/O2/st8_w50_lbfgs_p5_lag1.txt`]. Tracing the first
+windows of the one-stream run shows why. Each window's fit moves far along
 directions that the sound heard so far hardly constrains: in the first
 window, the event's log duration rose by 2.0 (its duration seven times) for
 a gain of 1.5 in the log joint; later windows moved level deviations by 10
 to 16 dB. When the next 50 ms arrive, the fit starts far from the tones
-(log joint −16,969 at 0.2 s against −2,680 at the end of the window
-before) and does not find its way back. Adam's small steps avoid this.
+(log joint −16,969 at 0.2 s against −2,680 at the end of the window before)
+and does not find its way back. Adam's small steps avoid this.
+
+**L-BFGS held near the window's start, then Adam.** The pull stops the
+drift, and Adam finishes on the true log joint, so each window ends at a
+real mode. With S2 at 8 semitones [`data/O2/st8_w50_lbfgs_p50_lag1_e0.5.txt`]:
+
+| Triplets | 1 | 2 | 3 | 4 | 5 | 6 |
+|---|---|---|---|---|---|---|
+| O1 | 9.97 | 37.06 | 60.53 | 84.92 | 108.11 | 131.94 |
+| S1, S2 and S3 | 12.74 | 34.73 | 89.60 | 117.34 | 139.07 | 167.49 |
+
+Off by up to 36. The two-stream fit is the same as with Adam alone (log
+joint at the mode within 0.05 at every triplet's end); the one-stream fit
+is worse (−62,054 against −61,998 at 3.05 s, and −31,346 against −31,316
+at 1.55 s), so the odds for two streams are too high. L-BFGS lands the
+one-stream whistle in a worse basin of the rugged timing landscape, which
+Adam from the same start avoids. The time saved was 6% (1,043 s against
+1,108 s): the one-stream fit took 19,772 evaluations of the log joint and
+its gradient against Adam's 22,737, and the two-stream fit 7,065 against
+3,756, because each L-BFGS iteration costs 3 to 5 evaluations in its line
+search and the 50-step Adam floor still follows.
 
 On one window from a fixed start, L-BFGS does fit better and in fewer
-evaluations: on the test's toy window (`tests/test_online.py`), log joint
-−5,824 after 10 iterations (31 evaluations) against Adam's −5,837 after 40
-steps. So the failure comes from fitting a sound that keeps arriving, not
-from the optimizer itself.
+evaluations (on the test's toy window, log joint −5,824 after 10 iterations
+and 31 evaluations against Adam's −5,837 after 40 steps), so the failure is
+of fitting a sound that keeps arriving, where the one-stream whistle has to
+jump to each B tone, not of the optimizer. Dropped (design S3's fallback
+options (C) and (D) remain).
+
+### Where the time goes now
+
+With S1 and S2 at 8 semitones, the two-stream fit stops at the 50-step
+floor of the stopping rule in nearly every window (3,696 steps over 60
+windows), and the one-stream fit spends hundreds of steps at each B tone's
+arrival (22,677 steps). The 12 Hessians per hypothesis take about 150 to
+250 s of the 835 s. So the next levers are a stopping rule that can stop
+below 50 steps (design S3 (D)), 100 ms windows (O1 found the window barely
+matters, and it halves the floor), and S4.
 
 ## What is open
 
-- Whether to keep L-BFGS as an option (asked of Cho).
 - S2 as the default, now that it passed at 8 and 4 semitones.
-- S4 (a Gaussian summary of the past) and S5 (the PC's GPU), per the design.
+- S3 (D), 100 ms windows, S4 and S5, per the design.

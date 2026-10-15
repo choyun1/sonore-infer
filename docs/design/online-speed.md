@@ -13,7 +13,7 @@ All six accepted by Cho on 2026-10-15. The options and reasons are in §2.
 |---|---|
 | S1. Render each event over its own span | Yes: exact, no approximation; first |
 | S2. Take the evidence less often than the fit | Every 0.5 s and at each triplet's end; fit still every 50 ms |
-| S3. Fewer optimizer steps per window | L-BFGS on the free latents, Adam kept as the default until it is shown equal |
+| S3. Fewer optimizer steps per window | L-BFGS on the free latents, Adam kept as the default until it is shown equal. **Outcome:** tried in two forms, failed S6, dropped (results/O2); (C) and (D) remain |
 | S4. Evaluate only the recent sound | The past summarized by a Gaussian in the whole-sound latents; after S1 to S3 are measured |
 | S5. Hardware | Measure the PC's GPU; float64 throughout until float32 is shown safe |
 | S6. How each is checked | Against the O1 runs: log odds within 3 at every triplet, cost measured with `online_cost.py` |
@@ -107,6 +107,14 @@ about one gradient per step plus a few in the line search [estimate; to be
 measured]. (C) would need a Hessian in every window, which S2 removes.
 Adam stays the default until L-BFGS reproduces the O1 fits (S6), because
 the learning rates per latent were tuned for Adam in milestones (a) to (c).
+
+**Outcome (2026-10-15).** Tried twice on the O1 case and dropped
+([O2](../../results/O2-online-speed.md)): plain L-BFGS drifts along
+directions the sound so far does not constrain and the next window never
+recovers (odds −1.4 million against 132); held near the window's start and
+finished by Adam, it lands the one-stream fit in a worse basin (odds 167
+against 132) and saves 6% of the time. (D), a stopping rule that can stop
+below 50 steps, is the option left here.
 
 ### S4. Evaluate only the recent sound
 
