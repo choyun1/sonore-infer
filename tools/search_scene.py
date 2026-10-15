@@ -19,11 +19,13 @@ import sys
 import torch
 
 from sonore_infer.cochleagram import FFTCochleagram
-from sonore_infer.search import describe, search
+from sonore_infer.erb import erb_to_freq
+from sonore_infer.search import build, describe, search
 from sonore_infer.stimuli import bistability as ab
 from sonore_infer.stimuli import two_notes as tn
 
 DTYPE = torch.float64
+FS = 20_000
 LEAD = 0.05  # as tools/compare_aba.py
 
 
@@ -96,8 +98,25 @@ def main():
         vi = f"{s.result.log_posterior_variational:21.1f}" if variational else f"{'-':>21}"
         elbo = f"{s.result.log_posterior_elbo:14.1f}" if variational else f"{'-':>14}"
         print(f"{'':20s} {s.screen:17.1f}  {vi}  {elbo}  {describe(s.plan)}")
+        print(f"{'':20s} fitted: {fitted(s, ramp)}")
     print(f"best: {describe(result.best.plan)}")
     print(f"hypotheses fitted: {result.n_fits}, seconds: {result.seconds:.0f}")
+
+
+def fitted(scored, ramp):
+    """The fitted sources: kind, mean frequency [Hz] and each event's onset-duration [ms]."""
+    params = scored.fitted.fit.params
+    scene, _ = build(scored.plan, scored.end, FS, ramp, dtype=DTYPE)
+    parts = []
+    for source in scene.sources:
+        gp = "f0" if source.kind == "harmonic" else "freq"
+        mean = erb_to_freq(params[source.key(f"{gp}_mean")] + params[source.key(f"{gp}_deviation")]).mean()
+        onsets, durations = source.event_times(params, scene.timing)
+        times = ",".join(
+            f"{1000 * float(o):.0f}-{1000 * float(o + d):.0f}" for o, d in zip(onsets, durations, strict=True)
+        )
+        parts.append(f"{source.kind[0]}{float(mean):.0f}Hz[{times}]")
+    return " + ".join(parts)
 
 
 def _single(candidate):
