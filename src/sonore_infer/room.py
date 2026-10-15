@@ -270,7 +270,7 @@ class RoomGain:
         centers = torch.arange(self.n_blocks, dtype=torch.float64) * width
         rate = rate[:, None]
 
-        def weighted(start, stop, at_start, slope):
+        def weighted(start: torch.Tensor, stop: torch.Tensor, at_start: float, slope: float) -> torch.Tensor:
             # integral over [start, stop] (clipped to the decay) of
             # (at_start + slope (t - start)) exp(-rate t)
             lo = start.clamp(0, None).clamp(None, duration)

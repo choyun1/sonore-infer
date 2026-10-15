@@ -18,7 +18,13 @@ import torch
 REFERENCE_RMS = 1e-6
 
 
-def ramp_gain(n_samples: int, n_ramp: int, *, dtype=torch.float64, device=None) -> torch.Tensor:
+def ramp_gain(
+    n_samples: int,
+    n_ramp: int,
+    *,
+    dtype: torch.dtype = torch.float64,
+    device: torch.device | str | None = None,
+) -> torch.Tensor:
     """Raised-cosine onset and offset ramps of ``n_ramp`` samples, sampled at
     segment midpoints as sonore's ``Sound.ramp`` does."""
     gain = torch.ones(n_samples, dtype=dtype, device=device)
@@ -111,7 +117,7 @@ def whistle_event(
     midpoints = (n + 0.5) / fs  # where sonore samples its ramps
     offset = onset + duration
 
-    def rise(seconds):
+    def rise(seconds: torch.Tensor) -> torch.Tensor:
         return (1 - torch.cos(math.pi * (seconds / ramp).clamp(0, 1))) / 2
 
     gate = rise(midpoints - onset) * rise(offset - midpoints)
@@ -119,10 +125,12 @@ def whistle_event(
     return amplitude * gate * torch.cos(2 * math.pi * freq * (n / fs - onset))
 
 
-def _gate(midpoints: torch.Tensor, onset, duration, ramp: float) -> torch.Tensor:
+def _gate(
+    midpoints: torch.Tensor, onset: torch.Tensor | float, duration: torch.Tensor | float, ramp: float
+) -> torch.Tensor:
     """The raised-cosine gate of :func:`whistle_event` at ``midpoints`` [s]."""
 
-    def rise(seconds):
+    def rise(seconds: torch.Tensor) -> torch.Tensor:
         return (1 - torch.cos(math.pi * (seconds / ramp).clamp(0, 1))) / 2
 
     return rise(midpoints - onset) * rise(onset + duration - midpoints)
@@ -141,8 +149,8 @@ def upsample(grid_values: torch.Tensor, grid_step: float, n_samples: int, fs: fl
 def trajectory_event(
     freqs_hz: torch.Tensor,
     levels_db: torch.Tensor,
-    onset,
-    duration,
+    onset: torch.Tensor | float,
+    duration: torch.Tensor | float,
     *,
     grid_step: float,
     fs: float,

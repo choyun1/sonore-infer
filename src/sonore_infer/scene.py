@@ -33,7 +33,7 @@ from __future__ import annotations
 import copy
 import functools
 import math
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from typing import ClassVar
 
@@ -57,6 +57,7 @@ from sonore_infer.priors import (
     BoundedUniform,
     KernelParameterPrior,
     NormalGammaMarginal,
+    TrajectoryPrior,
     log_duration_distribution,
     log_prior_structure,
     sample_structure,
@@ -65,6 +66,9 @@ from sonore_infer.priors import (
 from sonore_infer.sources import _gate, trajectory_event
 
 Params = dict[str, torch.Tensor]
+
+KernelValues = tuple[float | torch.Tensor, float | torch.Tensor]
+"""A Gaussian process kernel's (sigma, lengthscale): numbers, or tensors when inferred."""
 
 
 @dataclass(frozen=True)
@@ -77,10 +81,17 @@ class SceneTiming:
 
     @property
     def n_grid(self) -> int:
+        """Points of the trajectory grid, ``GRID_STEP`` apart, covering the sound."""
         return round(self.total_duration / GRID_STEP) + 1
 
 
-def _event(timing: SceneTiming, freqs, levels, onset, duration) -> torch.Tensor:
+def _event(
+    timing: SceneTiming,
+    freqs: torch.Tensor,
+    levels: torch.Tensor,
+    onset: torch.Tensor | float,
+    duration: torch.Tensor | float,
+) -> torch.Tensor:
     return trajectory_event(
         freqs,
         levels,
@@ -104,21 +115,30 @@ distribution; :meth:`Scene.model` calls ``pyro.sample`` (design C7)."""
 TERM_FREQUENCY, TERM_LEVEL, TERM_SPECTRUM, TERM_TIMING = range(4)
 
 
-def _as_list(value, n_events: int, what: str) -> list[float]:
+def _number(value: float | Sequence[float], what: str) -> float:
+    """The one value of a one-event source's ``what``."""
+    if isinstance(value, Sequence):
+        raise ValueError(f"{what}: expected one number, got {len(value)} values")
+    return float(value)
+
+
+def _as_list(value: float | Sequence[float], n_events: int, what: str) -> list[float]:
     values = [value] * n_events if isinstance(value, (int, float)) else list(value)
     if len(values) != n_events:
         raise ValueError(f"{what}: expected {n_events} values, got {len(values)}")
     return values
 
 
-def _timing_init(n_events: int, onset, duration, dtype) -> dict[str, torch.Tensor]:
+def _timing_init(
+    n_events: int, onset: float | Sequence[float], duration: float | Sequence[float], dtype: torch.dtype
+) -> dict[str, torch.Tensor]:
     """Initial timing latents: the first onset and log duration, and with
     several events, every log duration and the log rests between events
     (``onset`` and ``duration`` then give each event's)."""
     if n_events == 1:
         return {
-            "onset": torch.tensor(onset, dtype=dtype),
-            "log_duration": torch.tensor(math.log(duration), dtype=dtype),
+            "onset": torch.tensor(_number(onset, "onset"), dtype=dtype),
+            "log_duration": torch.tensor(math.log(_number(duration, "duration")), dtype=dtype),
         }
     onsets = _as_list(onset, n_events, "onset")
     durations = _as_list(duration, n_events, "duration")
@@ -132,7 +152,9 @@ def _timing_init(n_events: int, onset, duration, dtype) -> dict[str, torch.Tenso
     }
 
 
-def _per_event_deviation(timing: SceneTiming, values: list[float], onsets: list[float], dtype):
+def _per_event_deviation(
+    timing: SceneTiming, values: list[float], onsets: list[float], dtype: torch.dtype
+) -> tuple[torch.Tensor, torch.Tensor]:
     """A constant mean and grid deviations that hold each event's value from its
     onset until the next event's (the first value before the first onset)."""
     mean = sum(values) / len(values)
@@ -147,7 +169,9 @@ class _Events:
     """The timing part of a source's program: sites, event times and grid memberships."""
 
     @staticmethod
-    def sample(source, sample: Sample, timing: SceneTiming, dtype) -> tuple[list, list]:
+    def sample(
+        source: _Source, sample: Sample, timing: SceneTiming, dtype: torch.dtype
+    ) -> tuple[list[torch.Tensor], list[torch.Tensor]]:
         """Each event's onset and duration [s], from the source's timing sites [App. A.2, Eqns A.8-A.12]:
         the first onset uniform over the scene, then log durations and log rests
         whose shared (mu, lambda) are integrated out (design C2, C3 (D))."""
@@ -164,7 +188,13 @@ class _Events:
         return onsets, list(durations)
 
     @staticmethod
-    def memberships(source, timing: SceneTiming, onsets, durations, dtype) -> torch.Tensor | None:
+    def memberships(
+        source: _Source,
+        timing: SceneTiming,
+        onsets: Sequence[torch.Tensor],
+        durations: Sequence[torch.Tensor],
+        dtype: torch.dtype,
+    ) -> torch.Tensor | None:
         """How much each grid point lies inside each event (None with one event; design C4)."""
         if source.n_events == 1:
             return None
@@ -176,43 +206,47 @@ class _Events:
 class _Scorer:
     """The ``sample`` of scoring: returns the given parameters and adds up their log densities by term."""
 
-    def __init__(self, params: Params):
+    def __init__(self, params: Params) -> None:
         self.params = params
         self.terms: dict[int, torch.Tensor] = {}
 
-    def __call__(self, name: str, distribution, term: int) -> torch.Tensor:
+    def __call__(self, name: str, distribution: torch.distributions.Distribution, term: int) -> torch.Tensor:
         value = self.params[name]
         log_prob = distribution.log_prob(value)
         self.terms[term] = log_prob if term not in self.terms else self.terms[term] + log_prob
         return value
 
     def ordered_terms(self) -> list[torch.Tensor]:
+        """The log prior terms in term order."""
         return [self.terms[term] for term in sorted(self.terms)]
 
 
 class _Recorder:
     """A ``sample`` that draws from each distribution, or asks ``draw`` to, and keeps the values by name."""
 
-    def __init__(self, draw=None):
+    def __init__(
+        self, draw: Callable[[str, torch.distributions.Distribution], torch.Tensor] | None = None
+    ) -> None:
         self.draw = draw or (lambda name, distribution: distribution.sample())
         self.params: Params = {}
 
-    def __call__(self, name: str, distribution, term: int) -> torch.Tensor:
+    def __call__(self, name: str, distribution: torch.distributions.Distribution, term: int) -> torch.Tensor:
         self.params[name] = self.draw(name, distribution)
         return self.params[name]
 
 
-def _for_pyro(distribution):
+def _for_pyro(distribution: torch.distributions.Distribution) -> torch.distributions.Distribution:
     """The same distribution as a Pyro one (Pyro needs its mixin; values are unchanged)."""
     from pyro.distributions.torch_distribution import TorchDistributionMixin
 
     pyro_distribution = copy.copy(distribution)
-    pyro_distribution.__class__ = _pyro_class(type(distribution), TorchDistributionMixin)
+    # torch's Distribution classes hash fine; mypy reads their __hash__ signature as unhashable
+    pyro_distribution.__class__ = _pyro_class(type(distribution), TorchDistributionMixin)  # type: ignore[arg-type]
     return pyro_distribution
 
 
 @functools.cache
-def _pyro_class(cls, mixin):
+def _pyro_class(cls: type, mixin: type) -> type:
     return type(cls.__name__, (cls, mixin), {})
 
 
@@ -223,12 +257,14 @@ class _Source:
     n_events: int
     infer_kernel: bool
     RATES: ClassVar[dict[str, float]]
+    TRAJECTORIES: ClassVar[dict[str, TrajectoryPrior]]
     # each Gaussian process: its fixed (sigma, lengthscale), the priors on them, and its prior term
-    KERNELS: ClassVar[dict[str, tuple[tuple[float, float], tuple[KernelParameterPrior, ...], int]]]
+    KERNELS: ClassVar[dict[str, tuple[KernelValues, tuple[KernelParameterPrior, ...], int]]]
     # step size of a kernel latent (its free coordinate)
     KERNEL_RATE: ClassVar[float] = 5e-2
 
     def key(self, parameter: str) -> str:
+        """The full name of one of this source's parameters, ``"<source name>.<parameter>"``."""
         return f"{self.name}.{parameter}"
 
     def _kernel_names(self) -> list[str]:
@@ -241,19 +277,20 @@ class _Source:
         return names + (["log_rest"] if self.n_events > 1 else []) + self._kernel_names()
 
     def learning_rates(self) -> dict[str, float]:
+        """Adam's step size for each of this source's parameters, by full name."""
         return {self.key(name): self.RATES.get(name, self.KERNEL_RATE) for name in self._parameter_names()}
 
-    def _kernel_init(self, dtype) -> dict[str, torch.Tensor]:
+    def _kernel_init(self, dtype: torch.dtype) -> dict[str, torch.Tensor]:
         """The kernel latents at the fixed values, so a fit starts where one with them fixed does."""
-        values = {}
+        values: dict[str, torch.Tensor] = {}
         for name in self._kernel_names():
             gp, which, _ = name.rsplit("_", 2)
             index = 0 if which == "sigma" else 1
             fixed, priors = self.KERNELS[gp][0][index], self.KERNELS[gp][1][index]
-            values[name] = torch.tensor(priors.free(fixed), dtype=dtype)
+            values[name] = torch.tensor(priors.free(float(fixed)), dtype=dtype)
         return values
 
-    def _kernel(self, sample: Sample, gp: str, dtype) -> tuple:
+    def _kernel(self, sample: Sample, gp: str, dtype: torch.dtype) -> tuple:
         """The GP's (sigma, lengthscale): fixed, or drawn through ``sample`` when inferred."""
         fixed, priors, term = self.KERNELS[gp]
         if not self.infer_kernel:
@@ -263,7 +300,14 @@ class _Source:
             for which, prior in zip(("sigma", "lengthscale"), priors, strict=True)
         )
 
-    def _trajectory(self, sample: Sample, gp: str, timing: SceneTiming, memberships, dtype):
+    def _trajectory(
+        self,
+        sample: Sample,
+        gp: str,
+        timing: SceneTiming,
+        memberships: torch.Tensor | None,
+        dtype: torch.dtype,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
         """The GP trajectory's mean and deviations on the grid, through ``sample``."""
         prior, term = self.TRAJECTORIES[gp], self.KERNELS[gp][2]
         if self.infer_kernel:
@@ -277,16 +321,23 @@ class _Source:
         return _Events.sample(self, _Scorer(params), timing, params[self.key("onset")].dtype)
 
     def log_prior_terms(self, params: Params, timing: SceneTiming) -> list[torch.Tensor]:
+        """The log prior of this source's parameters, one tensor per prior term, in term order."""
         scorer = _Scorer(params)
         self.program(scorer, timing, params[self.key("onset")].dtype)
         return scorer.ordered_terms()
 
-    def _render_events(self, params, timing, freqs, levels) -> torch.Tensor:
+    def _render_events(
+        self, params: Params, timing: SceneTiming, freqs: torch.Tensor, levels: torch.Tensor
+    ) -> torch.Tensor:
         onsets, durations = self.event_times(params, timing)
         waveform = _event(timing, freqs, levels, onsets[0], durations[0])
         for onset, duration in zip(onsets[1:], durations[1:], strict=True):
             waveform = waveform + _event(timing, freqs, levels, onset, duration)
         return waveform
+
+    def program(self, sample: Sample, timing: SceneTiming, dtype: torch.dtype = torch.float64) -> None:
+        """The source's random variables in generative order, through ``sample``."""
+        raise NotImplementedError
 
 
 @dataclass(frozen=True)
@@ -324,12 +375,12 @@ class Harmonic(_Source):
         self,
         timing: SceneTiming,
         *,
-        f0,
+        f0: float | Sequence[float],
         level_db: float,
-        onset,
-        duration,
+        onset: float | Sequence[float],
+        duration: float | Sequence[float],
         spectrum_db: torch.Tensor | None = None,
-        dtype=torch.float64,
+        dtype: torch.dtype = torch.float64,
     ) -> Params:
         """Constant trajectories at ``f0`` [Hz] and ``level_db``, a flat spectrum unless given.
 
@@ -337,11 +388,14 @@ class Harmonic(_Source):
         and ``f0`` may too (held from each onset to the next).
         """
         if self.n_events == 1 or isinstance(f0, (int, float)):
-            f0_mean = torch.tensor(freq_to_erb_float(float(f0)), dtype=dtype)
+            f0_mean = torch.tensor(freq_to_erb_float(_number(f0, "f0")), dtype=dtype)
             f0_deviation = torch.zeros(timing.n_grid, dtype=dtype)
         else:
             f0_mean, f0_deviation = _per_event_deviation(
-                timing, [freq_to_erb_float(f) for f in _as_list(f0, self.n_events, "f0")], list(onset), dtype
+                timing,
+                [freq_to_erb_float(f) for f in _as_list(f0, self.n_events, "f0")],
+                _as_list(onset, self.n_events, "onset"),
+                dtype,
             )
         values = (
             {
@@ -366,6 +420,7 @@ class Harmonic(_Source):
         return F0_TRAJECTORY.trajectory(params[p("f0_mean")], params[p("f0_deviation")])
 
     def render(self, params: Params, timing: SceneTiming) -> torch.Tensor:
+        """The source's waveform: every event's harmonics, summed."""
         p = self.key
         f0 = erb_to_freq(self.f0_erb(params))
         level = HARMONIC_LEVEL_TRAJECTORY.trajectory(params[p("level_mean")], params[p("level_deviation")])
@@ -373,7 +428,7 @@ class Harmonic(_Source):
         numbers = torch.arange(1, spectrum.shape[-1] + 1, dtype=f0.dtype)
         return self._render_events(params, timing, numbers[:, None] * f0, level + spectrum[:, None])
 
-    def program(self, sample: Sample, timing: SceneTiming, dtype=torch.float64) -> None:
+    def program(self, sample: Sample, timing: SceneTiming, dtype: torch.dtype = torch.float64) -> None:
         """The source's random variables in generative order, through ``sample``."""
         onsets, durations = _Events.sample(self, sample, timing, dtype)
         memberships = _Events.memberships(self, timing, onsets, durations, dtype)
@@ -417,22 +472,22 @@ class Whistle(_Source):
         self,
         timing: SceneTiming,
         *,
-        freq,
+        freq: float | Sequence[float],
         level_db: float,
-        onset,
-        duration,
-        dtype=torch.float64,
+        onset: float | Sequence[float],
+        duration: float | Sequence[float],
+        dtype: torch.dtype = torch.float64,
     ) -> Params:
         """Constant trajectories at ``freq`` [Hz] and ``level_db``; with several events,
         ``onset``, ``duration`` and ``freq`` may give each event's."""
         if self.n_events == 1 or isinstance(freq, (int, float)):
-            freq_mean = torch.tensor(freq_to_erb_float(float(freq)), dtype=dtype)
+            freq_mean = torch.tensor(freq_to_erb_float(_number(freq, "freq")), dtype=dtype)
             freq_deviation = torch.zeros(timing.n_grid, dtype=dtype)
         else:
             freq_mean, freq_deviation = _per_event_deviation(
                 timing,
                 [freq_to_erb_float(f) for f in _as_list(freq, self.n_events, "freq")],
-                list(onset),
+                _as_list(onset, self.n_events, "onset"),
                 dtype,
             )
         values = (
@@ -448,12 +503,13 @@ class Whistle(_Source):
         return {self.key(name): value for name, value in values.items()}
 
     def render(self, params: Params, timing: SceneTiming) -> torch.Tensor:
+        """The source's waveform: every event's tone, summed."""
         p = self.key
         freq = erb_to_freq(F0_TRAJECTORY.trajectory(params[p("freq_mean")], params[p("freq_deviation")]))
         level = WHISTLE_LEVEL_TRAJECTORY.trajectory(params[p("level_mean")], params[p("level_deviation")])
         return self._render_events(params, timing, freq[None], level[None])
 
-    def program(self, sample: Sample, timing: SceneTiming, dtype=torch.float64) -> None:
+    def program(self, sample: Sample, timing: SceneTiming, dtype: torch.dtype = torch.float64) -> None:
         """The source's random variables in generative order, through ``sample``."""
         onsets, durations = _Events.sample(self, sample, timing, dtype)
         memberships = _Events.memberships(self, timing, onsets, durations, dtype)
@@ -471,12 +527,13 @@ class Scene:
     sources: tuple[Source, ...]
     timing: SceneTiming
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         names = [source.name for source in self.sources]
         if len(set(names)) != len(names):
             raise ValueError(f"source names must be unique, got {names}")
 
     def render(self, params: Params) -> torch.Tensor:
+        """The scene's waveform: its sources' waveforms, summed."""
         waveform = self.sources[0].render(params, self.timing)
         for source in self.sources[1:]:
             waveform = waveform + source.render(params, self.timing)
@@ -547,11 +604,14 @@ class Scene:
         for source in self.sources:
             source.program(recorder, self.timing)
         if observed is not None:
+            if cochleagram is None:
+                raise ValueError("an observed cochleagram needs the cochleagram that made it")
             rendered = cochleagram(self.render(recorder.params))
             pyro.factor("likelihood", gaussian_log_likelihood(observed, rendered, sigma))
         return recorder.params
 
     def learning_rates(self) -> dict[str, float]:
+        """Adam's step size for every parameter of every source, by full name."""
         rates: dict[str, float] = {}
         for source in self.sources:
             rates |= source.learning_rates()
@@ -593,11 +653,15 @@ class SceneResult:
     @property
     def log_posterior_variational(self) -> float:
         """Unnormalized log posterior of the hypothesis, by importance sampling from the variational fit."""
+        if self.variational is None:
+            raise ValueError("no variational fit: evaluate() was run with variational_steps=0")
         return self.variational.importance + self.structure_log_prior
 
     @property
     def log_posterior_elbo(self) -> float:
         """Unnormalized log posterior of the hypothesis, by the ELBO (a lower bound)."""
+        if self.variational is None:
+            raise ValueError("no variational fit: evaluate() was run with variational_steps=0")
         return self.variational.elbo + self.structure_log_prior
 
 
@@ -613,18 +677,27 @@ def evaluate(
     variational_steps: int = 0,
     sigma: float = 10.0,
     report: Callable[[str], None] | None = None,
+    tolerance: float | None = None,
 ) -> SceneResult:
     """Fit ``scene`` from each initialization, keep the best mode, and estimate its evidence.
 
     The Laplace and importance-sampling estimates are always made; with
     ``variational_steps``, so is the variational one, from the same mode.
     ``sigma`` is the likelihood's SD [dB] (BASS's value by default).
-    ``report``, if given, receives a message as each stage starts.
+    ``report``, if given, receives a message as each stage starts. With
+    ``tolerance``, ``steps`` is a maximum and each fit stops once its best
+    objective rises by less than ``tolerance`` over 1000 steps (see
+    :func:`~sonore_infer.fit.fit`).
     """
 
-    def fit_one(index, init):
+    def fit_one(index: int, init: Params) -> FitResult:
         if report:
-            report(f"fitting (Adam, {steps} steps) from start {index + 1} of {len(inits)}")
+            limit = (
+                f"up to {steps} steps, stopping at a rise under {tolerance}"
+                if tolerance
+                else f"{steps} steps"
+            )
+            report(f"fitting (Adam, {limit}) from start {index + 1} of {len(inits)}")
         return fit(
             scene.render,
             init,
@@ -634,6 +707,8 @@ def evaluate(
             steps=steps,
             sigma=sigma,
             log_prior=scene.log_prior,
+            patience=1000 if tolerance else None,
+            tolerance=tolerance if tolerance else 1.0,
         )
 
     fits = [fit_one(index, init) for index, init in enumerate(inits)]
