@@ -15,6 +15,24 @@ the paper.
   copied), with file and line.
 - **[estimate]**: my estimate, with its basis next to it.
 
+## Decisions at a glance
+
+What Cho accepted on 2026-10-11. The options and reasons are in §3, the
+answers in §7, and what changed while implementing in §8.
+
+| Decision | Accepted |
+|---|---|
+| C1. Scope | The grammar, then search with hand-built proposals; no learned network |
+| C2. Events | Several events per source, set by rests and durations as in the paper |
+| C3. Source parameters | Infer each GP's σ and ℓ; integrate out the rests' and durations' (μ, λ) exactly |
+| C4. Event membership | Soft membership in the non-stationary kernel, a labeled departure from the paper |
+| C5. Noise type | Left for later |
+| C6. Counting sources | Count the n! labelings of a hypothesis, which changes (b)'s log odds slightly |
+| C7. Code | Pyro-ready priors (named `torch.distributions` sites, an optional `Scene.model()`), Pyro an optional extra. This option was added at Cho's request |
+| C8. Test stimuli | ABA bistability first, buildup of streaming after |
+| C9. Search | Detector plus residual proposals, with the paper's rounds and beam |
+| C10. Evidence during search | Screen by MAP and Laplace, decide by variational evidence |
+
 ---
 
 ## 1. What (c) is
