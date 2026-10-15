@@ -870,7 +870,7 @@ PLOTS = {
     "B4-two-notes-seeds": two_notes_seeds,
     "C1-kernel-inferred": kernel_inferred,
     "O1-online-buildup": online_buildup,
-    # "O1-lag-window": online_sweep,  # once the 10 ms window run is in data/O1
+    "O1-lag-window": online_sweep,
     "R1-likelihood-slice": likelihood_slice,
     "R1-interval-coverage": interval_coverage,
     "R2-atypical-rooms": atypical_rooms,
