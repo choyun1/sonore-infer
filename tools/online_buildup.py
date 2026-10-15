@@ -63,7 +63,10 @@ def main():
         "--window-patience",
         type=int,
         default=None,
-        help="each window stops once it gains less than 1 over this many steps (decision O9)",
+        help="each window stops once it gains less than --window-tolerance over this many steps (O9)",
+    )
+    parser.add_argument(
+        "--window-tolerance", type=float, default=1.0, help="log joint gain, with --window-patience"
     )
     parser.add_argument("--batch-steps", type=int, default=0, help="batch reference at each triplet's end")
     parser.add_argument(
@@ -142,6 +145,7 @@ def main():
                     lag=lag,
                     steps=args.steps,
                     patience=args.window_patience,
+                    tolerance=args.window_tolerance,
                     ends=ends,
                     report=report,
                 )
