@@ -58,6 +58,7 @@ not import the package.
 |---|---|
 | `online_buildup.py` | Buildup of streaming (App. C.11) in one online pass, against batch fits at each triplet's end |
 | `leaky_odds.py` | Leaky log odds (decision O10) from `online_buildup.py` outputs, no new inference |
+| `online_cost.py` | Where an online window's time goes (render, cochleagram, prior, Adam step, Hessian) as the sound grows |
 
 ## Measurements of the cochleagram, and readings of the paper
 

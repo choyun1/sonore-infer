@@ -17,7 +17,8 @@ has its own design documents, tools and results.
 | | [design/bass-code-check.md](design/bass-code-check.md): three items from design-v1 §1.1 checked against BASS's code at 48e3755 | none | n/a |
 | | [design/milestone-b.md](design/milestone-b.md): milestone (b), two simultaneous notes | B1-B6 | 2026-10-07 |
 | **Our own scene grammar** | [design/milestone-c.md](design/milestone-c.md): milestone (c), several events per source, inferred GP kernels, search over structures, ABA streaming | C1-C11 | 2026-10-11 |
-| **Online inference** | [design/online.md](design/online.md): evidence accumulated window by window, and a phone-app roadmap | O1-O9 | 2026-10-13 |
+| **Online inference** | [design/online.md](design/online.md): evidence accumulated window by window, and a phone-app roadmap | O1-O10 | 2026-10-13, O10 2026-10-14 |
+| | [design/online-realtime.md](design/online-realtime.md): what real time would take, measured on the buildup runs | none | n/a |
 | **Source and room** | [design/source-reverb.md](design/source-reverb.md): a random spectrogram and its room's RT60, inferred together | R1-R8 | 2026-10-10 |
 
 ## Names used across the code

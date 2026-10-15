@@ -321,7 +321,7 @@ does; whether its shape matches listeners is a separate question.
    test of O5 (B); compare with the reference at every triplet (PR).
 3. Sweeps of L, window and steps; both Δf; results page and step log (PR).
 4. A short note: what it would take to reach real time (O4 (C), O1 (C)),
-   with the numbers from steps 2–3, as the input to the next design.
+   with the numbers from steps 2–3, as the input to the next design. Written: [online-realtime.md](online-realtime.md) (2026-10-15).
 
 Each step is one PR; nothing past step 1 starts before Cho accepts this.
 
