@@ -1,0 +1,239 @@
+# Relative pitch from Shepard tones — design
+
+Status: **draft, not accepted.** Written 2026-10-15. AI-assisted (Claude),
+from the sonore project's handoff (HANDOFF-relative-pitch.md, 2026-10-14),
+Shepard (1964), a feasibility note (§2), and the code as of `151018e`.
+No library code is written until Cho accepts the decisions below.
+
+**How numbers are marked.**
+
+- **[Shepard §x]**: Shepard, R. N. (1964). Circularity in judgments of
+  relative pitch. *J. Acoust. Soc. Am.* 36(12), 2346–2353, at the section,
+  equation or figure given. Read from a scan; figure values are read by eye.
+- **[measured]**: from a script, with its path.
+- **[estimate]**: my estimate, with its basis next to it.
+
+Decision numbers use the letter P (pitch). The letters D, B, C, R, O and E
+belong to other documents.
+
+## Decisions at a glance
+
+Recommendations, for Cho to accept or change. The options and reasons are
+in §4.
+
+| Decision | Recommended |
+|---|---|
+| P1. What is inferred | f0 per tone with its octave reading; "up" is the posterior probability that the second f0 is higher |
+| P2. Observation | The cochleagram as it is (FFT, BASS gain, 64 channels, 20 Hz to 9.4 kHz) |
+| P3. Spectrum prior | Unchanged for the first experiments; decide whether to change it only from what experiment P1 shows |
+| P4. Hypotheses | Enumerated: one harmonic source per octave reading, and a set of whistles; the search (C3) on a few stimuli only, as a check |
+| P5. Response | The model's output is P(up); no lapse or noise model until it is compared with listeners |
+| P6. Stimuli | Shepard's Eqs. 1–3 and his parameters, without the noise bursts |
+| P7. Experiments | P1 one tone, P2 octave against minor-third spacing, P3 all 90 pairs, P4 the half octave by pitch class, as a prediction |
+| P8. Scale, seeds | One seed and one starting tone first, then all pairs, then 10 seeds |
+
+---
+
+## 1. The question
+
+Given two successive tones, did the pitch go up or down? Shepard built tones
+of octave-spaced components under a fixed spectral envelope, so each tone
+has a pitch class but no clear octave. Moving all components up a step
+around the circle is heard as going up; after 10 or 12 steps the stimulus is
+back where it started [Shepard §II]. Pairs of such tones are judged by
+proximity: the second tone is heard higher when it is less than half an
+octave clockwise, lower when more, and pairs half an octave apart are
+ambiguous [Shepard §IV, Fig. 3].
+
+This is a listening experiment with listener errors and a clear stimulus
+specification, so it suits the project's goal: a model of human auditory
+perception. The sonore project makes the stimuli; the inference and
+anything about listeners belongs here (handoff §1).
+
+## 2. What the feasibility note found
+
+From `/mnt/project-files/relative-pitch/feasibility.md` (2026-10-14), which
+evaluated the existing priors in numpy and fitted nothing
+(`relative-pitch/probe/shepard_prior_probe.py`):
+
+- **Proximity is already in the prior.** Two events of one harmonic source
+  0.25 s apart share the f0 Gaussian process (σ 5.9 ERB, ℓ 2.5 s, β 0.437),
+  which lets f0 change by about 0.87 ERB (SD, one grid point per event)
+  [measured]. An octave at 155.6 Hz spans 3.1 ERB. The prior's log odds of
+  "up" over "down" for k tenths of an octave, from a first tone at 155.6 Hz,
+  are +2.4 at k = 1, +1.2 at 3, −0.5 at 5, −2.5 at 7, −5.1 at 9 [measured].
+  The crossover sits just below k = 5, so at the half octave the prior leans
+  slightly "down" at every pitch class. That comes from the ERB scale, not
+  from listeners.
+- **The spectrum prior works against hearing one tone.** The harmonic
+  spectrum is a Gaussian process over the ERB numbers of the harmonics
+  (σ 11.8 dB, ℓ 4.7 ERB). Read as one harmonic tone, an octave complex has
+  to leave out every non-octave harmonic. Pushing them all 10 dB below their
+  conditional mean costs about 590 nats at f0 155.6 Hz and 100 to 1300 nats
+  over f0 622 Hz to 19.5 Hz [measured; a rough proxy, prior only]. So the
+  unchanged model probably hears a Shepard tone as several whistles, a
+  chord, where Shepard's listeners heard one organ-like tone [Shepard §I].
+
+The search (decision C9, `detect.py`) already offers a harmonic candidate's
+octave above and below, because octave errors are local minima of a fit.
+
+## 3. What Shepard (1964) specifies
+
+- **Tones [Shepard Eqs. 1–3].** Component c (1..c_max) of tone t
+  (1..t_max) is at `f = f_min · 2^(((c−1)·t_max + t − 1)/t_max)`, with level
+  `L = L_min + (L_max − L_min)(1 − cos θ)/2` dB, θ = 2π((c−1)·t_max + t − 1)/(t_max·c_max).
+  The envelope is a raised cosine in dB over log frequency, not the
+  handoff's Gaussian bell.
+- **Experiment parameters [Shepard §III].** t_max = 10 (steps of 1.2
+  semitones), c_max = 10, f_min = 4.863 Hz, L_min 22 dB, L_max 56 dB,
+  about 66 dB overall; envelope peak at 155.6 Hz; 10 kHz sampling. Tones
+  1/8 s, 1/8 s apart; a soft noise burst (54 dB, 1/8 s) 1/8 s before and
+  after each pair; 3 s to answer.
+- **Listeners [Shepard §IV, Fig. 3].** 50, in three groups by accuracy on
+  pure-tone pairs: Group I (26) near 100% "higher" at 1–2 steps clockwise,
+  near 0% at 8–9, about 50% at 5; Group III (14) about 68% correct at 1
+  step, about 80% at 3, and a non-monotonic curve. Values only in the
+  figure.
+- **Qualitative findings [Shepard §I, §V].** Octave-spaced components
+  sound like one tone; the same envelope with components a minor third
+  apart sounds like a chord. At 5 steps listeners disagree, but each hears
+  the pair clearly one way. In the cyclic scale, without the 0.84 s
+  silences the sequence is heard to drop at one point, which depends partly
+  on the starting tone.
+
+The pitch-class dependence of the half-octave ambiguity (the tritone
+paradox) is Deutsch (1986), cited in the handoff from memory. It is not on
+file and its data are not in hand.
+
+## 4. Decisions
+
+### P1. What is inferred (handoff D1)
+
+- **(A) The direction only.** A latent sign per pair. Simple, but nothing
+  in the generative model makes a sign; it would be a model of the task,
+  not of the sound.
+- **(B) f0 per tone, with its octave reading.** Each tone is an event of a
+  harmonic source; the octave reading of each tone is a discrete choice;
+  "up" is the posterior probability that the second event's f0 is higher,
+  summed over readings. It uses the existing source and the proximity the
+  f0 prior already gives.
+- **(C) Pitch class and height as separate latents.** Closer to the helix
+  [Shepard Introduction], but a new source type with no counterpart in the
+  paper's grammar.
+
+**Recommendation: B.** It asks what the paper's model, unchanged, hears.
+If the answer is "a chord" (P3), the question becomes how the whistles'
+frequencies move, and P5 says how that becomes "up".
+
+### P2. Observation (handoff D2)
+
+- **(A) The cochleagram as it is.** FFT, BASS gain, 64 channels from 20 Hz
+  to 9.4 kHz, 20 dB floor. It keeps the spread over octaves that chroma
+  drops. Components below 20 Hz (4.9–19.5 Hz at t = 1, 22–34 dB) fall
+  outside it.
+- **(B) Chroma or the semitone filter bank** (sonore PR #214). Chroma cannot
+  tell up from down by construction (handoff §3), and a new observation
+  would take every earlier result out of comparison.
+
+**Recommendation: A.**
+
+### P3. Spectrum prior (handoff D3)
+
+- **(A) Unchanged, as a prediction.** Report how the model hears one
+  Shepard tone (experiment P1) and whether it tells the octave complex from
+  the minor-third complex (experiment P2).
+- **(B) Allow sparse harmonic spectra.** For example a presence latent per
+  harmonic (spike and slab), or a mixture over harmonic subsets. A
+  departure from the paper and BASS, and Shepard's tones are the only
+  evidence for it in hand.
+- **(C) Change the kernel.** A shorter lengthscale would let neighboring
+  harmonics differ more; it changes every earlier result.
+
+**Recommendation: A first.** Decide between B and C, if at all, as a new
+decision after experiments P1 and P2, with their numbers in hand.
+
+### P4. Hypotheses
+
+Per pair, enumerated:
+
+1. One harmonic source, two events, with the second tone's f0 started at
+   the nearer reading above and, separately, the nearer reading below the
+   first (two fits). The first tone's f0 starts at its lowest component
+   above the cochleagram floor; other readings of it are offered when
+   experiment P1 shows they compete.
+2. One whistle source per component that experiment P1 finds, each with two
+   events, so each component is matched to its neighbor in the next tone.
+
+The search (C3) took 20–74 min per (b) stimulus and 6–9 h per ABA sequence
+[measured, `results/C3-search.md`], so it runs on a few pairs only, to check
+that the enumerated set is not missing a better structure.
+
+**Recommendation: as above.**
+
+### P5. Response (handoff D5's readout)
+
+- **(A) P(up) is the output.** For the harmonic hypotheses, the posterior
+  mass on readings where the second f0 is higher; for the whistle set, the
+  sign of the shared shift of the components. Weighted by each hypothesis's
+  variational evidence, as in B2.
+- **(B) A response model on top.** Argmax plus lapses, or decision noise,
+  to reproduce Group III's errors. It has free parameters that only listener
+  data can set.
+
+**Recommendation: A.** Add B only when comparing with Fig. 3 (experiment P3).
+
+### P6. Stimuli
+
+A generator in `src/sonore_infer/stimuli/shepard.py`, built with sonore
+0.6.0's `harmonic_complex` (it takes `harmonics` and per-harmonic
+`amplitudes`), at 20 kHz.
+
+- Shepard's Eqs. 1–3 and §III parameters, components up to 5 kHz as his
+  10 kHz sampling allowed.
+- Levels: his dB SPL read as our dB re 1e-6 RMS, with L_max 56 dB. An
+  assumption, as for every stimulus in the project (`stimuli/levels.py`).
+- Tones 1/8 s with 10 ms raised-cosine ramps (his attack and decay are
+  illegible in the scan; 10 ms is our usual value), 1/8 s apart, 50 ms of
+  silence before and after.
+- **No noise bursts.** They marked trials for listeners; modeling them
+  needs a noise source in each hypothesis. A labeled departure.
+- The minor-third version for experiment P2: 40 components, 4 per octave,
+  the same envelope [Shepard §V].
+
+**Recommendation: as above.**
+
+### P7. Experiments
+
+| ID | Asks | Stimuli | Compared with |
+|---|---|---|---|
+| P1 | How does the model hear one Shepard tone: one harmonic source (which octave), whistles, or a mix? | 10 tones, alone | Shepard §I (one tone, not a chord) |
+| P2 | Does it hear the octave complex as one tone and the minor-third complex as a chord? | One tone of each | Shepard §V |
+| P3 | P(up) against steps clockwise | All 90 ordered pairs | Fig. 3, read by eye (estimates) |
+| P4 | P(up) at 5 steps, by starting tone | The 10 half-octave pairs | No data; a prediction |
+
+The cyclic scale with and without silences is left for the online and
+order-effects work.
+
+**Recommendation: P1 and P2 first; P3 and P4 only after Cho has seen them,
+since P3 (the spectrum prior) may change.**
+
+### P8. Scale and seeds
+
+One seed throughout at first. Experiment P3 starts with one starting tone
+(9 pairs), then all 90, then 10 seeds as in A8 and B4. Cost: about 4 min
+per hypothesis for a 0.5 s stimulus on one thread [estimate, from C3's
+control: 5 hypotheses in 20 min], so about 7 min for a 0.875 s pair
+[estimate, scaled by length]; 90 pairs × about 4 hypotheses is about 40
+thread-hours [estimate], a day or less on the PC with several runs at once.
+
+**Recommendation: as above.**
+
+## 5. Not in scope
+
+Absolute pitch, musical training, and the Risset glide. Any claim that the
+model matches listeners waits for data; Shepard's Fig. 3 is the only
+listener data in hand.
+
+## 6. Cho's answers
+
+Not yet.
