@@ -941,6 +941,36 @@ def online_sweep():
     return figure(panels, "O1: online log odds by lag and window, windows 50 ms unless named", legend)
 
 
+def speed_agreement():
+    """Design online-speed S6: each speed-up's online log odds minus O1's, at each triplet."""
+    panels = []
+    for semitones in (4, 8):
+        panel = Panel(340, 230, (0.7, 6.3), (-4, 4), left=44)
+        panel.axes(
+            TRIPLETS,
+            [-3, -2, -1, 0, 1, 2, 3],
+            x_label="triplets heard",
+            y_label="log odds minus O1's",
+            title=f"{semitones} semitones",
+        )
+        panel.horizontal(0)
+        for bound in (-3, 3):
+            panel.horizontal(bound, kind="grid")
+        reference = dict(online_odds(data("O1", f"st{semitones}_w50_p50_lag1.txt")))
+        series = [(f"st{semitones}_w50_p50_lag1_e0.5.txt", "s2", "S1 and S2")]
+        if semitones == 8:
+            series.insert(0, ("st8_w50_p50_lag1.txt", "s1", "S1"))
+        for name, color, label in series:
+            points = [(n, odds - reference[n]) for n, odds in online_odds(data("O2", name))]
+            panel.line(points, color, tip=lambda x, y, label=label: f"{label}, {x:g} triplets: {y:+.2f}")
+        panels.append(panel)
+    legend = [
+        ("s1", "S1: each event over its span", "line"),
+        ("s2", "S1 and S2: evidence every 0.5 s", "line"),
+    ]
+    return figure(panels, "O2: log odds minus O1's, lag 1 s, 50 ms windows; S6 allows ±3", legend)
+
+
 PLOTS = {
     "milestone-a-thresholds": threshold_ladder,
     "A1-gammatone-baseline": lambda: mistuning_grid("A1"),
@@ -959,6 +989,7 @@ PLOTS = {
     "C2-aba-streaming": aba_streaming,
     "O1-online-buildup": online_buildup,
     "O1-lag-window": online_sweep,
+    "O2-speed-agreement": speed_agreement,
     "R1-likelihood-slice": likelihood_slice,
     "R1-interval-coverage": interval_coverage,
     "R2-atypical-rooms": atypical_rooms,
