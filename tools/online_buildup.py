@@ -68,6 +68,9 @@ def main():
     parser.add_argument(
         "--window-tolerance", type=float, default=1.0, help="log joint gain, with --window-patience"
     )
+    parser.add_argument(
+        "--heard", type=float, default=0.02, help="s of a tone heard before its event enters the scene"
+    )
     parser.add_argument("--batch-steps", type=int, default=0, help="batch reference at each triplet's end")
     parser.add_argument(
         "--patience",
@@ -146,6 +149,7 @@ def main():
                     steps=args.steps,
                     patience=args.window_patience,
                     tolerance=args.window_tolerance,
+                    heard=args.heard,
                     ends=ends,
                     report=report,
                 )

@@ -185,3 +185,20 @@ def test_windows_shorter_than_a_frame_are_skipped():
         steps=2,
     )
     assert [round(step.window.end, 3) for step in steps] == [0.06, 0.07, 0.08, 0.09, 0.1]
+
+
+def test_with_short_windows_an_event_enters_once_its_tone_is_heard():
+    waveform = torch.tensor(bu.buildup_stimulus(1, 8, lead=0.05).data[:, 0], dtype=F64)[: round(0.1 * bu.FS)]
+    steps = run_online(
+        waveform,
+        (WhistleSpec("w0", TONES[:1]),),
+        FFTCochleagram(),
+        fs=bu.FS,
+        ramp=bu.RAMP,
+        window=0.01,
+        lag=math.inf,
+        steps=2,
+        heard=0.02,
+    )
+    # the tone starts at 0.05: nothing enters until 0.07, so the scene is silence before
+    assert [round(step.window.end, 3) for step in steps] == [0.07, 0.08, 0.09, 0.1]
