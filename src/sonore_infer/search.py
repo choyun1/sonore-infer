@@ -31,8 +31,9 @@ C9 (A)):
 
 Departures from the paper, besides the detector: hypotheses are fitted by
 MAP and screened by Laplace instead of 250 steps of variational inference
-(C10); each round's fits start from the candidates, not from the previous
-round's fit; one onset group per round.
+[paper App. B.2; docs/design/milestone-c.md, decision C9] (decision C10);
+each round's fits start from the candidates, not from the previous round's
+fit; one onset group per round.
 """
 
 from __future__ import annotations
@@ -56,6 +57,9 @@ MIN_SPACING = 0.02
 # an event joins a source only if it overlaps the source's events by at most this
 # fraction of their union [the paper's IoU limit, App. B.2.2]
 MAX_OVERLAP = 0.25
+# MIN_SPACING, GAP, MIN_DURATION [s] and ABSENT_DB [dB, the starting level, relative
+# to the source, of a harmonic no candidate gave] are not measured: they were set
+# when the search was written (commit e9f5649), and no tool or decision records why
 GAP = 0.005
 MIN_DURATION = 0.01
 ABSENT_DB = -30.0

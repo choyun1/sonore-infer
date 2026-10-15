@@ -479,7 +479,7 @@ everyday-sound failures, and each failure points to a missing piece:
 
 **What this means for the source model.** Neither BASS's Panpipes nor a fixed
 filter fits instruments on its own. Body resonances (violin, guitar, piano
-soundboard) are fixed in frequency, which favours a fixed filter. Some spectral
+soundboard) are fixed in frequency, which favors a fixed filter. Some spectral
 features are tied to harmonic number instead; the clarinet's weak even
 harmonics in its low register are the textbook case (Fletcher & Rossing, *The
 Physics of Musical Instruments*, 1998). A two-part spectrum, harmonic-number

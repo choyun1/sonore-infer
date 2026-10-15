@@ -64,16 +64,16 @@ def test_tone_at_a_center_reads_its_level():
     channel = 40
     tone = so.pure_tone(0.5, FS, cochleagram.cfs[channel]).data[:, 0] * 1e-6 * 10 ** (60 / 20)
     levels = cochleagram(torch.as_tensor(tone)).numpy()
-    times = cochleagram.frame_times(len(tone))
+    times = cochleagram.window_times(len(tone))
     steady = (times > 0.1) & (times < 0.4)
     np.testing.assert_allclose(levels[channel, steady], 60, atol=0.01)
     # channels far from the tone are at the floor
     assert levels[0, steady].max() == 20.0
 
 
-def test_frames():
+def test_time_windows():
     cochleagram = Cochleagram()
-    assert (cochleagram.frame_samples, cochleagram.hop_samples) == (500, 200)
+    assert (cochleagram.win_samples, cochleagram.hop_samples) == (500, 200)
     levels = cochleagram(torch.zeros(2, 10_000))
     assert levels.shape == (2, 64, (10_000 - 500) // 200 + 1)
     assert (levels == 20).all()  # silence sits at the floor
@@ -103,7 +103,7 @@ def test_calibrated_fft_cochleagram_reads_a_tone_at_a_center():
     tone = so.pure_tone(0.5, FS, cochleagram.cfs[channel]).data[:, 0] * 1e-6 * 10 ** (60 / 20)
     levels = cochleagram(torch.as_tensor(tone)).numpy()
     assert levels.shape == Cochleagram()(torch.as_tensor(tone)).shape
-    times = cochleagram.frame_times(len(tone))
+    times = cochleagram.window_times(len(tone))
     steady = (times > 0.1) & (times < 0.4)
     np.testing.assert_allclose(levels[channel, steady], 60, atol=0.01)
     assert cochleagram.fft_size == 1024  # Ellis: next power of two above twice the 500-sample window
@@ -121,7 +121,9 @@ def test_fft_channels_are_wider_at_low_frequencies():
 
 
 def test_fft_cochleagram_gradients():
-    cochleagram = FFTCochleagram(n_channels=4, f_lo=200, f_hi=2000, floor_db=-1000, frame=0.005, hop=0.0025)
+    cochleagram = FFTCochleagram(
+        n_channels=4, f_lo=200, f_hi=2000, floor_db=-1000, win_dur=0.005, hop_dur=0.0025
+    )
     waveform = (
         1e-3 * torch.randn(300, dtype=torch.float64, generator=torch.Generator().manual_seed(2))
     ).requires_grad_()

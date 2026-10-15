@@ -39,7 +39,7 @@ from scipy.signal import fftconvolve
 
 from sonore_infer.blockpower import SIGMA_DB, BlockPower
 from sonore_infer.room import TYPICAL_DRR_DB
-from sonore_infer.sourceroom import THETA_DEFAULT, Model, importance_check, infer
+from sonore_infer.sourceroom import THETA_DEFAULT, Model, importance_estimate, infer
 
 FS = 20_000.0
 RT60S = (0.2, 0.4, 0.8)
@@ -88,7 +88,7 @@ def run_all(args):
                 model = Model(observed, power, sigma_db=sigma)
                 posterior = infer(model)
                 best = max(posterior.points, key=lambda p: p.log_evidence)
-                estimate, ess = importance_check(model, best, generator=generator)
+                estimate, ess = importance_estimate(model, best, generator=generator)
                 quantiles = np.vstack([posterior.rt60_quantiles(), posterior.theta_quantiles()])
                 record = {
                     "run": run,

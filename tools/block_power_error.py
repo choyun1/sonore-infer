@@ -21,7 +21,7 @@ blocks while the source plays and after it ends:
 
 Then single-draw bias and sd by thirds of the bands (low, mid, high).
 
-    python tools/block_power_check.py [--sources 4] [--draws 16]
+    python tools/block_power_error.py [--sources 4] [--draws 16]
 """
 
 import argparse

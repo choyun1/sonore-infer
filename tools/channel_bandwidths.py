@@ -1,7 +1,7 @@
 """Effective bandwidth of cochleagram channels, measured with steady sinusoids.
 
 For channels near the given frequencies, sweeps a 0.5 s sinusoid across
-frequency and records each channel's level in its steady frames. The
+frequency and records each channel's level in its steady time windows. The
 equivalent rectangular bandwidth is the integral of the channel's power
 response divided by its peak. Compares :class:`Cochleagram` (gammatone
 filtering) with :class:`FFTCochleagram` (BASS's FFT approximation).

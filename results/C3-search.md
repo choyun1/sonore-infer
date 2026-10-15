@@ -59,7 +59,7 @@ Log posteriors on this page are shifted by a constant so they read as
 misfit plus prior. The likelihood scores each cochleagram bin with a Gaussian
 of SD 10 dB, and its normalising term costs log(10·√(2π)) = 3.222 nats per
 bin even for a perfect fit: 9896.5 for a 0.5 s (b) stimulus (64 channels ×
-48 frames) and 63502.7 for an ABA sequence (64 × 308). That term is added
+48 time windows) and 63502.7 for an ABA sequence (64 × 308). That term is added
 back here. It is the same for every hypothesis of a stimulus, so it cancels in
 every comparison; the raw outputs in `data/` are not shifted.
 

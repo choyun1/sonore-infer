@@ -23,7 +23,8 @@ The posterior is sharp in every one of ``r, theta`` (1,599 cells): on one
 sound at RT60 0.4 s its sd is about 0.015 in log r, 0.12 in log sd and 0.2
 in log correlation length, against 0.58 between R5's 5 grid points per
 hyperparameter and 0.21 between its 15 RT60s, so a fixed grid would put
-all the mass on one point. Instead:
+all the mass on one point [measured: docs/design/source-reverb.md, update
+of step 5]. Instead:
 
 - At each ``r``, the log likelihood is expanded to second order in ``l``
   around the mode, which makes ``log p(y | r, theta)`` a closed-form
@@ -540,7 +541,7 @@ class Posterior:
         return result
 
 
-def importance_check(
+def importance_estimate(
     model: Model, point: RT60Point, n_samples: int = 128, generator: torch.Generator | None = None
 ) -> tuple[float, float]:
     """Importance-sampling estimate of ``log p(y | r, theta_hat)`` at one

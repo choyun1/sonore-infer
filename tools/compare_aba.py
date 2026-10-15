@@ -8,7 +8,7 @@ and durations), as the paper did:
 - ``two``: one whistle source with the 8 A tones and one with the 4 B tones.
 
 Prints one line per fit and, per stimulus, the log posterior odds of ``two``
-over ``one`` (positive favours two streams) by each evidence estimate.
+over ``one`` (positive favors two streams) by each evidence estimate.
 
     python tools/compare_aba.py --semitones 6 --intervals 0.1 --variational-steps 2000
 """

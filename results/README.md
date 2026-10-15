@@ -70,9 +70,9 @@ locally, as a check (A6).
 What every experiment here shares unless its page says otherwise:
 
 - **Representation.** A cochleagram of 64 channels from 20 to 9423 Hz, in
-  dB with a 20 dB floor, 10 ms frames. A1 uses true gammatone filters. From
-  A2 on it is BASS's FFT approximation, and from A4 on with BASS's
-  uncalibrated channel gain.
+  dB with a 20 dB floor, 25 ms time windows every 10 ms. A1 uses true
+  gammatone filters. From A2 on it is BASS's FFT approximation, and from
+  A4 on with BASS's uncalibrated channel gain.
 - **Likelihood.** Each cochleagram cell is Gaussian around the rendered
   scene's value, with an SD of 10 dB (BASS's value).
 - **Priors.** The paper's (Tables A.1 and A.2): the number of sources

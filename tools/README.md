@@ -40,8 +40,8 @@ not import the package.
 | Script | What it does |
 |---|---|
 | `rt60_prior_fit.py` | RT60 prior and typical DRR from Traer & McDermott's IR survey (decisions R2, R8) |
-| `room_gain_check.py` | Measures `RoomGain` against `synth_ir` renders (decision R3) |
-| `block_power_check.py` | Measures `BlockPower`'s expected energies against sonore renders (decisions R3-R4) |
+| `room_gain_error.py` | Measures `RoomGain` against `synth_ir` renders (decision R3) |
+| `block_power_error.py` | Measures `BlockPower`'s expected energies against sonore renders (decisions R3-R4) |
 | `likelihood_slices.py` | Likelihood along one parameter at a time through the truth (decisions R4-R5) |
 | `recovery.py` | Experiment (a) of decision R7: recover RT60 and the source's statistics |
 | `atypical_rooms.py` | Experiment (b) of decision R7: the model heard through atypical rooms |

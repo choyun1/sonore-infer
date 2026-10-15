@@ -18,9 +18,10 @@ block ``k`` of ``sum_j S_b(j) gain_b(k - j)``, ``S_b(j)`` being its own
 energy in block ``j``. The direct impulse is a gain of 1 in block 0. (Up to
 step 2 the gain was the impulse response's energy in each block, which puts
 every echo half a block early: 0.4 to 1.4 dB too little energy in the tail
-for RT60s of 0.8 to 0.2 s.)
+for RT60s of 0.8 to 0.2 s, as found in commit 9d29ac9; RoomGain is now
+measured against renders by tools/room_gain_error.py.)
 
-Only the natural room is modelled (exponential decay, ecological frequency
+Only the natural room is modeled (exponential decay, ecological frequency
 profile and onset levels); the atypical rooms appear only in observations.
 """
 

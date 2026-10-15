@@ -1,6 +1,6 @@
 """Seconds per cochleagram forward and backward pass, for sizing inference (design D6).
 
-Times the default cochleagram (BASS's 64 half-ERB channels, 25 ms frames
+Times the default cochleagram (BASS's 64 half-ERB channels, 25 ms time windows
 every 10 ms) on white noise of each duration, with a backward pass through
 the Gaussian likelihood, as one optimization step would need. Prints the
 median of ``--repeats`` runs after one warm-up run.

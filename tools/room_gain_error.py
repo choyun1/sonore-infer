@@ -20,7 +20,7 @@ Printed, over cells within 60 dB of each band's peak:
 the lowest bands: the narrow analysis filters ring for tens of ms, which in
 a reverberant sound belongs to the source's band energy, not to the room.)
 
-    python tools/room_gain_check.py [--draws 64]
+    python tools/room_gain_error.py [--draws 64]
 """
 
 import argparse
