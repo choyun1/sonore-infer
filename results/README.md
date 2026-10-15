@@ -140,6 +140,35 @@ What every experiment here shares unless its page says otherwise:
 | [R1](R1-source-and-room.md) | Source and room (RT60) from one sound | none in this paper | done | RT60 within 3%; 90% intervals cover 66% (overconfident) |
 | [R2](R2-atypical-rooms.md) | Atypical rooms, exponential room model | none in this paper | done | Biased like T20 × 3; time-reversed rooms do not fit |
 
+## Against the paper
+
+Where our results match Cusimano et al. (2024), where they differ, and
+which differences we chose not to chase. Our code, seeds and machines
+differ from the paper's, and BASS's code cannot be copied, so matching the
+paper is not a goal in itself; listeners are the reference. A difference
+is chased only if it is larger than seed and machine noise (seed SD 1–5 in
+[B4](B4-two-notes-seeds.md) and [A8](A8-ten-seeds.md), a few more between
+machines) and either suggests our own inference is not doing what we claim,
+or changes how the model compares with listeners.
+
+| Comparison | Paper | Ours | Status |
+| --- | --- | --- | --- |
+| Mistuned harmonic thresholds, 8 of 9 conditions (Fig. 7D) | by eye | within one grid step ([A5](A5-full-model.md)–[A8](A8-ten-seeds.md)) | **matches** |
+| Mistuned harmonic, 100 Hz harmonic 1 | about 45% (BASS's code, one seed: 40%) | 25% Eqn 2, 30% BASS's rule ([A8](A8-ten-seeds.md), [C1](C1-kernel-inferred.md)) | **differs, not chased**: listeners are about 1–5%, closer to ours; the cause is in BASS's code, which we cannot copy |
+| Threshold rule (Eqn 2) | Eqn 2 as printed; BASS's analysis code uses another rule ([A6](A6-bass-own-code.md)) | both reported | **differs by method**; both kept on every page |
+| Evidence method | variational, 250 steps per hypothesis then full fits for the top 5 | Laplace and variational importance ([A7](A7-variational-evidence.md)) | **differs by method**; A7 found the same thresholds by both |
+| Gaussian-process sigma and lengthscale inferred (Table A.2) | inferred per sound | inferred in C1 and C2, fixed at Table A.2's medians elsewhere | **matches where inferred**; Table A.2's quartiles imply an f0 lengthscale bound of 0.01 s, not the 0.1 s printed ([C1](C1-kernel-inferred.md)) |
+| ABA streaming, sign at 1 and 6–12 semitones (Fig. 8D) | one stream at 1, two from about 6 | the same ([C2](C2-aba-streaming.md)) | **matches** |
+| ABA streaming, 3 semitones | slightly one stream (about −5) | two streams (+8 to +13, seeds 0–4) | **differs, not chased**: listeners are near the two-stream boundary there, so neither sign is evidence |
+| ABA streaming, size of the log odds and its fall with slower rates | changes little across intervals (its color scale stops at ±20) | up to +217, falling with slower rates | **differs, deferred**: matters only once graded listener data are compared |
+| Buildup of streaming (Fig. 8F) | odds rise with triplets | see [O1](O1-online-buildup.md) | see that page |
+| Search over structures (App. B.2) | learned proposals, no per-stimulus results reported | hand-built detector ([C3](C3-search.md)) | **not applicable**: no paper numbers to compare; the test is against our own enumeration |
+| Two simultaneous notes (B), source and room (R) | not in the paper | | **not applicable** |
+
+One check is of our own inference, not of the paper: milestones (a) and (b)
+fitted each hypothesis with 300 Adam steps, which in C2 left the one-stream
+fit far from its mode. They have not yet been rerun to convergence.
+
 ## Milestone (a) at a glance
 
 ![Milestone (a) thresholds by experiment](plots/milestone-a-thresholds.svg)
