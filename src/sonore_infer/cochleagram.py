@@ -1,4 +1,4 @@
-"""A differentiable cochleagram: gammatone envelopes pooled into frames, in dB (design D4, option B).
+"""A differentiable cochleagram: gammatone envelopes pooled into time windows, in dB (design D4, option B).
 
 The filters are sonore's gammatones (``sonore.gammatone_filterbank`` with
 ``edges=False``), re-implemented here so the core does not import sonore;
@@ -11,13 +11,13 @@ The pipeline, for a waveform ``x``:
    around the circular FFT.
 2. Filter by multiplication on the DFT grid and take each band's analytic
    signal in the same step; its magnitude is the Hilbert envelope.
-3. Pool the squared envelope over Hann-weighted frames, 25 ms long every
+3. Pool the squared envelope over Hann-weighted time windows, 25 ms long every
    10 ms, as in BASS [§2.2 of Cusimano et al., 2024].
-4. Express each frame's power as the level of the sinusoid that would give
+4. Express each window's power as the level of the sinusoid that would give
    it, in dB re ``REFERENCE_RMS``, and clip it from below at ``floor_db``.
 
 So a sinusoid at a channel's center frequency, at L dB, reads L dB in that
-channel once its frames are past the onset. The defaults follow BASS: 64
+channel once its time windows are past the onset. The defaults follow BASS: 64
 channels with half-ERB bandwidths, centers 20 to 9423 Hz equally spaced in
 ERB number, and a 20 dB floor. These numbers are BASS's; the filters and the
 pooling are sonore's and ours, so values are comparable with BASS's in kind
@@ -80,8 +80,9 @@ class Cochleagram:
     ``n_channels`` gammatones have centers from ``f_lo`` to ``f_hi`` [Hz]
     inclusive, equally spaced in ERB number, with bandwidth parameter
     ``bandwidth_factor * ERB(cf)``; 1.019 is a full ERB for order 4 (Slaney,
-    1993), so the default 0.5 * 1.019 is BASS's half-ERB. ``frame`` and
-    ``hop`` are in seconds. ``pad`` is the zero-padding at each end in
+    1993), so the default 0.5 * 1.019 is BASS's half-ERB. ``win_dur`` (each
+    time window's length) and ``hop_dur`` (the step between them) are in
+    seconds, named as in sonore's views. ``pad`` is the zero-padding at each end in
     samples; ``None`` pads by the slowest filter's ringing to -60 dB.
     """
 
@@ -91,8 +92,8 @@ class Cochleagram:
     f_hi: float = 9423.0
     order: int = 4
     bandwidth_factor: float = 0.5 * 1.019
-    frame: float = 0.025
-    hop: float = 0.010
+    win_dur: float = 0.025
+    hop_dur: float = 0.010
     floor_db: float = 20.0
     pad: int | None = None
 
@@ -109,23 +110,23 @@ class Cochleagram:
         return ringing_samples(self.cfs, self.fs, self.order, self.bandwidth_factor)
 
     @property
-    def frame_samples(self) -> int:
+    def win_samples(self) -> int:
         """Length of each time window [samples]."""
-        return round(self.frame * self.fs)
+        return round(self.win_dur * self.fs)
 
     @property
     def hop_samples(self) -> int:
         """Step between time windows [samples]."""
-        return round(self.hop * self.fs)
+        return round(self.hop_dur * self.fs)
 
-    def n_frames(self, n_samples: int) -> int:
-        """Frames for a waveform of ``n_samples``: every whole window from sample 0 on."""
-        return (n_samples - self.frame_samples) // self.hop_samples + 1
+    def n_windows(self, n_samples: int) -> int:
+        """Time windows for a waveform of ``n_samples``: every whole window from sample 0 on."""
+        return (n_samples - self.win_samples) // self.hop_samples + 1
 
-    def frame_times(self, n_samples: int) -> np.ndarray:
-        """Center time [s] of each frame."""
-        starts = np.arange(self.n_frames(n_samples)) * self.hop_samples
-        return (starts + (self.frame_samples - 1) / 2) / self.fs
+    def window_times(self, n_samples: int) -> np.ndarray:
+        """Center time [s] of each time window."""
+        starts = np.arange(self.n_windows(n_samples)) * self.hop_samples
+        return (starts + (self.win_samples - 1) / 2) / self.fs
 
     @lru_cache(maxsize=8)  # noqa: B019 (the dataclass is frozen and small; the cache saves a recompute per step)
     def _analytic_transfer(self, n_padded: int, dtype: torch.dtype, device: torch.device) -> torch.Tensor:
@@ -162,21 +163,21 @@ class Cochleagram:
         analytic = torch.fft.ifft(spectrum.unsqueeze(-2) * transfer)  # (..., n_channels, n_padded)
         return analytic[..., pad : pad + n_samples].abs()
 
-    def frame_power(self, envelopes: torch.Tensor) -> torch.Tensor:
-        """Hann-weighted mean of the squared envelope in every frame, halved,
-        so a sinusoid of RMS r gives r**2; shape ``(..., n_channels, n_frames)``."""
-        window = torch.hann_window(
-            self.frame_samples, periodic=False, dtype=envelopes.dtype, device=envelopes.device
+    def window_power(self, envelopes: torch.Tensor) -> torch.Tensor:
+        """Hann-weighted mean of the squared envelope in every time window, halved,
+        so a sinusoid of RMS r gives r**2; shape ``(..., n_channels, n_windows)``."""
+        hann = torch.hann_window(
+            self.win_samples, periodic=False, dtype=envelopes.dtype, device=envelopes.device
         )
-        window = window / window.sum()
-        frames = envelopes.pow(2).unfold(
-            -1, self.frame_samples, self.hop_samples
-        )  # (..., C, n_frames, frame)
-        return (frames * window).sum(-1) / 2
+        hann = hann / hann.sum()
+        windows = envelopes.pow(2).unfold(
+            -1, self.win_samples, self.hop_samples
+        )  # (..., C, n_windows, window)
+        return (windows * hann).sum(-1) / 2
 
     def __call__(self, waveform: torch.Tensor) -> torch.Tensor:
-        """Cochleagram in dB re ``REFERENCE_RMS``, floored, shape ``(..., n_channels, n_frames)``."""
-        power = self.frame_power(self.envelopes(waveform))
+        """Cochleagram in dB re ``REFERENCE_RMS``, floored, shape ``(..., n_channels, n_windows)``."""
+        power = self.window_power(self.envelopes(waveform))
         tiny = torch.finfo(power.dtype).tiny
         level_db = 10 * torch.log10(power.clamp_min(tiny) / REFERENCE_RMS**2)
         return level_db.clamp_min(self.floor_db)
@@ -188,7 +189,7 @@ def gaussian_log_likelihood(
     """Log density of ``observed`` under independent Gaussians of mean ``predicted`` and SD ``sigma`` [dB].
 
     BASS's likelihood [§2.2 of Cusimano et al., 2024], with BASS's sigma as
-    the default. Summed over the last two dimensions (channels and frames).
+    the default. Summed over the last two dimensions (channels and time windows).
     """
     residual = (observed - predicted) / sigma
     log_density = -0.5 * residual**2 - np.log(sigma) - 0.5 * np.log(2 * np.pi)
@@ -200,8 +201,8 @@ class FFTCochleagram(Cochleagram):
     """The cochleagram BASS used: a short-time spectrum pooled into gammatone-shaped channels.
 
     Cusimano et al. (2024, App. A.5) compute their cochleagram with the FFT
-    approximation of Ellis (2009): a spectrogram with ``frame``-long windows
-    every ``hop``, whose magnitudes are summed with weights shaped like the
+    approximation of Ellis (2009): a spectrogram with ``win_dur``-long windows
+    every ``hop_dur``, whose magnitudes are summed with weights shaped like the
     gammatones' magnitude responses. Each channel's resolution is then limited
     by the window as well as by the gammatone, so channels whose gammatone is
     narrower than the window's main lobe (low center frequencies) are wider
@@ -211,7 +212,7 @@ class FFTCochleagram(Cochleagram):
     (the next power of two above twice the window); magnitudes, not powers,
     are pooled. Here the window is the same Hann window as
     :class:`Cochleagram` and the weights are :func:`gammatone_response`'s
-    magnitudes. No zero-padding is needed: frames hold whole windows.
+    magnitudes. No zero-padding is needed: every time window is whole.
 
     By default (``bass_gain=True``) the channels are not calibrated: as in
     BASS's ``gammatonegram``, the pooled magnitudes are divided by
@@ -227,7 +228,7 @@ class FFTCochleagram(Cochleagram):
     @property
     def fft_size(self) -> int:
         """FFT length: the power of two at least twice the window length."""
-        return 2 ** int(np.ceil(np.log2(2 * self.frame_samples)))
+        return 2 ** int(np.ceil(np.log2(2 * self.win_samples)))
 
     @lru_cache(maxsize=8)  # noqa: B019 (frozen dataclass)
     def _weights(self, dtype: torch.dtype, device: torch.device) -> torch.Tensor:
@@ -236,23 +237,23 @@ class FFTCochleagram(Cochleagram):
         weights = np.abs(gammatone_response(freqs, self.cfs, self.order, self.bandwidth_factor)).T
         if self.bass_gain:
             return torch.as_tensor(weights / self.fft_size, dtype=dtype, device=device)
-        window = np.hanning(self.frame_samples)
-        t = np.arange(self.frame_samples) / self.fs
+        hann = np.hanning(self.win_samples)
+        t = np.arange(self.win_samples) / self.fs
         gains = np.empty(self.n_channels)
         for channel, cf in enumerate(self.cfs):
             tone = np.sqrt(2) * np.cos(2 * np.pi * cf * t)  # RMS 1
-            gains[channel] = weights[channel] @ np.abs(np.fft.rfft(window * tone, self.fft_size))
+            gains[channel] = weights[channel] @ np.abs(np.fft.rfft(hann * tone, self.fft_size))
         return torch.as_tensor(weights / gains[:, None], dtype=dtype, device=device)
 
     def __call__(self, waveform: torch.Tensor) -> torch.Tensor:
-        """Cochleagram in dB re ``REFERENCE_RMS``, floored, shape ``(..., n_channels, n_frames)``."""
-        window = torch.hann_window(
-            self.frame_samples, periodic=False, dtype=waveform.dtype, device=waveform.device
+        """Cochleagram in dB re ``REFERENCE_RMS``, floored, shape ``(..., n_channels, n_windows)``."""
+        hann = torch.hann_window(
+            self.win_samples, periodic=False, dtype=waveform.dtype, device=waveform.device
         )
-        frames = waveform.unfold(-1, self.frame_samples, self.hop_samples) * window  # (..., n_frames, frame)
-        spectrum = torch.fft.rfft(frames, n=self.fft_size)
+        windows = waveform.unfold(-1, self.win_samples, self.hop_samples) * hann  # (..., n_windows, window)
+        spectrum = torch.fft.rfft(windows, n=self.fft_size)
         tiny = torch.finfo(waveform.dtype).tiny
         magnitude = (spectrum.real**2 + spectrum.imag**2 + tiny).sqrt()  # smooth at 0, for gradients
-        rms = magnitude @ self._weights(waveform.dtype, waveform.device).T  # (..., n_frames, C)
+        rms = magnitude @ self._weights(waveform.dtype, waveform.device).T  # (..., n_windows, C)
         level_db = 20 * torch.log10(rms.clamp_min(tiny) / REFERENCE_RMS)
         return level_db.clamp_min(self.floor_db).transpose(-1, -2)

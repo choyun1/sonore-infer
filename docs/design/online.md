@@ -22,7 +22,7 @@ Today every hypothesis is fitted to the whole sound at once: Adam to the
 mode, then Laplace, importance sampling or variational evidence, and the
 hypotheses compared by evidence. Online inference does the same job as the
 sound arrives. After each short window (10–100 ms), the belief about the
-scene is updated from the new frames and carried forward. Nothing has to
+scene is updated from the cochleagram's new time windows and carried forward. Nothing has to
 converge quickly. What matters is that each update uses only the new window
 and a bounded summary of the past, so its cost does not grow with elapsed
 time.
@@ -69,7 +69,7 @@ approximation loses.
 |---|---|---|
 | Latent trajectories | f0/freq and level as a Gaussian process on the 10 ms grid over the **whole scene**, squared-exponential kernel plus a per-event offset (β²) and a diagonal term [code: `priors.py` `TrajectoryPrior`, lines 280–345] | the grid extended window by window; old points fixed or summarized |
 | Kernel lengthscales | Table A.2 medians, or inferred (C3 (B)) | see O4: for whistles the memory is long |
-| Likelihood | Gaussian on the whole cochleagram (25 ms frames every 10 ms) [code: `cochleagram.py` lines 101–102; `scene.py` `log_joint`] | the same, summed over the new frames only |
+| Likelihood | Gaussian on the whole cochleagram (25 ms time windows every 10 ms) [code: `Cochleagram.win_dur`, `hop_dur`; `scene.py` `log_joint`] | the same, summed over the new time windows only |
 | Fit | Adam on all latents at once [code: `scene.py` `evaluate`] | a few steps per window on the free latents |
 | Evidence | Laplace, importance sampling, variational, all on the whole sound [code: `evidence.py`] | an estimate that grows window by window (O5) |
 | Hypotheses | written by hand from the stimulus's tones [code: `tools/compare_aba.py`, milestone (c) branch] | the same, with sources and events appearing as their tones arrive (O7) |
@@ -195,11 +195,11 @@ with a test on a toy model where the answer is known, as was done for C6.
 
 ### O6. Window length and steps per window
 
-The window is how often the belief is updated; frames are 25 ms every
-10 ms [code: `cochleagram.py` lines 101–102], so a frame is usable once its
-25 ms of sound has arrived, a fixed 25 ms latency.
+The window is how often the belief is updated; the cochleagram's time
+windows are 25 ms every 10 ms [code: `Cochleagram.win_dur`, `hop_dur`], so
+one is usable once its 25 ms of sound has arrived, a fixed 25 ms latency.
 
-**Options.** (A) 10 ms (every frame); (B) 50 ms; (C) 100 ms.
+**Options.** (A) 10 ms (every cochleagram time window); (B) 50 ms; (C) 100 ms.
 
 **Recommendation: 50 ms as the default, with 10 and 100 ms on one stimulus
 to see whether the answer depends on it.** 50 ms sits inside the 10–100 ms
@@ -248,7 +248,7 @@ colleagues; reviewed in Szabó, Denham & Winkler, 2016, Front. Neurosci.).
 
 - **(A) A fixed number of Adam steps per window** (O6).
 - **(B) Steps scaled by surprise**: a few steps when the window is well
-  predicted (its per-frame predictive log likelihood within some margin of
+  predicted (its predictive log likelihood per cochleagram time window within some margin of
   its running average), the full number when it is not, for example at a
   tone onset.
 
@@ -372,7 +372,7 @@ towards it. The steps after it, each its own design:
    form) and O1 (C) (structure search online), and a measured real-time
    factor below 1 on the laptop's CPU.
 2. **Live input**: the same loop fed from a microphone instead of a file,
-   with the cochleagram computed frame by frame as samples arrive.
+   with the cochleagram computed one time window at a time as samples arrive.
 3. **On the phone**: the model and the update loop on a phone's processor,
    or the phone streaming audio to a computer that runs them. Which one is
    open; it depends on the cost measured in step 1.

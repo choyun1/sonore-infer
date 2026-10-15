@@ -4,8 +4,8 @@ The paper proposes candidate events with a segmentation network [App. B.2.1
 of Cusimano et al., 2024]. Design C1 rules out a learned proposer, so this
 module reads candidates off the cochleagram by hand:
 
-- **Onsets** are frames where the level rises across many channels at once:
-  the sum over channels of each channel's rise from the previous frame
+- **Onsets** are time windows where the level rises across many channels at once:
+  the sum over channels of each channel's rise from the previous window
   (half-wave rectified), at its local maxima above a threshold.
 - **What starts at an onset** is the rise of each channel over the level
   just before the onset (:func:`rise_pattern`). Its peaks across channels
@@ -93,42 +93,42 @@ def channel_gains(cochleagram: Cochleagram, dtype: torch.dtype = torch.float64) 
     return gains
 
 
-def onset_frames(
+def onset_windows(
     level: np.ndarray, threshold_db: float, min_gap: int, clear_db: float = 60.0, steep_db: float = 6.0
 ) -> list[int]:
-    """Frames where the summed rise across channels peaks above ``threshold_db``.
+    """Time windows where the summed rise across channels peaks above ``threshold_db``.
 
-    ``level`` is the cochleagram above its floor, shape ``(channels, frames)``;
-    a frame's rise is measured from the frame before. A peak below
+    ``level`` is the cochleagram above its floor, shape ``(channels, windows)``;
+    a window's rise is measured from the window before. A peak below
     ``clear_db`` also needs two channels rising by ``steep_db`` or more:
     beats between the partials of two notes raise many channels a little at
     a time, a new note raises a few by a lot. Peaks closer than ``min_gap``
-    frames keep only the larger.
+    windows keep only the larger.
     """
     rises = np.clip(np.diff(level, axis=1), 0.0, None)
     rises = np.concatenate([level[:, :1], rises], axis=1)
     rise = rises.sum(axis=0)
     steep = (rises >= steep_db).sum(axis=0)
     peaks = [
-        frame
-        for frame in range(level.shape[1])
-        if rise[frame] >= threshold_db
-        and (rise[frame] >= clear_db or steep[frame] >= 2)
-        and rise[frame] >= rise[max(frame - 1, 0)]
-        and rise[frame] > rise[min(frame + 1, level.shape[1] - 1)]
+        window
+        for window in range(level.shape[1])
+        if rise[window] >= threshold_db
+        and (rise[window] >= clear_db or steep[window] >= 2)
+        and rise[window] >= rise[max(window - 1, 0)]
+        and rise[window] > rise[min(window + 1, level.shape[1] - 1)]
     ]
     kept: list[int] = []
-    for frame in sorted(peaks, key=lambda f: -rise[f]):
-        if all(abs(frame - other) >= min_gap for other in kept):
-            kept.append(frame)
+    for window in sorted(peaks, key=lambda f: -rise[f]):
+        if all(abs(window - other) >= min_gap for other in kept):
+            kept.append(window)
     return sorted(kept)
 
 
-def rise_pattern(level: np.ndarray, frame: int, span: int = 3) -> np.ndarray:
-    """Each channel's rise [dB] at onset ``frame``: its peak over the next ``span``
-    frames above its level two frames before (zero if it falls)."""
-    before = level[:, max(frame - 2, 0)]
-    after = level[:, frame : frame + span].max(axis=1)
+def rise_pattern(level: np.ndarray, window: int, span: int = 3) -> np.ndarray:
+    """Each channel's rise [dB] at onset ``window``: its peak over the next ``span``
+    windows above its level two windows before (zero if it falls)."""
+    before = level[:, max(window - 2, 0)]
+    after = level[:, window : window + span].max(axis=1)
     return np.clip(after - before, 0.0, None)
 
 
@@ -184,7 +184,7 @@ def subharmonic_summation(
 def _duration(
     level: np.ndarray, channels: list[int], start: int, next_onsets: list[int], drop_db: float
 ) -> int:
-    """Frames from ``start`` until ``channels`` fall ``drop_db`` below their peak, or
+    """Time windows from ``start`` until ``channels`` fall ``drop_db`` below their peak, or
     the next onset that raises them."""
     trace = level[channels].max(axis=0)
     end = level.shape[1]
@@ -193,9 +193,9 @@ def _duration(
             end = onset
             break
     peak = start + int(np.argmax(trace[start:end]))
-    for frame in range(peak, end):
-        if trace[frame] < trace[peak] - drop_db:
-            return frame - start
+    for window in range(peak, end):
+        if trace[window] < trace[peak] - drop_db:
+            return window - start
     return end - start
 
 
@@ -203,14 +203,14 @@ def _channels_near(erbs: np.ndarray, erb: float) -> list[int]:
     return [int(np.argmin(np.abs(erbs - erb)))]
 
 
-def _refine(level: np.ndarray, erbs: np.ndarray, frame: int, erb: float, span: int = 3) -> float:
-    """The ERB number of the level's maximum after ``frame`` within one channel of ``erb``.
+def _refine(level: np.ndarray, erbs: np.ndarray, window: int, erb: float, span: int = 3) -> float:
+    """The ERB number of the level's maximum after ``window`` within one channel of ``erb``.
 
     A rise pattern's peak sits on the flank of a tone when a neighboring
     tone was still sounding before the onset; the level itself peaks at the
     tone.
     """
-    pattern = level[:, frame : frame + span].max(axis=1)
+    pattern = level[:, window : window + span].max(axis=1)
     near = int(np.argmin(np.abs(erbs - erb)))
     channels = range(max(near - 1, 0), min(near + 2, len(erbs)))
     c = max(channels, key=lambda channel: pattern[channel])
@@ -296,7 +296,7 @@ def detect(
     tolerance_erb: float = 0.35,
     min_duration: float = 0.03,
 ) -> list[OnsetGroup]:
-    """The onset groups of an observed cochleagram (shape ``(channels, frames)``, dB)
+    """The onset groups of an observed cochleagram (shape ``(channels, windows)``, dB)
     of a sound of ``n_samples`` samples.
 
     ``onset_threshold_db`` is the summed rise across channels that counts as
@@ -305,25 +305,25 @@ def detect(
     at least two peaks; its octave above and below are offered with it.
     """
     level = observed.detach().cpu().numpy() - cochleagram.floor_db
-    times = cochleagram.frame_times(n_samples)
+    times = cochleagram.window_times(n_samples)
     erbs = freq_to_erb(cochleagram.cfs)
     gains = channel_gains(cochleagram, observed.dtype)
-    hop = cochleagram.hop
-    frames = onset_frames(level, onset_threshold_db, min_gap=2)
+    hop_dur = cochleagram.hop_dur
+    windows = onset_windows(level, onset_threshold_db, min_gap=2)
     groups: list[OnsetGroup] = []
     sounding: list[Candidate] = []
-    for index, frame in enumerate(frames):
-        onset = max(float(times[frame]) - 0.5 * hop, 0.0)
+    for index, window in enumerate(windows):
+        onset = max(float(times[window]) - 0.5 * hop_dur, 0.0)
         whistles: list[Candidate] = []
-        for erb, height in spectral_peaks(rise_pattern(level, frame), erbs, peak_min_db):
-            erb = _refine(level, erbs, frame, erb)
+        for erb, height in spectral_peaks(rise_pattern(level, window), erbs, peak_min_db):
+            erb = _refine(level, erbs, window, erb)
             channels = _channels_near(erbs, erb)
-            n_frames = _duration(level, channels, frame, frames[index + 1 :], drop_db)
-            reading = observed[channels[0], frame : frame + max(n_frames, 1)].max().item()
+            n_windows = _duration(level, channels, window, windows[index + 1 :], drop_db)
+            reading = observed[channels[0], window : window + max(n_windows, 1)].max().item()
             candidate = Candidate(
                 kind="whistle",
                 onset=onset,
-                duration=max(n_frames * hop, min_duration),
+                duration=max(n_windows * hop_dur, min_duration),
                 freq=float(erb_to_freq(erb)),
                 level_db=reading + float(gains[channels[0]]),
                 salience=height,

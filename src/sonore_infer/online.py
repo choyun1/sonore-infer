@@ -413,8 +413,8 @@ def run_online(
     for end in ends:
         begin = time.perf_counter()
         n_samples = round(end * fs)
-        if n_samples < cochleagram.frame_samples:
-            continue  # not one whole frame yet: nothing heard, nothing to update
+        if n_samples < cochleagram.win_samples:
+            continue  # not one whole cochleagram time window yet: nothing heard, nothing to update
         observed = cochleagram(waveform[:n_samples])
         scene, fresh = prefix_scene(hypothesis, end, fs, ramp, heard)
         if scene is None:
@@ -423,7 +423,7 @@ def run_online(
         if evidence is None:
             n_silent = round(last_silent_end * fs)
             observed_silent = (
-                cochleagram(waveform[:n_silent]) if n_silent >= cochleagram.frame_samples else None
+                cochleagram(waveform[:n_silent]) if n_silent >= cochleagram.win_samples else None
             )
             initial = (
                 0.0
