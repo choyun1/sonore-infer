@@ -85,7 +85,7 @@ def main():
         "--optimizer",
         choices=["adam", "lbfgs"],
         default="adam",
-        help="each window's fit (S3); with lbfgs, --steps and --window-patience count iterations",
+        help="each window's fit (S3): lbfgs is L-BFGS held near the window's start, then Adam",
     )
     parser.add_argument("--batch-steps", type=int, default=0, help="batch reference at each triplet's end")
     parser.add_argument(
@@ -111,7 +111,7 @@ def main():
         evidence_ends = sorted(set(every) | set(checkpoints))
     print(
         f"{args.semitones:g} st, {args.triplets} triplets, window {1000 * args.window:g} ms, "
-        f"{args.steps} {'L-BFGS iterations' if args.optimizer == 'lbfgs' else 'Adam steps'} per window"
+        f"{'L-BFGS then ' if args.optimizer == 'lbfgs' else ''}{args.steps} Adam steps per window"
         + (f", evidence every {args.evidence_every:g} s and at each triplet's end" if evidence_ends else "")
         + ", fft-bass-gain cochleagram, all timing inferred"
     )

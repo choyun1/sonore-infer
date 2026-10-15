@@ -250,6 +250,20 @@ def test_lbfgs_finds_the_mode_of_a_quadratic_and_leaves_frozen_entries():
     assert history[-1] >= history[0] and evaluations >= len(history)
 
 
+def test_lbfgs_pull_holds_a_direction_the_data_do_not_constrain():
+    """S3's pull: a latent the log joint does not depend on stays near its start."""
+    from sonore_infer.online import lbfgs_free
+
+    def log_joint(params):
+        return -0.5 * (params["x"][0] - 3.0) ** 2 + 1e-3 * params["x"][1]  # x[1]: almost flat
+
+    init, free = {"x": torch.zeros(2, dtype=F64)}, {"x": torch.ones(2, dtype=torch.bool)}
+    free_mode, *_ = lbfgs_free(log_joint, init, free, {"x": 0.1}, iterations=50)
+    pulled, *_ = lbfgs_free(log_joint, init, free, {"x": 0.1}, iterations=50, pull=100.0)
+    assert pulled["x"][0].item() == pytest.approx(3.0, abs=0.05)  # constrained: barely held back
+    assert abs(pulled["x"][1].item()) < 0.2 < abs(free_mode["x"][1].item())
+
+
 def test_lbfgs_fits_a_window_in_fewer_evaluations_than_adam():
     """Design online-speed S3, on the toy hypothesis's whole 0.3 s: from the
     same start, 10 L-BFGS iterations reach a higher log joint than 40 Adam

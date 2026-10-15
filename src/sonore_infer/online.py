@@ -35,7 +35,8 @@ whose cost the experiment measures.
 only at those ends: a term is then the same difference over a longer step,
 from the last evidence time, and with an infinite lag the terms still
 telescope to the batch estimate. With ``optimizer="lbfgs"`` (S3), each
-window's fit is L-BFGS on the free latents instead of Adam.
+window's fit starts with L-BFGS on the free latents, held near the window's
+start, and Adam finishes it.
 """
 
 from __future__ import annotations
@@ -199,6 +200,7 @@ def lbfgs_free(
     iterations: int,
     patience: int | None = None,
     tolerance: float = 1.0,
+    pull: float | None = None,
 ) -> tuple[Params, list[float], int]:
     """L-BFGS on the free entries of ``init`` for at most ``iterations``
     iterations (design online-speed S3); the best point seen, the log joint
@@ -212,6 +214,13 @@ def lbfgs_free(
     strong Wolfe line search. With ``patience``, the fit stops as
     :func:`adam_free` does, counted in iterations, and also when L-BFGS
     itself takes no step.
+
+    ``pull`` adds ``-0.5 * |u / pull|^2`` to what is maximized, ``u`` the
+    move from ``init`` in learning-rate units: online, the sound heard so far
+    hardly constrains some latents (an event's duration before its end has
+    arrived), and without it L-BFGS moves them far, which the next window's
+    sound then contradicts (results/O2). The history and the returned point
+    are of the log joint with the pull; the caller finishes with Adam.
     """
     start, keys, unflatten = free_vector(init, free)
     if not keys:
@@ -233,7 +242,8 @@ def lbfgs_free(
     evaluations = 0
 
     def value_at(flat: torch.Tensor) -> torch.Tensor:
-        return log_joint(unflatten(start + scale * flat))
+        value = log_joint(unflatten(start + scale * flat))
+        return value if pull is None else value - 0.5 * (flat / pull).pow(2).sum()
 
     def closure() -> torch.Tensor:
         nonlocal evaluations
@@ -269,6 +279,12 @@ def lbfgs_free(
                 break
     best = {name: value.detach().clone() for name, value in unflatten(start + scale * best_steps).items()}
     return best, history, evaluations
+
+
+# S3's L-BFGS stage (results/O2): at most this many iterations, stopping once
+# it gains less than the tolerance over LBFGS_PATIENCE of them, pulled towards
+# the window's start with this radius in learning-rate units
+LBFGS_ITERATIONS, LBFGS_PATIENCE, LBFGS_PULL = 200, 20, 100.0
 
 
 @dataclass
@@ -494,8 +510,11 @@ def run_online(
     (design online-speed S2); the last window is always one. Between them
     the fit runs as usual and nothing is returned; each returned window's
     seconds, steps and evaluations count everything since the last one. By
-    default the evidence is taken at every window. ``optimizer`` is ``"adam"`` or ``"lbfgs"``
-    (S3); with L-BFGS, ``steps`` and ``patience`` count iterations.
+    default the evidence is taken at every window.
+
+    ``optimizer`` is ``"adam"`` or ``"lbfgs"`` (S3): L-BFGS pulled towards
+    the window's start (:func:`lbfgs_free`, ``LBFGS_*``), then Adam from its
+    point with ``steps`` and ``patience``.
     """
     if optimizer not in ("adam", "lbfgs"):
         raise ValueError(f"optimizer: expected 'adam' or 'lbfgs', got {optimizer!r}")
@@ -541,9 +560,13 @@ def run_online(
             )
             evaluations = len(history)
         else:
-            mode, history, evaluations = lbfgs_free(
-                log_joint, init, free, scene.learning_rates(), steps, patience, tolerance
+            rates = scene.learning_rates()
+            start, lbfgs_history, evaluations = lbfgs_free(
+                log_joint, init, free, rates, LBFGS_ITERATIONS, LBFGS_PATIENCE, tolerance, LBFGS_PULL
             )
+            mode, history = adam_free(log_joint, start, free, rates, steps, patience, tolerance)
+            history = lbfgs_history + history
+            evaluations += len(history) - len(lbfgs_history)
         previous = mode
         fit_steps += len(history) - 1
         fit_evaluations += evaluations
