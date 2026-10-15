@@ -14,6 +14,24 @@ request.
 - **[code]**: read in this repository, with file and line.
 - **[estimate]**: my estimate, with its basis next to it.
 
+## Decisions at a glance
+
+What Cho accepted on 2026-10-13 (O10 on 2026-10-14). The options and
+reasons are in §4, and the answers in §11.
+
+| Decision | Accepted |
+|---|---|
+| O1. Scope | A batch reference plus an online approximation for the same hypotheses; online structure search later |
+| O2. Reference | The paper's buildup of streaming (App. C.11) as the paper ran it |
+| O3. What is updated | A fixed lag L, swept over 0.5 to 2 s; kernel parameters never frozen |
+| O4. Kernel | Keep the squared-exponential kernel and condition exactly on the past; Markov kernels a later decision |
+| O5. Evidence over time | Accumulated window by window, checked against full recomputation |
+| O6. Window length | 50 ms by default, 10 and 100 ms checked; steps per window set by agreement with the reference |
+| O7. Hypotheses | The paper's two, events entering at their onsets, the B source born with the first B tone |
+| O8. Code | A new `online.py` and its tools; existing modules changed only to split latents |
+| O9. Effort | Fixed steps per window by default, surprise-scaled steps run beside it on one stimulus |
+| O10. Finite memory | A leaky decision variable (τ 2.5 s, with 1 and 5 s) reported beside the full sum |
+
 ---
 
 ## 1. What this is

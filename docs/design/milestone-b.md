@@ -3,6 +3,19 @@
 Status: accepted by Cho on 2026-10-07, all as recommended except B2, where Cho
 chose to include option (B) as well. Follows design v1, D3 (b‴).
 
+## Decisions at a glance
+
+What Cho accepted on 2026-10-07. The options and reasons are in §2.
+
+| Decision | Accepted |
+|---|---|
+| B1. Stimuli | Four intervals (tritone with different spectra, tritone, just fifth, octave) at onset asynchronies of 0 to 80 ms, plus four single-note controls |
+| B2. Hypotheses | Three: one harmonic source, two, and one plus whistles. Cho added the whistles to the recommended two |
+| B3. Starting points | The true parameters plus the known alternatives (100 Hz at the fifth, octave errors) |
+| B4. Scene code | A general scene in the package (`scene.py`); tools only build stimuli and hypotheses |
+| B5. Success | Log odds and asynchrony thresholds per interval, by both rules from (a); no comparison with listeners |
+| B6. BASS on the same stimuli | Not in this milestone |
+
 ## 1. Goal
 
 Can the model tell two harmonic notes sounding together from one note? As in

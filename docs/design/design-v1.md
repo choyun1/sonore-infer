@@ -14,6 +14,26 @@ a full read of the paper.
   as reported in HANDOFF.md, or from bass-code-check.md where cited (§1.3);
 - **[estimate]**: my own estimate, with its basis stated next to it.
 
+## Decisions at a glance
+
+What Cho accepted on 2026-10-05. The options and reasons are in §4, and §5
+records the two answers that needed detail.
+
+| Decision | Accepted |
+|---|---|
+| D1. Framework | PyTorch |
+| D2. Relation to sonore | sonore is a test oracle and an optional extra; core never imports it |
+| D3. First milestone | (a) the mistuned harmonic, then (b‴) two simultaneous notes |
+| D4. Likelihood | sonore's ERB envelopes behind one likelihood interface, with BASS's floor (20 dB) and σ (10) as defaults |
+| D5. Inference | MAP by gradient for (b); enumerative inference (fit each hypothesis, compare by evidence) at (c) |
+| D6. Compute | Cho's laptop (CPU only) and a Windows PC with an NVIDIA GPU; sized for CPU, GPU optional, OS-independent |
+| D7. License | MIT; implement only from the paper and sonore |
+| D8. Source-count prior | One Poisson prior for sampling and scoring: rate per second, zero-truncated, λ a parameter |
+
+D4 records the starting point: milestone (a) later moved the likelihood to an
+FFT cochleagram with BASS's gain, which milestones (b) and (c) kept
+(milestone-b.md §1).
+
 ---
 
 ## 1. What reading the paper changes in the handoff
