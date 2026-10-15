@@ -1,0 +1,10 @@
+8 st, lag 1 s, 4 threads, median of 5; times in ms (Hessian in s)
+cost: hypothesis  end  n_grid  n_free  render  cochleagram  likelihood  prior  log_joint  adam_step  hessian
+cost: one  0.55  56  120  3.3  0.5  0.04  1.5  5.1  12.9  1.65
+cost: two  0.55  56  234  3.4  0.5  0.03  2.8  7.7  18.5  4.09
+cost: one  1.05  106  216  8.6  0.7  0.03  1.7  13.2  43.2  11.11
+cost: two  1.05  106  420  10.6  0.7  0.03  3.4  15.2  43.6  22.25
+cost: one  2.05  206  216  27.9  0.8  0.06  3.3  35.3  98.9  25.69
+cost: two  2.05  206  420  27.1  0.9  0.05  7.3  39.6  118.0  51.77
+cost: one  3.05  306  216  53.8  1.0  0.05  4.2  64.6  204.6  54.21
+cost: two  3.05  306  420  61.8  1.2  0.12  11.5  71.5  237.8  107.66
