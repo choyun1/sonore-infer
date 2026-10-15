@@ -3,16 +3,19 @@
 Status: **draft for Cho, 2026-10-15.** Nothing is accepted yet; §8 lists
 the questions in short form.
 
-**Decisions in brief** (recommendations, not yet accepted):
+## Decisions at a glance
 
-| | Decision | Recommendation |
-|---|---|---|
-| E1 | Which effects first | Reset after silence, then the context effect of the previous trial; hysteresis once a source is found; bistable switching later |
-| E2 | Stimuli | The O1 (App. C.11) tones, an inducer, a silent gap of 0 to 8 s, a test; parameters checked against the papers before running |
-| E3 | Hypotheses across a gap | The same two, the whistles continuing through the gap; a third, restarting after the gap, as a check |
-| E4 | Readout | The leaky decision (O10), τ 2.5 s fixed, never fitted to these data; the window terms reported beside it |
-| E5 | Cost | One window spanning each gap, so silence costs one update; runs on Cho's PC |
-| E6 | What the model is expected to get wrong | Stated before running: the context effect of the previous Δf, which listeners show as contrast |
+Recommendations; nothing is accepted yet. The options and reasons are in
+§4, and the questions in §8.
+
+| Decision | Recommended |
+|---|---|
+| E1. Which effects first | Reset after silence, then the context effect of the previous trial; hysteresis once a source is found; bistable switching later |
+| E2. Stimuli | The O1 (App. C.11) tones, an inducer, a silent gap of 0 to 8 s, a test; parameters checked against the papers before running |
+| E3. Hypotheses across a gap | The same two, the whistles continuing through the gap; a third, restarting after the gap, as a check |
+| E4. Readout | The leaky decision (O10), τ 2.5 s fixed, never fitted to these data; the window terms reported beside it |
+| E5. Cost | One window spanning each gap, so silence costs one update; runs on Cho's PC |
+| E6. What the model is expected to get wrong | Stated before running: the context effect of the previous Δf, which listeners show as contrast |
 
 **How numbers and sources are marked** (as in online.md).
 

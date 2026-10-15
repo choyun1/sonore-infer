@@ -5,16 +5,19 @@ questions in short form. Cho chose on 2026-10-15 to do the speed-ups before
 the order-effects runs ([order-effects.md](order-effects.md), parked), since
 speed compounds across every later experiment.
 
-**Decisions in brief** (recommendations, not yet accepted):
+## Decisions at a glance
 
-| | Decision | Recommendation |
-|---|---|---|
-| S1 | Render each event over its own span | Yes: exact, no approximation; first |
-| S2 | Take the evidence less often than the fit | Every 0.5 s and at each triplet's end; fit still every 50 ms |
-| S3 | Fewer optimizer steps per window | L-BFGS on the free latents, Adam kept as the default until it is shown equal |
-| S4 | Evaluate only the recent sound | The past summarized by a Gaussian in the whole-sound latents; after S1 to S3 are measured |
-| S5 | Hardware | Measure the PC's GPU; float64 throughout until float32 is shown safe |
-| S6 | How each is checked | Against the O1 runs: log odds within 3 at every triplet, cost measured with `online_cost.py` |
+Recommendations; nothing is accepted yet. The options and reasons are in
+§2, and the questions in §7.
+
+| Decision | Recommended |
+|---|---|
+| S1. Render each event over its own span | Yes: exact, no approximation; first |
+| S2. Take the evidence less often than the fit | Every 0.5 s and at each triplet's end; fit still every 50 ms |
+| S3. Fewer optimizer steps per window | L-BFGS on the free latents, Adam kept as the default until it is shown equal |
+| S4. Evaluate only the recent sound | The past summarized by a Gaussian in the whole-sound latents; after S1 to S3 are measured |
+| S5. Hardware | Measure the PC's GPU; float64 throughout until float32 is shown safe |
+| S6. How each is checked | Against the O1 runs: log odds within 3 at every triplet, cost measured with `online_cost.py` |
 
 Numbers are marked as in [online.md](online.md): **[measured]** with its
 file, **[code]** with file and line, **[estimate]** with its basis.
