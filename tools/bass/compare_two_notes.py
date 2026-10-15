@@ -161,6 +161,12 @@ def main():
     parser.add_argument("--only", nargs="+", help="fit only these hypotheses (e.g. one@200 two)")
     parser.add_argument("--steps", type=int, default=300)
     parser.add_argument(
+        "--tolerance",
+        type=float,
+        help="stop a fit once its log joint has risen by less than this over the last 1000 steps "
+        "(--steps is then a maximum)",
+    )
+    parser.add_argument(
         "--variational-steps",
         type=int,
         default=0,
@@ -187,7 +193,9 @@ def main():
         parser.error("give --interval or --controls")
     cochleagram = FFTCochleagram()
     print(
-        f"{args.steps} Adam steps, {args.samples} samples, sigma {args.sigma:g} dB, seed {args.seed}, "
+        f"{args.steps} Adam steps"
+        + (f" at most, stopping at a rise under {args.tolerance} over 1000" if args.tolerance else "")
+        + f", {args.samples} samples, sigma {args.sigma:g} dB, seed {args.seed}, "
         "fft-bass-gain cochleagram, trajectories, all timing inferred"
         + (", GP sigma and lengthscale inferred" if args.infer_kernel else "")
     )
@@ -217,6 +225,7 @@ def main():
                 n_samples=args.samples,
                 generator=generator,
                 variational_steps=args.variational_steps,
+                tolerance=args.tolerance,
                 sigma=args.sigma,
                 report=status(hypothesis),
             )
