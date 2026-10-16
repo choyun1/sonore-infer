@@ -29,6 +29,13 @@ the terms telescope, and the total is the batch Laplace estimate of the
 whole prefix at the final mode; with a finite lag the frozen past enters as
 a point value instead of being integrated out, which is the approximation
 whose cost the experiment measures.
+
+**Faster options (docs/design/online-speed.md).** With ``evidence_ends``
+(S2), the fit still runs every window but the Laplace estimate is taken
+only at those ends: a term is then the same difference over a longer step,
+from the last evidence time, and with an infinite lag the terms still
+telescope to the batch estimate. L-BFGS in place of Adam (S3) was tried
+and dropped (results/O2).
 """
 
 from __future__ import annotations
@@ -387,6 +394,7 @@ def run_online(
     heard: float = 0.0,
     sigma: float = 10.0,
     ends: Sequence[float] | None = None,
+    evidence_ends: Sequence[float] | None = None,
     report: Callable[[OnlineStep], None] | None = None,
 ) -> list[OnlineStep]:
     """One pass over ``waveform``, updating ``hypothesis`` every ``window`` seconds.
@@ -399,6 +407,12 @@ def run_online(
     enters once ``heard`` seconds of it have arrived: with windows much
     shorter than a tone, an event that enters on its ramp alone can have its
     timing pushed away from the tone, where the fit cannot pull it back.
+
+    ``evidence_ends`` [s] are the window ends at which the evidence is taken
+    (design online-speed S2); the last window is always one. Between them
+    the fit runs as usual and nothing is returned; each returned window's
+    seconds and steps count everything since the last one. By
+    default the evidence is taken at every window.
     """
     total = waveform.shape[-1] / fs
     if ends is None:
@@ -410,8 +424,10 @@ def run_online(
     previous: Params = {}
     steps_out: list[OnlineStep] = []
     last_silent_end = 0.0
+    final = ends[-1]
+    # since the last evidence time: seconds and Adam steps
+    begin, fit_steps = time.perf_counter(), 0
     for end in ends:
-        begin = time.perf_counter()
         n_samples = round(end * fs)
         if n_samples < cochleagram.win_samples:
             continue  # not one whole cochleagram time window yet: nothing heard, nothing to update
@@ -435,6 +451,10 @@ def run_online(
         free = lag_free(scene, init, end, lag)
         log_joint = scene.log_joint(observed, cochleagram, sigma)
         mode, history = adam_free(log_joint, init, free, scene.learning_rates(), steps, patience, tolerance)
+        previous = mode
+        fit_steps += len(history) - 1
+        if evidence_ends is not None and end != final and not any(abs(end - e) < 1e-9 for e in evidence_ends):
+            continue
         # what is free is decided before the fit and kept: the evidence's terms need one set
         state = laplace(log_joint, mode, free)
         term, floored = evidence.add(state)
@@ -447,7 +467,7 @@ def run_online(
                 floored,
                 state.peak,
                 time.perf_counter() - begin,
-                len(history) - 1,
+                fit_steps,
             ),
             scene.structure_log_prior(),
             mode,
@@ -455,7 +475,7 @@ def run_online(
         steps_out.append(step)
         if report:
             report(step)
-        previous = mode
+        begin, fit_steps = time.perf_counter(), 0
     return steps_out
 
 

@@ -17,6 +17,10 @@ is the batch Laplace estimate at the online run's mode, so the online
 total minus it is the error of the window terms alone (zero with an infinite
 lag), and it minus ``batch`` is the difference the fits make.
 
+``--evidence-every`` is speed-up S2 of docs/design/online-speed.md: a
+window line is then printed only at the evidence times, with the seconds and
+steps since the last.
+
     python tools/online/online_buildup.py --semitones 8 --triplets 6 --lag inf 1 --batch-steps 300
 """
 
@@ -71,6 +75,12 @@ def main():
     parser.add_argument(
         "--heard", type=float, default=0.02, help="s of a tone heard before its event enters the scene"
     )
+    parser.add_argument(
+        "--evidence-every",
+        type=float,
+        default=None,
+        help="s between evidence times, plus each triplet's end (online-speed S2); default every window",
+    )
     parser.add_argument("--batch-steps", type=int, default=0, help="batch reference at each triplet's end")
     parser.add_argument(
         "--patience",
@@ -88,9 +98,16 @@ def main():
     total = bu.duration(args.triplets, LEAD)
     grid = [round((k + 1) * args.window, 9) for k in range(int(total / args.window + 1e-9))]
     ends = sorted(set(grid) | set(checkpoints))
+    evidence_ends = None
+    if args.evidence_every:
+        n_evidence = int(total / args.evidence_every + 1e-9)
+        every = [round((k + 1) * args.evidence_every, 9) for k in range(n_evidence)]
+        evidence_ends = sorted(set(every) | set(checkpoints))
     print(
         f"{args.semitones:g} st, {args.triplets} triplets, window {1000 * args.window:g} ms, "
-        f"{args.steps} Adam steps per window, fft-bass-gain cochleagram, all timing inferred"
+        f"{args.steps} Adam steps per window"
+        + (f", evidence every {args.evidence_every:g} s and at each triplet's end" if evidence_ends else "")
+        + ", fft-bass-gain cochleagram, all timing inferred"
     )
 
     batch = {}
@@ -151,6 +168,7 @@ def main():
                     tolerance=args.window_tolerance,
                     heard=args.heard,
                     ends=ends,
+                    evidence_ends=evidence_ends,
                     report=report,
                 )
             }

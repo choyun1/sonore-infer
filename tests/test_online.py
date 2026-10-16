@@ -202,3 +202,23 @@ def test_with_short_windows_an_event_enters_once_its_tone_is_heard():
     )
     # the tone starts at 0.05: nothing enters until 0.07, so the scene is silence before
     assert [round(step.window.end, 3) for step in steps] == [0.07, 0.08, 0.09, 0.1]
+
+
+def short_run_with(**kwargs):
+    waveform = torch.tensor(bu.buildup_stimulus(1, 8, lead=0.05).data[:, 0], dtype=F64)[: round(0.3 * bu.FS)]
+    options = dict(fs=bu.FS, ramp=bu.RAMP, window=0.05, lag=math.inf, steps=5) | kwargs
+    return run_online(waveform, (WhistleSpec("w0", TONES),), FFTCochleagram(), **options)
+
+
+def test_evidence_taken_less_often_keeps_the_fits_and_still_telescopes():
+    """Design online-speed S2: the fits are the same windows' fits; only the
+    evidence is taken at fewer ends (and the last), and with no lag the total
+    is still the batch Laplace estimate at the final mode."""
+    every = short_run_with()
+    sparse = short_run_with(evidence_ends=[0.15])
+    assert [round(step.window.end, 3) for step in sparse] == [0.15, 0.3]
+    final = every[-1]
+    assert torch.equal(sparse[-1].params["w0.freq_deviation"], final.params["w0.freq_deviation"])
+    assert sparse[-1].window.total == pytest.approx(final.window.total, abs=1e-6)
+    later = [step for step in every if step.window.end > 0.15 + 1e-9]
+    assert sparse[-1].window.adam_steps == sum(step.window.adam_steps for step in later)
