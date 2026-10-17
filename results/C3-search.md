@@ -105,8 +105,8 @@ Why did the search's two-note fit to the just fifth (0 ms) end about 10
 below B2's? The same two-note hypothesis was fitted from five starts,
 on current main, as the C3 search was (fits to convergence, 2000 variational
 steps; `data/C3/fifth_starts/`). The detector's candidates sit at 197
-and 304 Hz. Their spectra come from the peaks. The lower note's harmonics 4, 7 and 10 (800, 1400 and
-2000 Hz) start at the −30 dB floor, because no peak was resolved there
+and 304 Hz. Their spectra come from the peaks. The lower note's harmonics 4, 7
+and 10 (800, 1400 and 2000 Hz) start at the −30 dB floor, because no peak was resolved there
 next to the upper note's 900, 1500 and 2100 Hz:
 
 | Start | Variational log posterior, seed 0 | Seeds 0–4, mean (SD) |
@@ -122,6 +122,24 @@ Adam fit at the same place. The search's own run gave −125.8 and −117.5 for 
 start and its best. It ran on code from before PR #61, so its numbers differ
 slightly. The Laplace estimates (−127 to −87) disagree with the variational ones
 by up to 33 and do not rank these fits consistently (`data/C3/fifth_starts/`).
+
+A better f0 from the detector does not fix this. A comb over the lowest six
+harmonics brought every candidate f0 on the (b) stimuli within 0.7% of the
+truth, where the peaks' average had been up to 7.5% off. The fifth then got
+199 and 298 Hz. The four (b) searches, rerun with it
+(`data/C3/fifth_starts/comb_search/`), chose the same structures as
+before, within 2.1 of their log posteriors. The fifth's two-note fit stayed
+low, at −125.6. Fitted from 198.7 Hz, the lower note drifts down to
+197.8 Hz instead of up to 200. Starting one or both notes 0.7% off costs 4
+to 9 against starting exactly at 200 and 300 Hz. Starting the muted harmonics at 0 dB costs
+about 9 more. Fitting first at a wider likelihood SD (40, then 20 dB) does
+not help either: from exactly 200 and 300 Hz it gives −123.2
+(`data/C3/fifth_starts/f0_sensitivity.txt`). The comb was dropped.
+
+So the two-note posterior has several modes within about 1% of the notes'
+f0s, and the evidence, estimated around one mode, depends on which mode the
+fit reaches, by up to 15. B2's −115 comes from a fit started at the true
+f0s, which the model would not have.
 
 ## What it says
 
@@ -144,8 +162,10 @@ by up to 33 and do not rank these fits consistently (`data/C3/fifth_starts/`).
   with the detector's spectra, the same fit recovers 9 of the 10. Lifting
   the floored harmonics alone recovers 5. With the right start the two
   notes and the note plus whistle tie: −116.0 against −115.3, over five
-  seeds with SDs of 1.5 and 2.3. So this mismatch is a starting value, and
-  behind it is a near tie that one seed cannot settle.
+  seeds with SDs of 1.5 and 2.3. But only the exact f0s give that. Starts
+  0.7% off, which the detector can reach, lose 4 to 9. So the comparison
+  hinges on which mode of the two-note posterior the fit reaches, and the
+  one-mode evidence cannot settle it.
 - **Cost.** 5 to 23 hypotheses and 20 to 74 minutes per 0.5 s stimulus on
   one cloud CPU, within decision C9's estimate of 1 to 3 hours. The ABA
   sequences (3.1 s with the 12 tones in the first 1.5 s, 12 rounds) took 82 to 100 hypotheses and 5.7 to 9.2
@@ -175,6 +195,7 @@ Defaults: `--steps 15000 --tolerance 0.5 --variational-steps 2000 --keep 5
 - Warm starts between rounds, to bring the ABA cost down.
 - The octave's upper onset: the detector would need a cue other than a rise
   in level at new frequencies, or the residual pass would need to find it.
-- The detector's f0s: refine each harmonic candidate's f0 from its peaks
-  (197 Hz here, for a 200 Hz note) before the fits start.
+- The fifth's two-note evidence depends on which posterior mode the fit
+  reaches. Fitting from several nearby starts and combining their evidence
+  would show how much that matters.
 - More (b) stimuli and asynchronies, and more seeds.
