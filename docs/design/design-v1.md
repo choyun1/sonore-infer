@@ -27,7 +27,7 @@ records the two answers that needed detail.
 | D4. Likelihood | sonore's ERB envelopes behind one likelihood interface, with BASS's floor (20 dB) and σ (10) as defaults |
 | D5. Inference | MAP by gradient for (b); enumerative inference (fit each hypothesis, compare by evidence) at (c) |
 | D6. Compute | Cho's laptop (CPU only) and a Windows PC with an NVIDIA GPU; sized for CPU, GPU optional, OS-independent |
-| D7. License | MIT; implement only from the paper and sonore |
+| D7. License | MIT; write our own code (amended 2026-10-17: reading BASS's code to check details is fine) |
 | D8. Source-count prior | One Poisson prior for sampling and scoring: rate per second, zero-truncated, λ a parameter |
 
 D4 records the starting point: milestone (a) later moved the likelihood to an
@@ -388,6 +388,13 @@ keep names taken from the paper unchanged. Ask Maddie whether the code could
 carry a license anyway, since later comparison (sequential inference, the
 fitted priors) would benefit. chcochleagram's license is to be checked before
 it is used even as a test dependency.
+
+**Amended 2026-10-17 (Cho).** "Implement only from the paper" was a margin
+of caution, not a legal need: copyright covers code as written, not the
+model, equations or parameter values. The rule is now: write our own code,
+cite the paper (and BASS where a value comes from its code), and never
+commit BASS's files or a line-by-line translation of them. Reading BASS's
+code to check details is fine, as `bass-code-check.md` did.
 
 ### D8. Prior on the number of sources
 

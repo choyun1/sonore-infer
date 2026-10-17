@@ -114,4 +114,3 @@ committed file gives the same text).
 - At BASS's 20 dB floor one sound barely constrains RT60 (see
   [R2](R2-atypical-rooms.md)), which matters for combining this with
   milestone (b)'s model.
-- Licence of the survey's original files is unchecked.

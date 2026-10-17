@@ -61,9 +61,10 @@ point where the model switches from hearing one source to two. These
 thresholds are what the paper compares with listeners, and what we
 compare with the paper's model.
 
-The paper's own code is BASS (github.com/mcusi/bass). We re-implement the
-model from the paper alone, because BASS has no license. We ran BASS only
-locally, as a check (A6).
+The paper's own code is BASS (github.com/mcusi/bass). We write our own
+code from the paper and read BASS's code only to check details. BASS has no
+license, so none of its code is in this repository; we ran it only locally,
+as a check (A6).
 
 ### The common setup
 
