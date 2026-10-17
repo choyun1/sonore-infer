@@ -13,7 +13,7 @@ All six accepted by Cho on 2026-10-15. The options and reasons are in §2.
 |---|---|
 | S1. Render each event over its own span | Yes: exact, no approximation; first |
 | S2. Take the evidence less often than the fit | Every 0.5 s and at each triplet's end; fit still every 50 ms. **Outcome:** passed S6 at 8 and 4 st, six to eight times faster (results/O2); default of `online_buildup.py` since 2026-10-16 |
-| S3. Fewer optimizer steps per window | L-BFGS on the free latents, Adam kept as the default until it is shown equal. **Outcome:** tried in two forms, failed S6, dropped (results/O2); (C) and (D) remain |
+| S3. Fewer optimizer steps per window | L-BFGS on the free latents, Adam kept as the default until it is shown equal. **Outcome:** tried in two forms, failed S6, dropped (results/O2); (D), shorter look-backs, saves at most 8% and fails S6 below 20, dropped (2026-10-17); (C) remains |
 | S4. Evaluate only the recent sound | The past summarized by a Gaussian in the whole-sound latents; after S1 to S3 are measured |
 | S5. Hardware | Measure the PC's GPU; float64 throughout until float32 is shown safe |
 | S6. How each is checked | Against the O1 runs: log odds within 3 at every triplet, cost measured with `online_cost.py` |
@@ -114,7 +114,9 @@ directions the sound so far does not constrain and the next window never
 recovers (odds −1.4 million against 132); held near the window's start and
 finished by Adam, it lands the one-stream fit in a worse basin (odds 167
 against 132) and saves 6% of the time. (D), a stopping rule that can stop
-below 50 steps, is the option left here.
+below 50 steps, was swept on 2026-10-17 (O2): look-backs of 20 pass S6 but
+save at most 8%, and 10 or 5 fail it, because the floor is not where the
+time goes. Dropped too; 100 ms windows save 14 to 18%.
 
 ### S4. Evaluate only the recent sound
 

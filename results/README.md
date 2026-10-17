@@ -138,7 +138,7 @@ What every experiment here shares unless its page says otherwise:
 | [C2](C2-aba-streaming.md) | ABA sequences, one stream or two (30 stimuli) | Fig. 8D, App. C.10 | map done; seeds 0–4 on the 2 cells under 10 | One stream at 1 semitone, two from 3 up (paper: from about 6) |
 | [C3](C3-search.md) | Search over structures from detected events | App. B.2 | first pass on 4 (b) and 3 ABA stimuli | Same structure as enumerated on 6 of 7; fifth at 0 ms gives note + whistle |
 | [O1](O1-online-buildup.md) | Buildup of streaming, batch and online | Fig. 8F, App. C.11 | first pass, sweeps | Converged batch odds rise with triplets; online with per-window convergence reproduces them in one pass; the lag, not the window, sets the slope |
-| [O2](O2-online-speed.md) | Faster online inference | none (cost; checked against O1) | S1, S2 checked; S3 dropped | Rendering each event over its span changes no answer; with the evidence every 0.5 s, odds stay within 1.2 of O1 in a seventh of the time; L-BFGS, plain or paired with Adam, fails online |
+| [O2](O2-online-speed.md) | Faster online inference | none (cost; checked against O1) | S1, S2 checked; S3 dropped; stopping-rule sweep run | Rendering each event over its span changes no answer; with the evidence every 0.5 s, odds stay within 1.2 of O1 in a seventh of the time; L-BFGS, plain or paired with Adam, fails online; shorter look-backs save little, 100 ms windows a sixth |
 | [R1](R1-source-and-room.md) | Source and room (RT60) from one sound | none in this paper | done | RT60 within 3%; 90% intervals cover 66% (overconfident) |
 | [R2](R2-atypical-rooms.md) | Atypical rooms, exponential room model | none in this paper | done | Biased like T20 × 3; time-reversed rooms do not fit |
 
