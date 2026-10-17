@@ -1,7 +1,7 @@
 # Order effects in streaming — design
 
-Status: **draft for Cho, 2026-10-15.** Nothing is accepted yet; §8 lists
-the questions in short form.
+Status: **draft for Cho, 2026-10-15; E7 added 2026-10-17.** Nothing is
+accepted yet; §8 lists the questions in short form.
 
 ## Decisions at a glance
 
@@ -16,6 +16,7 @@ Recommendations; nothing is accepted yet. The options and reasons are in
 | E4. Readout | The leaky decision (O10), τ 2.5 s fixed, never fitted to these data; the window terms reported beside it |
 | E5. Cost | One window spanning each gap, so silence costs one update; runs on Cho's PC |
 | E6. What the model is expected to get wrong | Stated before running: the context effect of the previous Δf, which listeners show as contrast |
+| E7. Compute per window | A fixed budget, part of the model, chosen once before these runs and never fitted to listeners; tying it to attention waits for the papers |
 
 **How numbers and sources are marked** (as in online.md).
 
@@ -67,7 +68,8 @@ stimuli are a few seconds of tones, as in O1.
   Biol. 9:e1002925, listed in online.md §8). Needs noise or sampling in the
   model, which the online code does not have.
 
-Attention switches are out of scope: the model has no attention.
+Attention switches are out of scope: the model has no attention (but see
+E7).
 
 ## 3. What the model should do, before running anything
 
@@ -194,6 +196,46 @@ expected, that is a result about the model: something in listeners adapts
 to Δf, and the model has nothing that does. If the runs show contrast, §3
 is wrong and the reason has to be found before anything else.
 
+### E7. Compute per window
+
+Each window's fit stops by a rule (O9: once it gains less than 1 over 50
+Adam steps). That rule decides how far each hypothesis gets towards its
+best fit before the next 50 ms arrive, so it changes the log odds, not only
+the cost [measured: O1 page, where 30 and 150 fixed steps per window gave
+log odds of 143 and 25 at 4 semitones, against 16 with the rule; O2 page,
+stopping-rule sweep]. A perception model does not have to fit perfectly; listeners have
+limited time and effort too, which is the idea of resource-rational models
+(Lieder & Griffiths, 2020, Behav. Brain Sci. 43:e1).
+
+**What less compute should do** [inferred, the O2 sweep checks it]. The
+two-stream fit already stops at the floor in nearly every window; the
+one-stream fit needs hundreds of steps each time its whistle has to jump
+to a B tone. With less compute the one-stream fit falls further behind, so
+the log odds for two streams rise faster: less compute, faster buildup.
+
+**Where that may conflict with listeners.** Buildup was smaller when
+attention was drawn away from the tones (Carlyon, Cusack, Foxton &
+Robertson, 2001, JEP:HPP 27:115–127 [abstract; not read in full]). If less
+attention meant less compute, the model would predict the opposite. That
+mapping from attention to compute is my inference, not something the model
+or the papers say.
+
+**Options.**
+
+- **(A) A numerical setting only**, chosen for cost under S6 and not
+  discussed further.
+- **(B) A fixed model parameter**: one rule, chosen once from the O2 sweep
+  before any order-effect run, reported with every result, never fitted to
+  listeners; other budgets only as a check.
+- **(C) Compute as attention**: varied across conditions to model attended
+  and unattended listening.
+
+**Recommendation: (B).** It keeps the rule visible as a model choice
+without adding a free parameter. (C) is the interesting one but rests on
+the inference above and on a direction that may be wrong; it waits for the
+sweep's direction and for Carlyon et al. (2001) and later attention studies
+to be read in full.
+
 ## 5. What counts as success
 
 - **Reset:** the log odds after the gap fall with the gap's length, with a
@@ -207,15 +249,15 @@ is wrong and the reason has to be found before anything else.
 
 No change to the library is expected: `run_online` takes any tones and any
 window ends. A new tool in `tools/online/` builds the inducer–gap–test
-sequences and the third hypothesis, and a results page (experiment O2) with
+sequences and the third hypothesis, and a results page (experiment O3) with
 a plot, as for O1.
 
 ## 7. Order of work
 
 1. Read the three papers (needs the PDFs), and fix E2's values.
 2. Reset after silence, at 8 semitones first (the larger effect in O1), then
-   4: runs, page O2, PR.
-3. The context of the previous trial: runs, page O3, PR.
+   4: runs, page O3, PR (O2 is now the speed-up page).
+3. The context of the previous trial: runs, page O4, PR.
 
 ## 8. Questions for Cho, short form
 
@@ -232,3 +274,6 @@ a plot, as for O1.
    contrast) before running? (recommended: yes)
 7. Can you add the PDFs of Beauvois & Meddis (1997), Cusack et al. (2004)
    and Snyder et al. (2008) to the project? I could not open them from here.
+8. **E7** Compute per window a fixed model parameter, chosen once from the
+   O2 sweep and reported, with attention left for later? (recommended: yes)
+   Carlyon et al. (2001) as a PDF would help here too.
