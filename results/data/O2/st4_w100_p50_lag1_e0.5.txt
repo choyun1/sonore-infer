@@ -1,0 +1,3 @@
+4 st, 6 triplets, window 100 ms, 2000 Adam steps per window, evidence every 0.5 s and at each triplet's end, fft-bass-gain cochleagram, all timing inferred
+lag 1 s
+window: lag  hypothesis  end  n_free  term  total  structure  floored  log_joint  seconds  steps
