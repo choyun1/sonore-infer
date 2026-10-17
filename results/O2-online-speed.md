@@ -4,7 +4,7 @@
 > results. The work was done with AI assistance (Claude) and has not yet been
 > checked carefully. Numbers, methods and interpretations may change.
 
-**Status:** S1 and S2 checked (2026-10-15), S2 the online tool's default since 2026-10-16 (Cho); S3 tried in two forms, both failed its check, dropped.
+**Status:** S1 and S2 checked (2026-10-15), S2 the online tool's default since 2026-10-16 (Cho); S3 tried in two forms, both failed its check, dropped; stopping-rule and window sweep run 2026-10-17.
 **Paper target:** none; this is about cost, checked against
 [O1](O1-online-buildup.md). **Code:** `src/sonore_infer/sources.py`
 (`trajectory_event`), `src/sonore_infer/online.py` (`run_online`),
@@ -141,6 +141,63 @@ arrival (22,677 steps). The 12 Hessians per hypothesis take about 150 to
 below 50 steps (design S3 (D)), 100 ms windows (O1 found the window barely
 matters, and it halves the floor), and S4.
 
+### Shorter look-backs barely save time; 100 ms windows save a sixth
+
+The stopping rule of O9 ends a window's fit once it gains less than 1 over
+the last 50 Adam steps. Design S3 (D) and the end of the section above
+asked whether a shorter look-back, at the same gain per step (tolerance
+look-back/50), saves time without changing the answer, and whether 100 ms
+windows do. Each run had S1 and S2, one at a time on the cloud CPU
+[`data/O2/st{4,8}_w{50,100}_p{50,20,10,5}_lag1_e0.5.txt`; the look-back
+50, 50 ms runs are the S2 runs above].
+
+Largest difference from O1's log odds over the 6 triplets, the log odds at
+6 triplets minus the 10,000-step batch fit's (11.9 at 4 st, 118.5 at
+8 st, from O1), and wall time:
+
+| Window | Look-back | 4 st: max diff | 4 st: minus batch | 4 st: wall | 8 st: max diff | 8 st: minus batch | 8 st: wall |
+|---|---|---|---|---|---|---|---|
+| 50 ms | 50 | 1.21 | 5.6 | 833 s | 1.04 | 14.5 | 1,108 s |
+| 50 ms | 20 | 1.46 | 5.9 | 889 s | **7.11** (1 triplet; else 1.09) | 14.5 | 1,020 s |
+| 50 ms | 10 | 1.27 | 5.7 | 764 s | **9.70** | 19.4 | 983 s |
+| 50 ms | 5 | **8.13** | 12.5 | 735 s | **39.73** | 29.3 | 984 s |
+| 100 ms | 50 | 0.41 | 4.8 | 717 s | **7.06** (1 triplet; else 1.87) | 11.8 | 956 s |
+| 100 ms | 20 | 0.75 | 4.4 | 687 s | **7.04** (1 triplet; else 1.52) | 12.2 | 931 s |
+| 100 ms | 10 | **8.18** | 6.0 | 668 s | **10.61** | 17.7 | 879 s |
+| 100 ms | 5 | **6.37** | 7.5 | 666 s | **11.24** | 24.7 | 833 s |
+
+Bold: outside S6's 3.
+
+- **The 7 at 1 triplet, 8 st, is a second basin, not the change.** Those
+  runs give log odds of 17.0 to 17.1 at 1 triplet, where O1 gives 10.0;
+  O1's own 100 ms run gives 17.0 there too
+  [`data/O1/st8_w100_p50_lag1.txt`]. Against that run, 100 ms with
+  look-back 50 is within 1.12 at every triplet, and with look-back 20
+  within 1.53. It is the window-length effect O1 reported, up to 7.
+- **Look-backs of 10 and 5 fail**, at 8 st with both windows and at 4 st
+  with 100 ms windows (and look-back 5 with 50 ms).
+- **The error, where it is large, mostly favours two streams**: the
+  one-stream fit, stopped sooner, falls further behind each B tone. That is
+  the direction design E7 of [order effects](../docs/design/order-effects.md)
+  inferred: less compute, faster buildup. Exceptions are 100 ms with
+  look-back 10 and 5 at 4 st, whose first triplet is 6 to 8 lower.
+- **The 4 st crossing does not move**: the log odds turn positive at the
+  third triplet in every run but 100 ms with look-back 5 (the second).
+- **Every run sits above the 10,000-step batch fit**, as O1 did; the
+  passing runs by 4 to 6 at 4 st and 12 to 15 at 8 st.
+
+The look-back saves little because it is not where the time goes. With
+look-back 5 the two-stream fit takes 300 Adam steps in all (look-back 50:
+3,693) and still takes 175 s against 255 s: most of that is its 12
+Laplace estimates. The one-stream fit's steps hardly fall (10,755 to
+9,001 at 4 st, 22,677 to 20,474 at 8 st): it stops because it has
+stopped gaining, not at the floor. 100 ms windows save 14 to 18% of the
+wall time, from fewer windows. So the cheapest runs that pass S6 (against
+O1's own 100 ms run at 8 st) are 100 ms windows with look-back 50 or 20,
+about a sixth faster than now.
+
 ## What is open
 
-- S3 (D), 100 ms windows, S4 and S5, per the design.
+- 100 ms windows as the online tool's default (look-back 50): for Cho.
+- S4 (the Laplace estimates and the growing past) and S5, per the design;
+  S3 (D) is answered above and dropped.
