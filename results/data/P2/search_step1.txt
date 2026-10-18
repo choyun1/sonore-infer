@@ -1,0 +1,29 @@
+shepard:1:minor_third: steps 15000, tolerance 0.5, seed 0
+onset groups: 1
+  0.057 s: w[20x1] + w[183x1] + w[254x1] + w[878x1] + w[1031x1] + w[1247x1] + w[1464x1] | w[20x1] + h[90x1] | w[20x1] + h[179x1] | w[20x1] + h[45x1]
+stage                 end_s  fit_steps  laplace_posterior  structure
+round 1 of 1          0.225      15001               -inf  w[20x1] + h[90x1]
+round 1 of 1          0.225      15001               -inf  w[20x1] + h[179x1]
+round 1 of 1          0.225      15001               -inf  w[20x1] + h[45x1]
+residual 1 of 1       0.225      15001               -inf  w[20x1] + w[451x1] + w[20x1] + h[90x1]
+residual 1 of 1       0.225      15001               -inf  w[20x1] + w[451x1] + w[20x1] + h[179x1]
+cleanup               0.225       2576            -4427.6  h[90x1]
+cleanup               0.225       1996            -4453.8  h[179x1]
+cleanup               0.225       6204            -4629.3  w[20x1] + w[179x1]
+cleanup               0.225       1660            -4765.2  w[20x1]
+cleanup               0.225      15001               -inf  w[20x1] + w[90x1]
+cleanup               0.225      15001               -inf  h[20x1] + h[90x1]
+cleanup               0.225      15001               -inf  h[20x1] + h[179x1]
+final               laplace_posterior  variational_posterior  elbo_posterior  structure
+                               -4427.6                -4425.1         -4425.8  h[90x1]
+                     fitted: h97Hz[52-172]
+                               -4453.8                -4453.1         -4450.1  h[179x1]
+                     fitted: h132Hz[54-172]
+                               -4629.3                -4624.2         -4622.8  w[20x1] + w[179x1]
+                     fitted: w305Hz[65-170] + w113Hz[82-168]
+                               -4765.2                -4752.1         -4756.2  w[20x1]
+                     fitted: w154Hz[86-162]
+                                  -inf                -4775.8         -4783.0  w[20x1] + h[90x1]
+                     fitted: h90Hz[57-217] + w20Hz[57-167]
+best: h[90x1]
+hypotheses fitted: 12, seconds: 1815

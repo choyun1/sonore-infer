@@ -1,0 +1,8 @@
+Shepard tones, octave spacing; up to 15000 Adam steps, stop at a rise under 0.5 over 1000; 2000 variational steps, 128 samples, seed 0; fft-bass-gain cochleagram, sigma 10 dB
+step  hypothesis  n_params  structure  log_joint_at_mode  laplace  elbo  vi_importance  vi_ess  seconds
+   1  harmonic@155.6       82    -1.91    -4461.7    -4458.0    -4453.1    -4453.8      2    165.1
+   1  harmonic@311.2       66    -1.91    -4594.9    -4597.0    -4591.4    -4591.4      7    147.9
+   1  harmonic@622.5       58    -1.91    -4687.7    -4689.0    -4687.1    -4686.4     20    179.3
+   1  harmonic@1244.9      54    -1.91    -4716.1    -4717.8    -4707.9    -4712.3      4     86.3
+   1  whistles×4          200   -11.76    -4215.0    -4433.1    -4424.8    -4434.6      1    173.1
+step 1: log posterior relative to the best: harmonic@155.6 -9.3, harmonic@311.2 -146.9, harmonic@622.5 -241.9, harmonic@1244.9 -267.8, whistles×4 0.0
