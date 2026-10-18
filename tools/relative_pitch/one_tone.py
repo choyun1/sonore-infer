@@ -13,6 +13,10 @@ from the stimulus and scored by its variational evidence:
 - ``harmonic@F+whistle@G`` (with ``--mixed``): the harmonic reading at F plus
   a whistle at the component an octave below it, G = F/2, the structure the
   scene search found best on the octave tone 1 (``results/P1-shepard-one-tone.md``).
+- ``chord×K`` (with ``--chord``): K harmonic sources, one at each of the K
+  lowest readings, K being the components per octave, so each source takes
+  one octave-spaced series of components. With minor-third spacing, four
+  Shepard-like tones a minor third apart: the chord listeners hear [Shepard §V].
 
 The f0 and whistle-frequency prior is uniform on 3 to 33.19 ERB number, from
 87.5 Hz, so no hypothesis can explain components below 87.5 Hz (Shepard's
@@ -24,7 +28,10 @@ start puts the Gaussian-process spectrum through the stimulus's levels,
 interpolated in ERB number between components (held flat beyond them), and
 starts the offsets at 0 dB for harmonics the stimulus has and at
 ``ABSENT_OFFSET_DB`` for the others, with the presence probability at the
-fraction present.
+fraction present. A second start has every harmonic present, as without a
+sparse spectrum (its 30 dB-down harmonics lie between the two parts of the
+offset prior, so a fit from one start rarely reaches the other's mode); the
+fit keeps the better.
 
 Prints one line per fit and, per tone, the log posterior of each hypothesis
 relative to the best (0 is the best).
@@ -56,15 +63,23 @@ PRIOR_LOW_HZ = float(erb_to_freq(F0_TRAJECTORY.mean_range[0]))
 DTYPE = torch.float64
 
 
-def harmonic_start(source, f0, freqs, levels):
-    """A harmonic source at ``f0`` whose harmonics take the stimulus's levels where it has a component."""
+def harmonic_starts(source, f0, freqs, levels):
+    """Starts for a harmonic source at ``f0``: one, or with a sparse spectrum two (see above)."""
+    if not source.sparse_spectrum:
+        return [harmonic_start(source, f0, freqs, levels)]
+    return [harmonic_start(source, f0, freqs, levels), harmonic_start(source, f0, freqs, levels, dense=True)]
+
+
+def harmonic_start(source, f0, freqs, levels, dense=False):
+    """A harmonic source at ``f0`` whose harmonics take the stimulus's levels where it has a component;
+    with ``dense``, a sparse source starts with every harmonic present."""
     found = []
     for n in range(1, source.n_harmonics + 1):
         match = abs(freqs - n * f0) < 0.01
         found.append(float(levels[match][0]) if match.any() else None)
     loudest = max(level for level in found if level is not None)
     present = [n for n, level in enumerate(found) if level is not None]
-    if source.sparse_spectrum:
+    if source.sparse_spectrum and not dense:
         # the GP spectrum through the present harmonics, interpolated in ERB number
         erbs = [freq_to_erb_float((n + 1) * f0) for n in range(source.n_harmonics)]
         spectrum = torch.tensor(
@@ -79,7 +94,7 @@ def harmonic_start(source, f0, freqs, levels):
         spectrum = torch.tensor(
             [(level - loudest) if level is not None else -ABSENT_DB for level in found], dtype=DTYPE
         )
-        extra = {}
+        extra = {"presence_logit": 2.0} if source.sparse_spectrum else {}
     return source.initial(
         TIMING,
         f0=f0,
@@ -98,7 +113,7 @@ def whistle_start(whistle, f, level):
     )
 
 
-def hypotheses(step, components_per_octave, lowest, highest, whistle_floor, floor, sparse, mixed):
+def hypotheses(step, components_per_octave, lowest, highest, whistle_floor, floor, sparse, mixed, chord):
     """(label, scene, starts) for every hypothesis fitted to this tone."""
     freqs, levels = sh.components(step, components_per_octave=components_per_octave)
     out = []
@@ -106,7 +121,7 @@ def hypotheses(step, components_per_octave, lowest, highest, whistle_floor, floo
     for f0 in readings:
         source = Harmonic("h0", int(sh.F_MAX // f0), sparse_spectrum=sparse, frequency_floor_hz=floor)
         out.append(
-            (f"harmonic@{f0:.1f}", Scene((source,), TIMING), [harmonic_start(source, f0, freqs, levels)])
+            (f"harmonic@{f0:.1f}", Scene((source,), TIMING), harmonic_starts(source, f0, freqs, levels))
         )
     if mixed:
         for f0 in readings:
@@ -115,11 +130,23 @@ def hypotheses(step, components_per_octave, lowest, highest, whistle_floor, floo
                 continue
             source = Harmonic("h0", int(sh.F_MAX // f0), sparse_spectrum=sparse, frequency_floor_hz=floor)
             whistle = Whistle("w0", frequency_floor_hz=floor)
-            start = harmonic_start(source, f0, freqs, levels) | whistle_start(
-                whistle, freqs[below][0], levels[below][0]
-            )
+            whistle_params = whistle_start(whistle, freqs[below][0], levels[below][0])
+            starts = [start | whistle_params for start in harmonic_starts(source, f0, freqs, levels)]
             label = f"harmonic@{f0:.1f}+whistle@{f0 / 2:.1f}"
-            out.append((label, Scene((source, whistle), TIMING), [start]))
+            out.append((label, Scene((source, whistle), TIMING), starts))
+    if chord and len(readings) >= components_per_octave:
+        sources, starts = [], [{}, {}] if sparse else [{}]
+        for index, f0 in enumerate(readings[:components_per_octave]):
+            source = Harmonic(
+                f"h{index}", int(sh.F_MAX // f0), sparse_spectrum=sparse, frequency_floor_hz=floor
+            )
+            sources.append(source)
+            for start, part in zip(starts, harmonic_starts(source, f0, freqs, levels), strict=True):
+                start |= part
+        label = f"chord×{components_per_octave}@" + "/".join(
+            f"{f:.1f}" for f in readings[:components_per_octave]
+        )
+        out.append((label, Scene(tuple(sources), TIMING), starts))
     keep = (freqs >= (floor or PRIOR_LOW_HZ)) & (levels >= whistle_floor)
     whistles = [Whistle(f"w{index}", frequency_floor_hz=floor) for index in range(int(keep.sum()))]
     start = {}
@@ -156,6 +183,9 @@ def main():
     )
     parser.add_argument(
         "--mixed", action="store_true", help="also fit each reading plus a whistle an octave below it"
+    )
+    parser.add_argument(
+        "--chord", action="store_true", help="also fit one harmonic source per component of an octave"
     )
     parser.add_argument("--lowest", type=float, help="lowest component tried as f0 [Hz]; default the floor")
     parser.add_argument("--highest", type=float, default=1300.0, help="highest component tried as f0 [Hz]")
@@ -200,6 +230,7 @@ def main():
             args.floor,
             args.sparse_spectrum,
             args.mixed,
+            args.chord,
         ):
             if args.only and not any(label.startswith(prefix) for prefix in args.only):
                 continue
@@ -219,7 +250,7 @@ def main():
             e, v = result.evidence, result.variational
             n_params = sum(value.numel() for value in starts[0].values())
             print(
-                f"{step:4d}  {label:28s}  {n_params:5d}  {result.structure_log_prior:7.2f}"
+                f"{step:4d}  {label:34s}  {n_params:5d}  {result.structure_log_prior:7.2f}"
                 f"  {e.log_joint_at_mode:9.1f}  {e.laplace:9.1f}"
                 + (f"  {v.elbo:9.1f}  {v.importance:9.1f}  {v.effective_sample_size:5.0f}" if v else "")
                 + f"  {time.perf_counter() - begin:7.1f}",
