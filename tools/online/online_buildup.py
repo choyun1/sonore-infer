@@ -87,8 +87,9 @@ def main():
     )
     parser.add_argument(
         "--summarize-past",
-        action="store_true",
-        help="the past's likelihood as a quadratic in the whole-sound latents (online-speed S4)",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="the past's likelihood as a quadratic in the whole-sound latents (online-speed S4; default since 2026-10-18)",
     )
     parser.add_argument("--batch-steps", type=int, default=0, help="batch reference at each triplet's end")
     parser.add_argument(
