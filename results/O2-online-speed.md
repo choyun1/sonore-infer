@@ -4,7 +4,7 @@
 > results. The work was done with AI assistance (Claude) and has not yet been
 > checked carefully. Numbers, methods and interpretations may change.
 
-**Status:** S1 and S2 checked (2026-10-15), S2 the online tool's default since 2026-10-16 (Cho); S3 tried in two forms, both failed its check, dropped; stopping-rule and window sweep run 2026-10-17.
+**Status:** S1 and S2 checked (2026-10-15), S2 the online tool's default since 2026-10-16 (Cho); S3 tried in two forms, both failed its check, dropped; stopping-rule and window sweep run 2026-10-17; 100 ms windows the online tool's default since 2026-10-18 (Cho).
 **Paper target:** none; this is about cost, checked against
 [O1](O1-online-buildup.md). **Code:** `src/sonore_infer/sources.py`
 (`trajectory_event`), `src/sonore_infer/online.py` (`run_online`),
@@ -150,6 +150,8 @@ look-back/50), saves time without changing the answer, and whether 100 ms
 windows do. Each run had S1 and S2, one at a time on the cloud CPU
 [`data/O2/st{4,8}_w{50,100}_p{50,20,10,5}_lag1_e0.5.txt`; the look-back
 50, 50 ms runs are the S2 runs above].
+Each is `online_buildup.py --semitones S --triplets 6 --lag 1 --steps 2000
+--window W --window-patience P --window-tolerance P/50`.
 
 Largest difference from O1's log odds over the 6 triplets, the log odds at
 6 triplets minus the 10,000-step batch fit's (11.9 at 4 st, 118.5 at
@@ -198,6 +200,5 @@ about a sixth faster than now.
 
 ## What is open
 
-- 100 ms windows as the online tool's default (look-back 50): for Cho.
 - S4 (the Laplace estimates and the growing past) and S5, per the design;
   S3 (D) is answered above and dropped.
