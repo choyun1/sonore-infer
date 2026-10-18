@@ -29,6 +29,21 @@ the terms telescope, and the total is the batch Laplace estimate of the
 whole prefix at the final mode; with a finite lag the frozen past enters as
 a point value instead of being integrated out, which is the approximation
 whose cost the experiment measures.
+
+**Faster options (docs/design/online-speed.md).** With ``evidence_ends``
+(S2), the fit still runs every window but the Laplace estimate is taken
+only at those ends: a term is then the same difference over a longer step,
+from the last evidence time, and with an infinite lag the terms still
+telescope to the batch estimate. L-BFGS in place of Adam (S3) was tried
+and dropped (results/O2).
+
+With ``summarize_past`` (S4), the likelihood of the cochleagram's time
+windows that only frozen latents and the whole-sound latents reach is
+replaced by its second-order Taylor expansion in the whole-sound latents,
+taken at the current fit when each window joins that past (assumed-density
+filtering). Each step then renders and compares only the rest, from about
+the lag on. The prior is unchanged: the free latents stay conditioned on the
+whole frozen past exactly.
 """
 
 from __future__ import annotations
@@ -348,6 +363,115 @@ def lag_free(scene: Scene, params: Params, end: float, lag: float) -> Free:
     return free
 
 
+def _whole_sound(name: str) -> bool:
+    """Whether the parameter belongs to the whole sound (means and kernel latents),
+    never frozen by the lag."""
+    short = name.split(".", 1)[1]
+    return not short.endswith("_deviation") and short not in ("onset", "log_duration", "log_rest")
+
+
+def past_start(
+    scene: Scene, params: Params, end: float, lag: float, cochleagram: Cochleagram, fs: float
+) -> int:
+    """The first sample of the cochleagram time window from which on the free
+    local latents can reach the likelihood, at a whole number of hops: the
+    windows before it depend only on frozen and whole-sound latents.
+
+    A grid deviation reaches the samples within one grid step of its time and,
+    through the phase, its event's later samples; an event's timing reaches
+    its samples from the one before its onset on.
+    """
+    if not math.isfinite(lag):
+        return 0
+    reach = end - lag - GRID_STEP
+    for source in scene.sources:
+        onsets, durations = source.event_times(params, scene.timing)
+        for onset, duration in zip(onsets, durations, strict=True):
+            onset, offset = (
+                float(torch.as_tensor(onset).detach()),
+                float(torch.as_tensor(onset + duration).detach()),
+            )
+            if offset >= end - lag:  # free (lag_free)
+                reach = min(reach, onset)
+    first = math.floor((reach * fs - 1 - cochleagram.win_samples) / cochleagram.hop_samples)
+    return max(0, first) * cochleagram.hop_samples
+
+
+class PastSummary:
+    """The past's likelihood as a quadratic in the whole-sound latents (design S4 (C)).
+
+    It covers the cochleagram's time windows before sample ``start``. Each
+    stretch added is expanded to second order at the parameters given then,
+    and kept as ``constant + linear @ g + g @ quadratic @ g / 2`` in the
+    whole-sound latents ``g`` themselves, so stretches expanded at different
+    points add up.
+    """
+
+    def __init__(self) -> None:
+        self.start = 0
+        self.names: list[str] = []
+        self.constant = 0.0
+        self.linear = torch.zeros(0, dtype=torch.float64)
+        self.quadratic = torch.zeros(0, 0, dtype=torch.float64)
+
+    def _grow(self, names: list[str]) -> None:
+        new = [name for name in names if name not in self.names]
+        if not new:
+            return
+        n_old, n = len(self.names), len(self.names) + len(new)
+        linear, quadratic = torch.zeros(n, dtype=torch.float64), torch.zeros(n, n, dtype=torch.float64)
+        linear[:n_old] = self.linear
+        quadratic[:n_old, :n_old] = self.quadratic
+        self.names += new
+        self.linear, self.quadratic = linear, quadratic
+
+    def _vector(self, params: Params) -> torch.Tensor:
+        if not self.names:
+            return torch.zeros(0, dtype=torch.float64)
+        return torch.stack([params[name].reshape(()) for name in self.names])
+
+    def value(self, params: Params) -> torch.Tensor:
+        """The past's log likelihood, approximated, at ``params``."""
+        g = self._vector(params)
+        return self.constant + self.linear @ g + 0.5 * g @ self.quadratic @ g
+
+    def absorb(
+        self,
+        scene: Scene,
+        params: Params,
+        observed: torch.Tensor,
+        cochleagram: Cochleagram,
+        sigma: float,
+        start: int,
+    ) -> None:
+        """Add the time windows from ``self.start`` up to ``start`` [samples, rounded down to a
+        whole number of hops], expanded at ``params``."""
+        hop, win = cochleagram.hop_samples, cochleagram.win_samples
+        start -= start % hop
+        if start <= self.start:
+            return
+        first, last = self.start // hop, start // hop
+        names = [name for name in params if _whole_sound(name) and params[name].numel() == 1]
+        self._grow(names)
+        base = {name: value.detach() for name, value in params.items()}
+        target = observed[..., first:last]
+        n_samples = (last - first - 1) * hop + win
+
+        def chunk(g: torch.Tensor) -> torch.Tensor:
+            point = dict(base) | {name: g[i].reshape(base[name].shape) for i, name in enumerate(self.names)}
+            rendered = scene.render(point, self.start)[..., :n_samples]
+            return gaussian_log_likelihood(target, cochleagram(rendered), sigma)
+
+        g0 = self._vector(base).detach()
+        value = chunk(g0).item()
+        gradient = torch.autograd.functional.jacobian(chunk, g0).detach()
+        hessian = torch.autograd.functional.hessian(chunk, g0).detach()
+        self.constant += value - (gradient @ g0).item() + 0.5 * (g0 @ hessian @ g0).item()
+        self.linear = self.linear + gradient - hessian @ g0
+        self.quadratic = self.quadratic + hessian
+        self.start = start
+
+
 def silence_log_likelihood(
     observed: torch.Tensor, cochleagram: Cochleagram, n_samples: int, sigma: float
 ) -> float:
@@ -387,6 +511,8 @@ def run_online(
     heard: float = 0.0,
     sigma: float = 10.0,
     ends: Sequence[float] | None = None,
+    evidence_ends: Sequence[float] | None = None,
+    summarize_past: bool = False,
     report: Callable[[OnlineStep], None] | None = None,
 ) -> list[OnlineStep]:
     """One pass over ``waveform``, updating ``hypothesis`` every ``window`` seconds.
@@ -399,6 +525,16 @@ def run_online(
     enters once ``heard`` seconds of it have arrived: with windows much
     shorter than a tone, an event that enters on its ramp alone can have its
     timing pushed away from the tone, where the fit cannot pull it back.
+
+    ``evidence_ends`` [s] are the window ends at which the evidence is taken
+    (design online-speed S2); the last window is always one. Between them
+    the fit runs as usual and nothing is returned; each returned window's
+    seconds and steps count everything since the last one. By
+    default the evidence is taken at every window.
+
+    ``summarize_past`` (design online-speed S4) replaces the likelihood of
+    the past that only frozen and whole-sound latents reach by
+    :class:`PastSummary`, so each step renders only from about the lag on.
     """
     total = waveform.shape[-1] / fs
     if ends is None:
@@ -407,11 +543,14 @@ def run_online(
         if total - ends[-1] > 1e-9:
             ends.append(total)
     evidence: FixedLagEvidence | None = None
+    past = PastSummary() if summarize_past else None
     previous: Params = {}
     steps_out: list[OnlineStep] = []
     last_silent_end = 0.0
+    final = ends[-1]
+    # since the last evidence time: seconds and Adam steps
+    begin, fit_steps = time.perf_counter(), 0
     for end in ends:
-        begin = time.perf_counter()
         n_samples = round(end * fs)
         if n_samples < cochleagram.win_samples:
             continue  # not one whole cochleagram time window yet: nothing heard, nothing to update
@@ -433,8 +572,18 @@ def run_online(
             evidence = FixedLagEvidence(initial)
         init = extend(scene, fresh, previous, hypothesis) if previous else fresh
         free = lag_free(scene, init, end, lag)
-        log_joint = scene.log_joint(observed, cochleagram, sigma)
+        if past is None:
+            log_joint = scene.log_joint(observed, cochleagram, sigma)
+        else:
+            past.absorb(
+                scene, init, observed, cochleagram, sigma, past_start(scene, init, end, lag, cochleagram, fs)
+            )
+            log_joint = _recent_log_joint(scene, past, observed, cochleagram, sigma)
         mode, history = adam_free(log_joint, init, free, scene.learning_rates(), steps, patience, tolerance)
+        previous = mode
+        fit_steps += len(history) - 1
+        if evidence_ends is not None and end != final and not any(abs(end - e) < 1e-9 for e in evidence_ends):
+            continue
         # what is free is decided before the fit and kept: the evidence's terms need one set
         state = laplace(log_joint, mode, free)
         term, floored = evidence.add(state)
@@ -447,7 +596,7 @@ def run_online(
                 floored,
                 state.peak,
                 time.perf_counter() - begin,
-                len(history) - 1,
+                fit_steps,
             ),
             scene.structure_log_prior(),
             mode,
@@ -455,8 +604,23 @@ def run_online(
         steps_out.append(step)
         if report:
             report(step)
-        previous = mode
+        begin, fit_steps = time.perf_counter(), 0
     return steps_out
+
+
+def _recent_log_joint(
+    scene: Scene, past: PastSummary, observed: torch.Tensor, cochleagram: Cochleagram, sigma: float
+) -> Callable[[Params], torch.Tensor]:
+    """The log joint with the past summarized: the prior, the summary, and the
+    likelihood of the time windows from ``past.start`` on."""
+    recent = observed[..., past.start // cochleagram.hop_samples :]
+    start = past.start
+
+    def log_joint(params: Params) -> torch.Tensor:
+        rendered = cochleagram(scene.render(params, start))
+        return gaussian_log_likelihood(recent, rendered, sigma) + past.value(params) + scene.log_prior(params)
+
+    return log_joint
 
 
 def leaky_log_odds(
@@ -488,6 +652,7 @@ __all__ = [
     "FixedLagEvidence",
     "LaplaceState",
     "OnlineStep",
+    "PastSummary",
     "Tone",
     "WhistleSpec",
     "adam_free",
@@ -496,6 +661,7 @@ __all__ = [
     "lag_free",
     "leaky_log_odds",
     "laplace",
+    "past_start",
     "prefix_scene",
     "run_online",
 ]

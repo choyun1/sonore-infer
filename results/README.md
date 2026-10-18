@@ -61,9 +61,10 @@ point where the model switches from hearing one source to two. These
 thresholds are what the paper compares with listeners, and what we
 compare with the paper's model.
 
-The paper's own code is BASS (github.com/mcusi/bass). We re-implement the
-model from the paper alone, because BASS has no license. We ran BASS only
-locally, as a check (A6).
+The paper's own code is BASS (github.com/mcusi/bass). We write our own
+code from the paper and read BASS's code only to check details. BASS has no
+license, so none of its code is in this repository; we ran it only locally,
+as a check (A6).
 
 ### The common setup
 
@@ -137,8 +138,80 @@ What every experiment here shares unless its page says otherwise:
 | [C2](C2-aba-streaming.md) | ABA sequences, one stream or two (30 stimuli) | Fig. 8D, App. C.10 | map done; seeds 0–4 on the 2 cells under 10 | One stream at 1 semitone, two from 3 up (paper: from about 6) |
 | [C3](C3-search.md) | Search over structures from detected events | App. B.2 | first pass on 4 (b) and 3 ABA stimuli | Same structure as enumerated on 6 of 7; fifth at 0 ms gives note + whistle |
 | [O1](O1-online-buildup.md) | Buildup of streaming, batch and online | Fig. 8F, App. C.11 | first pass, sweeps | Converged batch odds rise with triplets; online with per-window convergence reproduces them in one pass; the lag, not the window, sets the slope |
+| [O2](O2-online-speed.md) | Faster online inference | none (cost; checked against O1) | S1, S2, S4 checked; S3 dropped; stopping-rule sweep run | Rendering each event over its span changes no answer; with the evidence every 0.5 s, odds stay within 1.2 of O1 in a seventh of the time; L-BFGS, plain or paired with Adam, fails online; shorter look-backs save little, 100 ms windows a sixth; summarizing the past (S4) changes no answer and saves more as the sound grows |
 | [R1](R1-source-and-room.md) | Source and room (RT60) from one sound | none in this paper | done | RT60 within 3%; 90% intervals cover 66% (overconfident) |
 | [R2](R2-atypical-rooms.md) | Atypical rooms, exponential room model | none in this paper | done | Biased like T20 × 3; time-reversed rooms do not fit |
+
+## Planned
+
+Experiments agreed on but not yet run. Each has, or gets, a design
+document with its decisions for Cho before any run.
+
+- **Order effects in streaming** (design drafted 2026-10-15, decisions E1
+  to E7 open: [order-effects.md](../docs/design/order-effects.md)). Reset
+  of buildup after a silent gap, then the context of the previous trial,
+  which the model is expected to get wrong (assimilation where listeners
+  show contrast). Needs the PDFs of Beauvois & Meddis (1997), Cusack et
+  al. (2004) and Snyder et al. (2008). Later: attention as a gate on what is
+  integrated (E7 (D)), tested on Carlyon et al. (2001), Experiment 1.
+- **Relative pitch from Shepard tones** (design drafted 2026-10-15,
+  decisions P1 to P8 open, draft PR #63). Whether the model hears the
+  direction of a step between octave-complex tones as Shepard's (1964)
+  listeners did. Waiting for the online speed-ups, then its cost estimate
+  is refreshed.
+- **ABA margins against graded listener data.** C2's log odds are far
+  larger than the paper's (up to +217); whether that matters is deferred
+  until graded listener data are compared (the "Against the paper"
+  section below).
+- **Timing in the likelihood** (Cho, 2026-10-18). The likelihood compares
+  BASS's cochleagram: 64 half-ERB channels from a magnitude spectrum,
+  25 ms windows every 10 ms. It keeps no phase, so no phase locking,
+  temporal fine structure or interaural time differences, and it smooths
+  envelope modulation above a few tens of Hz. The paper lowered a
+  modulation cutoff from 50 to 10 Hz for this reason [App. C.4] and puts
+  periodic notes heard as noise down to the cochleagram's poor
+  periodicity resolution [Fig. G.7]. The question is whether a likelihood
+  that keeps periodicity changes what the model hears.
+  - *Candidates:* a correlogram (per-channel autocorrelation), envelope
+    modulation channels, or fine structure itself. Only the last makes each
+    harmonic's phase a latent to infer.
+  - *Likely test cases:* pitch from unresolved harmonics; the 100 Hz
+    mistuned-harmonic gap of A5 to A8 (whether it is related is not
+    checked); co-modulation masking release at the original 50 Hz cutoff;
+    interaural time differences.
+
+## Against the paper
+
+Where our results match Cusimano et al. (2024), where they differ, and
+which differences we chose not to chase. Our code, seeds and machines
+differ from the paper's, and BASS's code cannot be copied, so matching the
+paper is not a goal in itself; listeners are the reference. A difference
+is chased only if it is larger than seed and machine noise (seed SD 1–5 in
+[B4](B4-two-notes-seeds.md) and [A8](A8-ten-seeds.md), a few more between
+machines) and either suggests our own inference is not doing what we claim,
+or changes how the model compares with listeners.
+
+| Comparison | Paper | Ours | Status |
+| --- | --- | --- | --- |
+| Mistuned harmonic thresholds, 8 of 9 conditions (Fig. 7D) | by eye | within one grid step ([A5](A5-full-model.md)–[A8](A8-ten-seeds.md)) | **matches** |
+| Mistuned harmonic, 100 Hz harmonic 1 | about 45% (BASS's code, one seed: 40%) | 25% Eqn 2, 30% BASS's rule ([A8](A8-ten-seeds.md), [C1](C1-kernel-inferred.md)) | **differs, not chased**: listeners are about 1–5%, closer to ours; the cause is in BASS's code, which we cannot copy |
+| Threshold rule (Eqn 2) | Eqn 2 as printed; BASS's analysis code uses another rule ([A6](A6-bass-own-code.md)) | both reported | **differs by method**; both kept on every page |
+| Evidence method | variational, 250 steps per hypothesis then full fits for the top 5 | Laplace and variational importance ([A7](A7-variational-evidence.md)) | **differs by method**; A7 found the same thresholds by both |
+| Gaussian-process sigma and lengthscale inferred (Table A.2) | inferred per sound | inferred in C1 and C2, fixed at Table A.2's medians elsewhere | **matches where inferred**; Table A.2's quartiles imply an f0 lengthscale bound of 0.01 s, not the 0.1 s printed ([C1](C1-kernel-inferred.md)) |
+| ABA streaming, sign at 1 and 6–12 semitones (Fig. 8D) | one stream at 1, two from about 6 | the same ([C2](C2-aba-streaming.md)) | **matches** |
+| ABA streaming, 3 semitones | slightly one stream (about −5) | two streams (+8 to +13, seeds 0–4) | **differs, not chased**: listeners are near the two-stream boundary there, so neither sign is evidence |
+| ABA streaming, size of the log odds and its fall with slower rates | changes little across intervals (its color scale stops at ±20) | up to +217, falling with slower rates | **differs, deferred**: matters only once graded listener data are compared |
+| Buildup of streaming (Fig. 8F) | odds rise with triplets | see [O1](O1-online-buildup.md) | see that page |
+| Search over structures (App. B.2) | learned proposals, no per-stimulus results reported | hand-built detector ([C3](C3-search.md)) | **not applicable**: no paper numbers to compare; the test is against our own enumeration |
+| Two simultaneous notes (B), source and room (R) | not in the paper | | **not applicable** |
+
+One check is of our own inference, not of the paper: milestones (a) and (b)
+fitted each hypothesis with 300 Adam steps, which in C2 left the one-stream
+fit far from its mode. Rerun with fits to convergence (2026-10-15), every
+sign and every threshold on the shared grid is unchanged, except 400 Hz
+harmonic 3's variational threshold (15.0 to 12.8%); see
+[A7](A7-variational-evidence.md#fits-run-to-convergence-2026-10-15) and
+[B2](B2-two-notes-variational.md#fits-run-to-convergence-2026-10-15).
 
 ## Milestone (a) at a glance
 

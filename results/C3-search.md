@@ -99,6 +99,30 @@ below. At 6 and 12 semitones no one-stream hypothesis reached the finalists.
 The fitted streams sit at 1000 and 1414 Hz, and 1000 and 2000 Hz, with every
 tone in the right stream (`fitted:` lines).
 
+### The just fifth's two-note fit (2026-10-17)
+
+Why did the search's two-note fit to the just fifth (0 ms) end about 10
+below B2's? The same two-note hypothesis was fitted from five starts,
+on current main, as the C3 search was (fits to convergence, 2000 variational
+steps; `data/C3/fifth_starts/`). The detector's candidates sit at 197
+and 304 Hz. Their spectra come from the peaks. The lower note's harmonics 4, 7 and 10 (800, 1400 and
+2000 Hz) start at the −30 dB floor, because no peak was resolved there
+next to the upper note's 900, 1500 and 2100 Hz:
+
+| Start | Variational log posterior, seed 0 | Seeds 0–4, mean (SD) |
+| --- | --- | --- |
+| Search's (197 and 304 Hz, spectra from the peaks) | −124.7 | – |
+| Search's, floored harmonics started at 0 dB | −119.5 | – |
+| Search's, f0s set to 200 and 300 Hz | −116.0 | −116.0 (1.5) |
+| B2's (200 and 300 Hz, flat spectra) | −115.5 | −114.7 (3.0) |
+| Note + whistle, the search's best | −111.5 | −115.3 (2.3) |
+
+The seed changes only the variational fit and its samples. Every seed starts the
+Adam fit at the same place. The search's own run gave −125.8 and −117.5 for its
+start and its best. It ran on code from before PR #61, so its numbers differ
+slightly. The Laplace estimates (−127 to −87) disagree with the variational ones
+by up to 33 and do not rank these fits consistently (`data/C3/fifth_starts/`).
+
 ## What it says
 
 - **Six of seven match.** The control, the octave, the tritone and all
@@ -116,9 +140,12 @@ tone in the right stream (`fitted:` lines).
 - **The fifth at 0 ms does not match.** The search did fit two notes, but
   its fit reached −125.8, about 10 below B2's −115.4 for the same
   structure. A note at 197 Hz plus a whistle at 304 Hz then scored higher
-  (−117.5). The gap between the two-note fits is not explained yet; the
-  search's starting values (f0 197 Hz from the detector, its spectra from
-  the peaks) are the first suspect, not checked.
+  (−117.5). The detector's f0s are the cause. Started from 200 and 300 Hz
+  with the detector's spectra, the same fit recovers 9 of the 10. Lifting
+  the floored harmonics alone recovers 5. With the right start the two
+  notes and the note plus whistle tie: −116.0 against −115.3, over five
+  seeds with SDs of 1.5 and 2.3. So this mismatch is a starting value, and
+  behind it is a near tie that one seed cannot settle.
 - **Cost.** 5 to 23 hypotheses and 20 to 74 minutes per 0.5 s stimulus on
   one cloud CPU, within decision C9's estimate of 1 to 3 hours. The ABA
   sequences (3.1 s with the 12 tones in the first 1.5 s, 12 rounds) took 82 to 100 hypotheses and 5.7 to 9.2
@@ -135,6 +162,7 @@ python tools/grammar/search_scene.py two:just_fifth:0.0
 python tools/grammar/search_scene.py aba:1:0.1 --threads 2
 python tools/grammar/search_scene.py aba:6:0.1 --threads 2
 python tools/grammar/search_scene.py aba:12:0.1 --threads 2
+python tools/grammar/search_starts.py true-f0 --seed 1
 ```
 
 Defaults: `--steps 15000 --tolerance 0.5 --variational-steps 2000 --keep 5
@@ -147,6 +175,6 @@ Defaults: `--steps 15000 --tolerance 0.5 --variational-steps 2000 --keep 5
 - Warm starts between rounds, to bring the ABA cost down.
 - The octave's upper onset: the detector would need a cue other than a rise
   in level at new frequencies, or the residual pass would need to find it.
-- The fifth's two-note fit: start it from the true f0s to see whether the
-  10 lost are starting values or spectra.
+- The detector's f0s: refine each harmonic candidate's f0 from its peaks
+  (197 Hz here, for a 200 Hz note) before the fits start.
 - More (b) stimuli and asynchronies, and more seeds.

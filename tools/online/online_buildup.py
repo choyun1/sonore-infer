@@ -17,6 +17,12 @@ is the batch Laplace estimate at the online run's mode, so the online
 total minus it is the error of the window terms alone (zero with an infinite
 lag), and it minus ``batch`` is the difference the fits make.
 
+The evidence is taken every ``--evidence-every`` seconds (0.5 by default,
+speed-up S2 of docs/design/online-speed.md, the default since 2026-10-16)
+and at each triplet's end; the fit still runs every window. A window line is
+printed only at the evidence times, with the seconds and steps since the
+last. ``--evidence-every 0`` takes it at every window, as the O1 runs did.
+
     python tools/online/online_buildup.py --semitones 8 --triplets 6 --lag inf 1 --batch-steps 300
 """
 
@@ -52,7 +58,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--semitones", type=float, default=8)
     parser.add_argument("--triplets", type=int, default=6)
-    parser.add_argument("--window", type=float, default=0.05, help="s between updates")
+    parser.add_argument(
+        "--window", type=float, default=0.1, help="s between updates (100 ms since 2026-10-18, results/O2)"
+    )
     parser.add_argument(
         "--lag", type=float, nargs="*", default=[1.0], help="s; inf for no freezing; none for batch only"
     )
@@ -71,6 +79,19 @@ def main():
     parser.add_argument(
         "--heard", type=float, default=0.02, help="s of a tone heard before its event enters the scene"
     )
+    parser.add_argument(
+        "--evidence-every",
+        type=float,
+        default=0.5,
+        help="s between evidence times, plus each triplet's end (online-speed S2); 0 for every window",
+    )
+    parser.add_argument(
+        "--summarize-past",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="the past's likelihood as a quadratic in the whole-sound latents (online-speed S4; "
+        "default since 2026-10-18)",
+    )
     parser.add_argument("--batch-steps", type=int, default=0, help="batch reference at each triplet's end")
     parser.add_argument(
         "--patience",
@@ -88,9 +109,17 @@ def main():
     total = bu.duration(args.triplets, LEAD)
     grid = [round((k + 1) * args.window, 9) for k in range(int(total / args.window + 1e-9))]
     ends = sorted(set(grid) | set(checkpoints))
+    evidence_ends = None
+    if args.evidence_every:
+        n_evidence = int(total / args.evidence_every + 1e-9)
+        every = [round((k + 1) * args.evidence_every, 9) for k in range(n_evidence)]
+        evidence_ends = sorted(set(every) | set(checkpoints))
     print(
         f"{args.semitones:g} st, {args.triplets} triplets, window {1000 * args.window:g} ms, "
-        f"{args.steps} Adam steps per window, fft-bass-gain cochleagram, all timing inferred"
+        f"{args.steps} Adam steps per window"
+        + (f", evidence every {args.evidence_every:g} s and at each triplet's end" if evidence_ends else "")
+        + (", past summarized" if args.summarize_past else "")
+        + ", fft-bass-gain cochleagram, all timing inferred"
     )
 
     batch = {}
@@ -151,6 +180,8 @@ def main():
                     tolerance=args.window_tolerance,
                     heard=args.heard,
                     ends=ends,
+                    evidence_ends=evidence_ends,
+                    summarize_past=args.summarize_past,
                     report=report,
                 )
             }

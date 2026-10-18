@@ -1,0 +1,9 @@
+f0 200 Hz, harmonic 2 mistuned; 300 Adam steps, 128 samples, seed 0, fft-bass-gain cochleagram, cosine phases, whistle timing inferred, trajectories, harmonic timing inferred (through sonore_infer.scene)
+log prior of structure: one source -2.05, two sources -4.54
+percent  logZ1_laplace  logZ1_is  ess1  logZ2_laplace  logZ2_is  ess2  log_odds_laplace  log_odds_is  seconds
+status: 8%, one source: fitting (Adam, 300 steps) from start 1 of 1
+status: 8%, one source: Laplace and importance sampling (128 samples)
+status: 8%, harmonic plus whistle: fitting (Adam, 300 steps) from start 1 of 2
+status: 8%, harmonic plus whistle: fitting (Adam, 300 steps) from start 2 of 2
+status: 8%, harmonic plus whistle: Laplace and importance sampling (128 samples)
+      8        -9967.5   -9971.7     4        -9999.2   -9997.5     4             -34.1        -28.3     24.4

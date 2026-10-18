@@ -1,0 +1,16 @@
+300 Adam steps, 128 samples, sigma 10 dB, seed 0, fft-bass-gain cochleagram, trajectories, all timing inferred
+stimulus  hypothesis  n_params  structure  laplace  importance  ess  floored  log_joint_at_mode  seconds
+status: one@400: fitting (Adam, 300 steps) from start 1 of 1
+status: one@400: Laplace and importance sampling (128 samples)
+octave 120 ms                       one@400      112    -2.05   -10996.5   -10988.0     2    0   -10946.6      5.8
+status: one@200: fitting (Adam, 300 steps) from start 1 of 1
+status: one@200: Laplace and importance sampling (128 samples)
+octave 120 ms                       one@200      118    -2.05    -9979.0    -9980.4     7    0    -9925.3      6.0
+status: one@100: fitting (Adam, 300 steps) from start 1 of 1
+status: one@100: Laplace and importance sampling (128 samples)
+octave 120 ms                       one@100      130    -2.05   -10147.3   -10214.6     1    1   -10110.1     11.7
+status: two: fitting (Adam, 300 steps) from start 1 of 1
+status: two: Laplace and importance sampling (128 samples)
+octave 120 ms                       two          230    -4.54    -9979.9   -10005.4     2    0    -9906.3     11.3
+octave 120 ms                       log odds vs best one (laplace): two -3.3
+octave 120 ms                       log odds vs best one (importance): two -27.5

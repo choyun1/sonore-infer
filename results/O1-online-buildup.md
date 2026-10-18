@@ -230,6 +230,12 @@ Checks, from the same outputs:
 
 ## Reproduce
 
+These runs predate three changes of the tool's defaults: evidence every
+0.5 s (since 2026-10-16), and 100 ms windows and the past summarized (both
+since 2026-10-18), all from [O2](O2-online-speed.md). To reproduce them,
+add `--evidence-every 0 --no-summarize-past`, and `--window 0.05` where no
+window is given.
+
 ```
 python tools/online/online_buildup.py --semitones 4 --triplets 6 --lag inf 1 \
     --batch-steps 300 > st4_w50_s30.txt

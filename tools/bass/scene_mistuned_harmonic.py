@@ -41,6 +41,12 @@ def main():
     parser.add_argument("--f0", type=float, default=200.0)
     parser.add_argument("--harmonic", type=int, default=3)
     parser.add_argument("--steps", type=int, default=300)
+    parser.add_argument(
+        "--tolerance",
+        type=float,
+        help="stop a fit once its log joint has risen by less than this over the last 1000 steps "
+        "(--steps is then a maximum)",
+    )
     parser.add_argument("--samples", type=int, default=128)
     parser.add_argument(
         "--variational-steps",
@@ -67,7 +73,9 @@ def main():
     timing = dict(onset=mh.PADDING, duration=mh.DURATION, dtype=dtype)
     print(
         f"f0 {args.f0:g} Hz, harmonic {args.harmonic} mistuned; "
-        f"{args.steps} Adam steps, {args.samples} samples, seed {args.seed}, "
+        f"{args.steps} Adam steps"
+        + (f" at most, stopping at a rise under {args.tolerance} over 1000" if args.tolerance else "")
+        + f", {args.samples} samples, seed {args.seed}, "
         "fft-bass-gain cochleagram, cosine phases, whistle timing inferred, trajectories, "
         "harmonic timing inferred (through sonore_infer.scene)"
         + (", GP sigma and lengthscale inferred" if args.infer_kernel else "")
@@ -111,6 +119,7 @@ def main():
             n_samples=args.samples,
             generator=generator,
             variational_steps=args.variational_steps,
+            tolerance=args.tolerance,
             report=status(f"{percent:g}%, one source"),
         )
         r2 = evaluate(
@@ -122,6 +131,7 @@ def main():
             n_samples=args.samples,
             generator=generator,
             variational_steps=args.variational_steps,
+            tolerance=args.tolerance,
             report=status(f"{percent:g}%, harmonic plus whistle"),
         )
         e1, e2 = r1.evidence, r2.evidence

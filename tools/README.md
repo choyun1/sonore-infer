@@ -49,6 +49,7 @@ not import the package.
 | `grammar/aba_map.py` | The ABA map of log odds from `compare_aba.py` outputs, combining reruns of one hypothesis |
 | `grammar/aba_fit_steps.py` | How far one ABA hypothesis's fit has got after a given number of Adam steps |
 | `grammar/search_scene.py` | Searches for a stimulus's best hypothesis without being given its structure (decisions C9, C10) |
+| `grammar/search_starts.py` | Fits the search's two-note hypothesis to the just fifth (0 ms) from one of five starts |
 
 ## Source and room (docs/design/source-reverb.md)
 

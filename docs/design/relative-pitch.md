@@ -1,8 +1,9 @@
 # Relative pitch from Shepard tones — design
 
-Status: **draft, not accepted.** Written 2026-10-15. AI-assisted (Claude),
+Status: **draft, not accepted.** Written 2026-10-15; P8's cost updated
+2026-10-18 for the speed-ups (S1). AI-assisted (Claude),
 from the sonore project's handoff (HANDOFF-relative-pitch.md, 2026-10-14),
-Shepard (1964), a feasibility note (§2), and the code as of `151018e`.
+Shepard (1964), a feasibility note (§2), and the code as of `151018e` (P8 as of `0798ab8`).
 No library code is written until Cho accepts the decisions below.
 
 **How numbers are marked.**
@@ -13,7 +14,7 @@ No library code is written until Cho accepts the decisions below.
 - **[measured]**: from a script, with its path.
 - **[estimate]**: my estimate, with its basis next to it.
 
-Decision numbers use the letter P (pitch). The letters D, B, C, R, O and E
+Decision numbers use the letter P (pitch). The letters D, B, C, R, O, S and E
 belong to other documents.
 
 ## Decisions at a glance
@@ -220,11 +221,16 @@ since P3 (the spectrum prior) may change.**
 ### P8. Scale and seeds
 
 One seed throughout at first. Experiment P3 starts with one starting tone
-(9 pairs), then all 90, then 10 seeds as in A8 and B4. Cost: about 4 min
-per hypothesis for a 0.5 s stimulus on one thread [estimate, from C3's
+(9 pairs), then all 90, then 10 seeds as in A8 and B4. Cost before S1: about
+4 min per hypothesis for a 0.5 s stimulus on one thread [estimate, from C3's
 control: 5 hypotheses in 20 min], so about 7 min for a 0.875 s pair
-[estimate, scaled by length]; 90 pairs × about 4 hypotheses is about 40
-thread-hours [estimate], a day or less on the PC with several runs at once.
+[estimate, scaled by length]. S1 (each event rendered over its own span,
+`docs/design/online-speed.md`) made an Adam step 2.8 times and the Hessian
+2.3 times faster at 1.05 s of sound [measured: `results/O2-online-speed.md`,
+one hypothesis, 8 semitones]. Applied to the pairs, that is about 2.5 to
+3 min per hypothesis, and 90 pairs × about 4 hypotheses about 15 to 18
+thread-hours [estimate, the O2 ratios applied to the C3 figure]. Experiment
+P1 times its first fits, which replaces this estimate with a measurement.
 
 **Recommendation: as above.**
 

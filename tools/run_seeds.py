@@ -21,6 +21,7 @@ only the sampling in the evidence estimates. Seed 0 is the runs already made.
     # the one-stream fits only, each until it converges (at most 15000 steps)
     python tools/run_seeds.py --out aba_one --only aba --seeds 0 --hypotheses one --tolerance 0.5
     python tools/run_seeds.py --out aba_seeds --only aba --seeds 1 2 3 4 --tolerance 0.5 --stimuli 3:0.083
+    python tools/run_seeds.py --out converged --seeds 0 --tolerance 0.5   # (a) and (b), fits to convergence
 """
 
 import argparse
@@ -57,6 +58,8 @@ def jobs(seeds, only, steps=None, hypotheses=None, tolerance=None, stimuli=None)
         common = ["--variational-steps", VARIATIONAL_STEPS, "--seed", str(seed)]
         if steps:
             common += ["--steps", str(steps)]
+        if tolerance:
+            common += ["--tolerance", str(tolerance)]
         if only == "aba":
             for semitones in ABA_SEMITONES:
                 for interval in ABA_INTERVALS:
@@ -74,7 +77,6 @@ def jobs(seeds, only, steps=None, hypotheses=None, tolerance=None, stimuli=None)
                             ]
                             + ["--infer-kernel"]
                             + (["--hypotheses", *hypotheses] if hypotheses else [])
-                            + (["--tolerance", str(tolerance)] if tolerance else [])
                             + common,
                         )
                     )
@@ -253,7 +255,7 @@ def main():
     parser.add_argument(
         "--tolerance",
         type=float,
-        help="ABA only: stop each fit once it rises by less than this over 1000 steps (--steps then 15000)",
+        help="stop each fit once it rises by less than this over 1000 steps (--steps then 15000)",
     )
     parser.add_argument("--heartbeat", type=float, default=5.0, help="minutes between 'still running' lines")
     parser.add_argument("--list", action="store_true", help="print the jobs and their state, then stop")
