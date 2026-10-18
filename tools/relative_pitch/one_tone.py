@@ -193,6 +193,8 @@ def main():
         "--whistle-floor", type=float, default=30.0, help="components below this level [dB] get no whistle"
     )
     parser.add_argument("--only", nargs="+", help="fit only hypotheses whose label starts with one of these")
+    parser.add_argument("--exact", action="store_true", help="--only labels must match exactly")
+    parser.add_argument("--list", action="store_true", help="print each tone's hypothesis labels and stop")
     parser.add_argument("--max-steps", type=int, default=15000, help="Adam steps at most")
     parser.add_argument(
         "--tolerance",
@@ -232,7 +234,12 @@ def main():
             args.mixed,
             args.chord,
         ):
-            if args.only and not any(label.startswith(prefix) for prefix in args.only):
+            if args.only and not any(
+                label == prefix if args.exact else label.startswith(prefix) for prefix in args.only
+            ):
+                continue
+            if args.list:
+                print(f"{step} {label}")
                 continue
             begin = time.perf_counter()
             result = evaluate(
