@@ -84,6 +84,56 @@ def spectrum_distribution(
     return torch.distributions.MultivariateNormal(mean, covariance_matrix=covariance)
 
 
+# A sparse harmonic spectrum (design relative-pitch-prior P10 (B), P11 (B)): each
+# harmonic's level is the GP spectrum plus an offset that is about 0 when the
+# harmonic is present and far below when it is absent. These three values are
+# assumptions, not fitted: present within a dB or so, absent 40 dB down (below
+# the cochleagram's 20 dB floor for the stimuli it was made for), give or take 10.
+PRESENT_OFFSET_SD_DB = 1.0
+ABSENT_OFFSET_DB = -40.0
+ABSENT_OFFSET_SD_DB = 10.0
+
+
+class StandardLogistic(torch.distributions.Distribution):
+    """The logit of a probability uniform on (0, 1), i.e. Beta(1, 1) in logit coordinates:
+    log density log sigmoid(x) + log sigmoid(-x)."""
+
+    arg_constraints: dict = {}
+    support = torch.distributions.constraints.real
+    has_rsample = True
+
+    def __init__(self, dtype: torch.dtype = torch.float64):
+        super().__init__(torch.Size(), validate_args=False)
+        self.dtype = dtype
+
+    def rsample(self, sample_shape: torch.Size | tuple = ()) -> torch.Tensor:  # type: ignore[override]
+        tiny = torch.finfo(self.dtype).tiny
+        return torch.rand(sample_shape, dtype=self.dtype).clamp(tiny, 1 - tiny).logit()
+
+    def log_prob(self, value: torch.Tensor) -> torch.Tensor:
+        return torch.nn.functional.logsigmoid(value) + torch.nn.functional.logsigmoid(-value)
+
+
+def presence_offset_distribution(
+    n_harmonics: int, presence_logit: torch.Tensor
+) -> torch.distributions.Distribution:
+    """Prior of a sparse spectrum's offsets [dB], one per harmonic: each harmonic is
+    present with probability sigmoid(``presence_logit``), offset Normal(0,
+    ``PRESENT_OFFSET_SD_DB``), or absent, offset Normal(``ABSENT_OFFSET_DB``,
+    ``ABSENT_OFFSET_SD_DB``); present or absent is summed out, harmonic by harmonic."""
+    dtype = presence_logit.dtype
+    # present against absent: probabilities sigmoid(logit) and 1 - sigmoid(logit)
+    logits = torch.stack([presence_logit, torch.zeros_like(presence_logit)]).expand(n_harmonics, 2)
+    loc = torch.tensor([0.0, ABSENT_OFFSET_DB], dtype=dtype).expand(n_harmonics, 2)
+    scale = torch.tensor([PRESENT_OFFSET_SD_DB, ABSENT_OFFSET_SD_DB], dtype=dtype).expand(n_harmonics, 2)
+    mixture = torch.distributions.MixtureSameFamily(
+        torch.distributions.Categorical(logits=logits, validate_args=False),
+        torch.distributions.Normal(loc, scale, validate_args=False),
+        validate_args=False,
+    )
+    return torch.distributions.Independent(mixture, 1, validate_args=False)
+
+
 def log_prior_spectrum(spectrum_db: torch.Tensor, f0: torch.Tensor) -> torch.Tensor:
     """Log density of a harmonic spectrum under :func:`spectrum_distribution`."""
     f0 = torch.as_tensor(f0, dtype=spectrum_db.dtype, device=spectrum_db.device)

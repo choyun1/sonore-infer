@@ -1,6 +1,7 @@
 # Relative pitch: sparse harmonic spectra and the f0 floor — design
 
-Status: **draft for Cho**, 2026-10-18. Follows experiments P1 and P2
+Status: **accepted by Cho on 2026-10-18** (P10 to P14 as recommended; see §4).
+Written 2026-10-18. Follows experiments P1 and P2
 (`results/P1-shepard-one-tone.md`, `results/P2-shepard-minor-third.md`)
 and reopens decision P3 of [relative-pitch.md](relative-pitch.md), as P3
 planned. Decisions continue that document's numbering (P10 to P14).
@@ -18,7 +19,7 @@ AI-assisted (Claude); code as of `1264ad4`.
 
 ## Decisions at a glance
 
-| Decision | Recommended |
+| Decision | Accepted |
 |---|---|
 | P10. Spectrum prior | (B) Each harmonic present or absent, the presence marginalized, so a missing harmonic costs a few nats instead of hundreds |
 | P11. Presence rate | (B) Inferred per source, with a Beta(1, 1) prior, so the model pays for sparsity only as much as the sound needs it |
@@ -175,4 +176,5 @@ P1 measures that.
 
 ## 4. Cho's answers
 
-Not yet.
+2026-10-18: all five as recommended ("Accept all" on the decision card,
+after PR #74 merged). P12's two papers are still to be checked.
