@@ -1,0 +1,14 @@
+# two notes fitted to the just fifth (0 ms) from given f0s [Hz], the detector's spectra; seed 0; cloud CPU, 2026-10-17
+# 'unmuted': harmonics no peak gave started at 0 dB instead of -30. 'coarse': first fitted at likelihood SD 40 then 20 dB (up to 3000 steps each), then as usual at 10 dB
+# log posteriors shifted as on the C3 page; fitted f0 = mean of the fitted trajectory
+lower upper start  fitted_lower fitted_upper  laplace variational elbo
+198.7 300 plain  - -  -123.1 -123.4 -126.7
+200 297.9 plain  - -  -132.0 -124.6 -128.7
+198.7 297.9 plain 197.8 300.5 -115.3 -120.2 -132.5
+200 300 plain 200.1 300.2 -106.3 -116.0 -122.1
+198.7 297.9 unmuted 198.9 302.3 -89.7 -128.9 -137.2
+199.4 298.6 unmuted 202.5 298.6 -104.9 -130.6 -138.9
+198.7 297.9 coarse-20 198.2 298.6 -96.6 -119.8 -130.2
+197.2 304.1 coarse-40,20 198.9 299.6 -71.7 -129.8 -131.3
+198.7 297.9 coarse-40,20 199.6 298.9 -96.5 -125.5 -122.3
+200 300 coarse-40,20 198.4 300.0 -61.3 -123.2 -128.4

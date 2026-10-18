@@ -7,7 +7,8 @@ import torch
 
 from sonore_infer.cochleagram import FFTCochleagram
 from sonore_infer.detect import Candidate, OnsetGroup, channel_gains, detect
-from sonore_infer.search import SourcePlan, build, cleanup_moves, extensions, plan_key
+from sonore_infer.erb import erb_to_freq
+from sonore_infer.search import SourcePlan, _scaled_starts, build, cleanup_moves, extensions, plan_key
 from sonore_infer.stimuli import bistability as ab
 from sonore_infer.stimuli import two_notes as tn
 
@@ -110,3 +111,18 @@ def test_build_cuts_overlaps_and_leaves_out_later_events():
     onsets, durations = source.event_times(params, scene.timing)
     assert float(onsets[0] + durations[0]) <= 0.15
     assert torch.isfinite(scene.log_prior(params))
+
+
+def test_scaled_starts_scale_only_harmonic_f0s():
+    harmonic = Candidate("harmonic", 0.05, 0.4, 200.0, 60.0, 10.0, 0, (0.0, 0.0))
+    whistle = Candidate("whistle", 0.05, 0.4, 300.0, 60.0, 10.0, 0)
+    scene, init = build(
+        (SourcePlan("harmonic", (harmonic,)), SourcePlan("whistle", (whistle,))), 0.5, tn.FS, tn.RAMP
+    )
+    starts = _scaled_starts(scene, init, (0.99, 1.01))
+    assert len(starts) == 2
+    for start, scale in zip(starts, (0.99, 1.01), strict=True):
+        assert float(erb_to_freq(start["h0.f0_mean"])) == pytest.approx(200.0 * scale)
+        assert torch.equal(start["w1.freq_mean"], init["w1.freq_mean"])
+    whistle_only, init = build((SourcePlan("whistle", (whistle,)),), 0.5, tn.FS, tn.RAMP)
+    assert _scaled_starts(whistle_only, init, (0.99, 1.01)) == [init]

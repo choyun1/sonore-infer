@@ -1,0 +1,34 @@
+# just fifth (0 ms): two notes ('two') and the search's note + whistle ('whistle') fitted from the detector's start (lower 197.2 Hz, upper 304.1 Hz) with the lower and upper f0 scaled by the factors given; seed 0; cloud CPU, main a8cff0a, 2026-10-17/18
+# fitted: mean fitted frequency of the upper source then the lower [Hz]; log_joint_mode: highest log joint the fit reached (unshifted); laplace, vi, elbo: log posteriors shifted as on the C3 page
+two 0.99 0.98 fitted 298.12 202.14 log_joint_mode -9931.8 laplace -84.9 vi -124.6 elbo -135.7
+two 0.99 0.99 fitted 300.84 197.14 log_joint_mode -9929.8 laplace -91.9 vi -138.8 elbo -147.6
+two 0.99 1.0 fitted 300.91 197.16 log_joint_mode -9928.8 laplace -83.2 vi -127.6 elbo -140.0
+two 0.99 1.01 fitted 314.03 198.36 log_joint_mode -9936.4 laplace -136.4 vi -122.9 elbo -129.3
+two 1.0 0.98 fitted 300.26 197.66 log_joint_mode -9926.2 laplace -123.8 vi -128.2 elbo -136.3
+two 1.0 0.99 fitted 300.18 199.29 log_joint_mode -9920.9 laplace -128.1 vi -123.3 elbo -127.9
+two 1.0 1.0 fitted 300.89 197.21 log_joint_mode -9927.1 laplace -126.6 vi -124.6 elbo -130.1
+two 1.0 1.01 fitted 306.06 198.09 log_joint_mode -9928.2 laplace -126.0 vi -121.7 elbo -125.6
+two 1.01 0.98 fitted 296.37 201.90 log_joint_mode -9927.4 laplace -110.7 vi -126.4 elbo -132.5
+two 1.01 0.99 fitted 298.15 198.78 log_joint_mode -9920.4 laplace -68.6 vi -125.9 elbo -138.3
+two 1.01 1.0 fitted 301.78 201.30 log_joint_mode -9913.1 laplace -104.9 vi -120.0 elbo -124.3
+two 1.01 1.01 fitted 299.98 199.98 log_joint_mode -9909.1 laplace -99.5 vi -110.9 elbo -117.5
+two 1.02 0.98 fitted 294.13 203.77 log_joint_mode -9932.5 laplace -141.3 vi -131.8 elbo -134.3
+two 1.02 0.99 fitted 300.61 202.53 log_joint_mode -9931.9 laplace -121.2 vi -128.9 elbo -126.8
+two 1.02 1.0 fitted 305.06 198.10 log_joint_mode -9928.3 laplace -128.8 vi -123.6 elbo -129.9
+two 1.02 1.01 fitted 308.49 199.80 log_joint_mode -9934.4 laplace -134.7 vi -119.3 elbo -122.8
+whistle 0.99 0.98 fitted 298.76 200.88 log_joint_mode -9829.2 laplace -124.1 vi -115.0 elbo -116.5
+whistle 0.99 0.99 fitted 301.41 200.55 log_joint_mode -9829.2 laplace -96.6 vi -114.4 elbo -120.7
+whistle 0.99 1.0 fitted 310.78 200.92 log_joint_mode -9830.6 laplace -121.9 vi -116.9 elbo -116.4
+whistle 0.99 1.01 fitted 312.23 200.98 log_joint_mode -9831.2 laplace -121.1 vi -117.2 elbo -116.8
+whistle 1.0 0.98 fitted 298.42 201.50 log_joint_mode -9830.0 laplace -116.3 vi -109.7 elbo -116.9
+whistle 1.0 0.99 fitted 300.99 201.50 log_joint_mode -9829.7 laplace -110.0 vi -117.3 elbo -119.8
+whistle 1.0 1.0 fitted 305.12 201.44 log_joint_mode -9830.3 laplace -120.1 vi -111.5 elbo -118.3
+whistle 1.0 1.01 fitted 310.26 201.43 log_joint_mode -9830.9 laplace -121.3 vi -116.0 elbo -118.3
+whistle 1.01 0.98 fitted 301.13 200.82 log_joint_mode -9828.9 laplace -124.1 vi -116.4 elbo -118.2
+whistle 1.01 0.99 fitted 302.91 200.93 log_joint_mode -9829.5 laplace -120.4 vi -117.8 elbo -118.6
+whistle 1.01 1.0 fitted 305.11 201.44 log_joint_mode -9830.3 laplace -120.6 vi -119.2 elbo -117.3
+whistle 1.01 1.01 fitted 307.70 201.44 log_joint_mode -9830.6 laplace -120.1 vi -116.2 elbo -118.4
+whistle 1.02 0.98 fitted 298.41 201.50 log_joint_mode -9830.0 laplace -116.8 vi -108.5 elbo -116.7
+whistle 1.02 0.99 fitted 300.98 201.50 log_joint_mode -9829.7 laplace -119.1 vi -108.9 elbo -117.6
+whistle 1.02 1.0 fitted 303.50 201.48 log_joint_mode -9829.9 laplace -118.7 vi -117.2 elbo -117.4
+whistle 1.02 1.01 fitted 307.70 201.44 log_joint_mode -9830.6 laplace -120.3 vi -115.6 elbo -118.3

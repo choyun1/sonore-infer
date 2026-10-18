@@ -1,0 +1,29 @@
+two:just_fifth:0.0: steps 15000, tolerance 0.5, seed 0
+onset groups: 1
+  0.047 s: w[206x1] + w[304x1] + w[397x1] + w[602x1] + w[922x1] + w[1201x1] + w[1525x1] + w[1796x1] + w[2183x1] | w[206x1] + h[298x1] + w[397x1] | w[206x1] + w[397x1] + h[596x1] | h[149x1] + w[206x1] + w[397x1] | h[199x1] + h[298x1]
+stage                 end_s  fit_steps  laplace_posterior  structure
+round 1 of 1          0.500       1333            -9986.2  h[199x1] + h[298x1]
+round 1 of 1          0.500       1688           -10074.7  w[206x1] + h[298x1] + w[397x1]
+round 1 of 1          0.500       4883           -10097.5  h[149x1] + w[206x1] + w[397x1]
+round 1 of 1          0.500       2920           -10802.3  w[206x1] + w[397x1] + h[596x1]
+cleanup               0.500       3272           -10016.9  h[199x1] + w[298x1]
+cleanup               0.500       1778           -10076.9  w[206x1] + h[298x1] + h[397x1]
+cleanup               0.500       1683           -10079.7  h[206x1] + h[298x1] + w[397x1]
+cleanup               0.500       3164           -10103.0  h[199x1]
+cleanup               0.500       1332           -10194.3  w[199x1] + h[298x1]
+cleanup               0.500       1783           -10396.8  h[298x1]
+cleanup               0.500       1539           -14520.8  w[206x1] + w[298x1] + w[397x1]
+cleanup               0.500       1766           -14802.6  w[206x1] + w[397x1]
+final               laplace_posterior  variational_posterior  elbo_posterior  structure
+                              -10016.9               -10012.3        -10012.9  h[199x1] + w[298x1]
+                     fitted: w301Hz[49-449] + h201Hz[49-449]
+                               -9986.2               -10022.1        -10022.9  h[199x1] + h[298x1]
+                     fitted: h298Hz[51-451] + h202Hz[49-450]
+                              -10074.7               -10070.4        -10069.1  w[206x1] + h[298x1] + w[397x1]
+                     fitted: h299Hz[52-448] + w203Hz[47-448] + w393Hz[49-449]
+                              -10079.7               -10076.7        -10076.3  h[206x1] + h[298x1] + w[397x1]
+                     fitted: h298Hz[52-448] + h203Hz[46-448] + w393Hz[49-449]
+                              -10076.9               -10076.9        -10075.7  w[206x1] + h[298x1] + h[397x1]
+                     fitted: h299Hz[52-448] + w203Hz[47-448] + h391Hz[49-449]
+best: h[199x1] + w[298x1]
+hypotheses fitted: 12, seconds: 2128
