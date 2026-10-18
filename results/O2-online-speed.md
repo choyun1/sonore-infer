@@ -4,7 +4,7 @@
 > results. The work was done with AI assistance (Claude) and has not yet been
 > checked carefully. Numbers, methods and interpretations may change.
 
-**Status:** S1 and S2 checked (2026-10-15), S2 the online tool's default since 2026-10-16 (Cho); S3 tried in two forms, both failed its check, dropped; stopping-rule and window sweep run 2026-10-17; 100 ms windows the online tool's default since 2026-10-18 (Cho).
+**Status:** S1 and S2 checked (2026-10-15), S2 the online tool's default since 2026-10-16 (Cho); S3 tried in two forms, both failed its check, dropped; stopping-rule and window sweep run 2026-10-17; 100 ms windows the online tool's default since 2026-10-18 (Cho); S4 checked 2026-10-18 and the online tool's default since (Cho).
 **Paper target:** none; this is about cost, checked against
 [O1](O1-online-buildup.md). **Code:** `src/sonore_infer/sources.py`
 (`trajectory_event`), `src/sonore_infer/online.py` (`run_online`),
@@ -151,7 +151,8 @@ windows do. Each run had S1 and S2, one at a time on the cloud CPU
 [`data/O2/st{4,8}_w{50,100}_p{50,20,10,5}_lag1_e0.5.txt`; the look-back
 50, 50 ms runs are the S2 runs above].
 Each is `online_buildup.py --semitones S --triplets 6 --lag 1 --steps 2000
---window W --window-patience P --window-tolerance P/50`.
+--window W --window-patience P --window-tolerance P/50`, plus
+`--no-summarize-past` since S4 became the default.
 
 Largest difference from O1's log odds over the 6 triplets, the log odds at
 6 triplets minus the 10,000-step batch fit's (11.9 at 4 st, 118.5 at
@@ -198,7 +199,30 @@ wall time, from fewer windows. So the cheapest runs that pass S6 (against
 O1's own 100 ms run at 8 st) are 100 ms windows with look-back 50 or 20,
 about a sixth faster than now.
 
+### S4 changes no answer and saves a sixth more, growing with the sound
+
+With S4 (`--summarize-past`), the likelihood of the cochleagram's time
+windows that only frozen latents and the trajectory means reach is
+replaced by its second-order expansion in the means, taken when each
+window joins that past; each step renders and compares only the rest, from
+about the lag on (`run_online(summarize_past=True)`). The O1 case, 100 ms
+windows, look-back 50, against the same runs without it from the sweep
+above [`data/O2/st{8,4}_w100_p50_lag1_e0.5{,_s4}.txt`]:
+
+| | Max diff from the run without S4 | Window time, without → with | Wall time, without → with |
+|---|---|---|---|
+| 8 st | 0.05 | 687 → 527 s | 956 → 803 s |
+| 4 st | 0.07 | 452 → 369 s | 717 → 643 s |
+
+The fits land at the same modes (one-stream log joint at 3.05 s within
+0.02 of the run without S4). So S4 passes S6 wherever the runs without it
+did. The gain grows with the sound: per Adam step of the one-stream fit at
+8 st, including its share of the Laplace estimates, the time rose from 9
+to 41 ms between 0.5 and 3 s without S4, and from 10 to 24 ms with it.
+What still grows is, I infer, the prior, whose trajectories cover the whole
+sound so far; I have not timed it separately.
+
 ## What is open
 
-- S4 (the Laplace estimates and the growing past) and S5, per the design;
+- What still grows with the sound under S4 (the prior, inferred), and S5;
   S3 (D) is answered above and dropped.

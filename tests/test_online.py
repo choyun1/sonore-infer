@@ -8,11 +8,14 @@ import torch
 from sonore_infer.cochleagram import FFTCochleagram
 from sonore_infer.online import (
     FixedLagEvidence,
+    PastSummary,
     Tone,
     WhistleSpec,
+    _recent_log_joint,
     batch_laplace,
     free_vector,
     laplace,
+    past_start,
     prefix_scene,
     run_online,
 )
@@ -222,3 +225,57 @@ def test_evidence_taken_less_often_keeps_the_fits_and_still_telescopes():
     assert sparse[-1].window.total == pytest.approx(final.window.total, abs=1e-6)
     later = [step for step in every if step.window.end > 0.15 + 1e-9]
     assert sparse[-1].window.adam_steps == sum(step.window.adam_steps for step in later)
+
+
+# --- the past summarized (design online-speed S4) ---------------------------
+
+
+def _two_triplets():
+    """Two ABA triplets at 8 semitones, after 50 ms of silence, as one whistle."""
+    freqs = bu.tone_freqs(8)
+    onsets = bu.tone_onsets(2, 0.05)
+    tones = tuple(Tone(onset, bu.TONE_DURATION, freqs[kind], bu.TONE_LEVEL_DB) for onset, kind in onsets)
+    waveform = torch.tensor(bu.buildup_stimulus(2, 8, lead=0.05).data[:, 0], dtype=F64)
+    return waveform, (WhistleSpec("w0", tones),)
+
+
+def test_a_scene_rendered_from_a_sample_is_the_whole_render_from_there():
+    waveform, hypothesis = _two_triplets()
+    end = waveform.shape[-1] / bu.FS
+    scene, params = prefix_scene(hypothesis, end, bu.FS, bu.RAMP)
+    whole = scene.render(params)
+    for start in (0, 1000, 4410, 10000):
+        torch.testing.assert_close(scene.render(params, start), whole[start:], rtol=0, atol=1e-12)
+
+
+def test_the_past_summary_is_exact_at_its_expansion_point():
+    waveform, hypothesis = _two_triplets()
+    cochleagram = FFTCochleagram()
+    end = waveform.shape[-1] / bu.FS
+    scene, params = prefix_scene(hypothesis, end, bu.FS, bu.RAMP)
+    observed = cochleagram(waveform)
+    start = past_start(scene, params, end, 0.3, cochleagram, bu.FS)
+    assert 0 < start < waveform.shape[-1]
+    past = PastSummary()
+    past.absorb(scene, params, observed, cochleagram, 10.0, start // 2)
+    past.absorb(scene, params, observed, cochleagram, 10.0, start)
+    exact = scene.log_joint(observed, cochleagram)
+    summarized = _recent_log_joint(scene, past, observed, cochleagram, 10.0)
+    assert summarized(params).item() == pytest.approx(exact(params).item(), abs=1e-6)
+    # and the summary moves with the whole-sound latents to second order
+    moved = dict(params) | {"w0.level_mean": params["w0.level_mean"] + 0.5}
+    assert summarized(moved).item() == pytest.approx(exact(moved).item(), abs=0.05)
+
+
+def test_with_no_lag_the_summary_changes_nothing():
+    plain = short_run_with()
+    summarized = short_run_with(summarize_past=True)
+    assert summarized[-1].window.total == pytest.approx(plain[-1].window.total, abs=1e-6)
+
+
+def test_with_a_lag_the_summary_stays_close_to_the_full_sum():
+    waveform, hypothesis = _two_triplets()
+    options = dict(fs=bu.FS, ramp=bu.RAMP, window=0.1, lag=0.3, steps=200, patience=20)
+    plain = run_online(waveform, hypothesis, FFTCochleagram(), **options)
+    summarized = run_online(waveform, hypothesis, FFTCochleagram(), summarize_past=True, **options)
+    assert summarized[-1].window.total == pytest.approx(plain[-1].window.total, abs=3.0)

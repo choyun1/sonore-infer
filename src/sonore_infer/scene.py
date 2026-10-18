@@ -329,11 +329,30 @@ class _Source:
         return scorer.ordered_terms()
 
     def _render_events(
-        self, params: Params, timing: SceneTiming, freqs: torch.Tensor, levels: torch.Tensor
+        self,
+        params: Params,
+        timing: SceneTiming,
+        freqs: torch.Tensor,
+        levels: torch.Tensor,
+        start: int = 0,
     ) -> torch.Tensor:
+        """Every event's sound, summed; with ``start`` [samples], the events that end
+        before it are left out (their samples there are zero; see :meth:`Scene.render`)."""
         onsets, durations = self.event_times(params, timing)
-        waveform = _event(timing, freqs, levels, onsets[0], durations[0])
-        for onset, duration in zip(onsets[1:], durations[1:], strict=True):
+        events = list(zip(onsets, durations, strict=True))
+        if start > 0:
+            events = [
+                (onset, duration)
+                for onset, duration in events
+                # an event's last non-zero sample is at most one past its offset (sources.trajectory_event)
+                if not float(torch.as_tensor(onset + duration).detach()) * timing.fs + 2 < start
+            ]
+            if not events:
+                return torch.zeros(
+                    freqs.shape[:-2] + (round(timing.total_duration * timing.fs),), dtype=freqs.dtype
+                )
+        waveform = _event(timing, freqs, levels, *events[0])
+        for onset, duration in events[1:]:
             waveform = waveform + _event(timing, freqs, levels, onset, duration)
         return waveform
 
@@ -421,8 +440,8 @@ class Harmonic(_Source):
         key = self.key
         return F0_TRAJECTORY.trajectory(params[key("f0_mean")], params[key("f0_deviation")])
 
-    def render(self, params: Params, timing: SceneTiming) -> torch.Tensor:
-        """The source's waveform: every event's harmonics, summed."""
+    def render(self, params: Params, timing: SceneTiming, start: int = 0) -> torch.Tensor:
+        """The source's waveform: every event's harmonics, summed (``start``: see :meth:`Scene.render`)."""
         key = self.key
         f0 = erb_to_freq(self.f0_erb(params))
         level = HARMONIC_LEVEL_TRAJECTORY.trajectory(
@@ -430,7 +449,7 @@ class Harmonic(_Source):
         )
         spectrum = params[key("spectrum_db")]
         numbers = torch.arange(1, spectrum.shape[-1] + 1, dtype=f0.dtype)
-        return self._render_events(params, timing, numbers[:, None] * f0, level + spectrum[:, None])
+        return self._render_events(params, timing, numbers[:, None] * f0, level + spectrum[:, None], start)
 
     def program(self, sample: Sample, timing: SceneTiming, dtype: torch.dtype = torch.float64) -> None:
         """The source's random variables in generative order, through ``sample``."""
@@ -506,12 +525,12 @@ class Whistle(_Source):
         )
         return {self.key(name): value for name, value in values.items()}
 
-    def render(self, params: Params, timing: SceneTiming) -> torch.Tensor:
-        """The source's waveform: every event's tone, summed."""
+    def render(self, params: Params, timing: SceneTiming, start: int = 0) -> torch.Tensor:
+        """The source's waveform: every event's tone, summed (``start``: see :meth:`Scene.render`)."""
         key = self.key
         freq = erb_to_freq(F0_TRAJECTORY.trajectory(params[key("freq_mean")], params[key("freq_deviation")]))
         level = WHISTLE_LEVEL_TRAJECTORY.trajectory(params[key("level_mean")], params[key("level_deviation")])
-        return self._render_events(params, timing, freq[None], level[None])
+        return self._render_events(params, timing, freq[None], level[None], start)
 
     def program(self, sample: Sample, timing: SceneTiming, dtype: torch.dtype = torch.float64) -> None:
         """The source's random variables in generative order, through ``sample``."""
@@ -536,12 +555,16 @@ class Scene:
         if len(set(names)) != len(names):
             raise ValueError(f"source names must be unique, got {names}")
 
-    def render(self, params: Params) -> torch.Tensor:
-        """The scene's waveform: its sources' waveforms, summed."""
-        waveform = self.sources[0].render(params, self.timing)
+    def render(self, params: Params, start: int = 0) -> torch.Tensor:
+        """The scene's waveform: its sources' waveforms, summed.
+
+        With ``start`` [samples], only the waveform from that sample on, and
+        only the events that reach it are rendered (online-speed S4).
+        """
+        waveform = self.sources[0].render(params, self.timing, start)
         for source in self.sources[1:]:
-            waveform = waveform + source.render(params, self.timing)
-        return waveform
+            waveform = waveform + source.render(params, self.timing, start)
+        return waveform[..., start:] if start > 0 else waveform
 
     def log_prior(self, params: Params) -> torch.Tensor:
         """Log prior of the sources' continuous parameters."""

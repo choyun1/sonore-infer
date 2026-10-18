@@ -85,6 +85,13 @@ def main():
         default=0.5,
         help="s between evidence times, plus each triplet's end (online-speed S2); 0 for every window",
     )
+    parser.add_argument(
+        "--summarize-past",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="the past's likelihood as a quadratic in the whole-sound latents (online-speed S4; "
+        "default since 2026-10-18)",
+    )
     parser.add_argument("--batch-steps", type=int, default=0, help="batch reference at each triplet's end")
     parser.add_argument(
         "--patience",
@@ -111,6 +118,7 @@ def main():
         f"{args.semitones:g} st, {args.triplets} triplets, window {1000 * args.window:g} ms, "
         f"{args.steps} Adam steps per window"
         + (f", evidence every {args.evidence_every:g} s and at each triplet's end" if evidence_ends else "")
+        + (", past summarized" if args.summarize_past else "")
         + ", fft-bass-gain cochleagram, all timing inferred"
     )
 
@@ -173,6 +181,7 @@ def main():
                     heard=args.heard,
                     ends=ends,
                     evidence_ends=evidence_ends,
+                    summarize_past=args.summarize_past,
                     report=report,
                 )
             }
