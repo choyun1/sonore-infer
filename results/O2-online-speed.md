@@ -237,7 +237,7 @@ CPU's (4 threads, `data/O2/online_cost_st8.txt`):
 | 3.05 s | two | 86 / 34 / 48 | 41 / 16 / 26 |
 
 (The cloud's 59 ms at 0.55 s is likely a first-call cost; the other
-cloud rows follow the PC CPU's.) The GPU is 2.5 to 4 times slower than the
+cloud rows follow the PC CPU's.) The GPU is 2.5 to 4.5 times slower than the
 PC's CPU at every size, and the PC's CPU 1.3 to 2 times faster than the
 cloud's. The whole 8-semitone run with S4 on the GPU gives the same answer
 (log odds within 0.15 of the cloud run at every triplet, the same modes)
