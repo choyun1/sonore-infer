@@ -26,7 +26,7 @@ reasons are in §4, and the answers in §11.
 | O3. What is updated | A fixed lag L, swept over 0.5 to 2 s; kernel parameters never frozen |
 | O4. Kernel | Keep the squared-exponential kernel and condition exactly on the past; Markov kernels a later decision |
 | O5. Evidence over time | Accumulated window by window, checked against full recomputation |
-| O6. Window length | 50 ms by default, 10 and 100 ms checked; steps per window set by agreement with the reference |
+| O6. Window length | 50 ms by default, 10 and 100 ms checked; steps per window set by agreement with the reference. **Amended 2026-10-18 (Cho):** 100 ms is the online tool's default, after it passed S6 at a sixth less time (results/O2) |
 | O7. Hypotheses | The paper's two, events entering at their onsets, the B source born with the first B tone |
 | O8. Code | A new `online.py` and its tools; existing modules changed only to split latents |
 | O9. Effort | Fixed steps per window by default, surprise-scaled steps run beside it on one stimulus |

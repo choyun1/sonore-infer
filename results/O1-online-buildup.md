@@ -230,6 +230,11 @@ Checks, from the same outputs:
 
 ## Reproduce
 
+These runs predate two changes of the tool's defaults: evidence every 0.5 s
+(since 2026-10-16) and 100 ms windows (since 2026-10-18), both from
+[O2](O2-online-speed.md). To reproduce them, add `--evidence-every 0`, and
+`--window 0.05` where no window is given.
+
 ```
 python tools/online/online_buildup.py --semitones 4 --triplets 6 --lag inf 1 \
     --batch-steps 300 > st4_w50_s30.txt

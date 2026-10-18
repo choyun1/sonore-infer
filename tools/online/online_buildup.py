@@ -58,7 +58,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--semitones", type=float, default=8)
     parser.add_argument("--triplets", type=int, default=6)
-    parser.add_argument("--window", type=float, default=0.05, help="s between updates")
+    parser.add_argument(
+        "--window", type=float, default=0.1, help="s between updates (100 ms since 2026-10-18, results/O2)"
+    )
     parser.add_argument(
         "--lag", type=float, nargs="*", default=[1.0], help="s; inf for no freezing; none for batch only"
     )
