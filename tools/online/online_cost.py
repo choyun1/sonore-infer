@@ -25,11 +25,19 @@ from sonore_infer.stimuli import buildup as bu
 DTYPE = torch.float64
 
 
+def synchronize():
+    """Wait for queued GPU work, so it is timed where it was asked for."""
+    if torch.cuda.is_available():
+        torch.cuda.synchronize()
+
+
 def median_seconds(function, repeats):
     times = []
     for _ in range(repeats):
+        synchronize()
         begin = time.perf_counter()
         function()
+        synchronize()
         times.append(time.perf_counter() - begin)
     return statistics.median(times)
 
@@ -64,12 +72,14 @@ def main():
     parser.add_argument("--ends", type=float, nargs="+", default=[0.55, 1.05, 2.05, 3.05], help="s")
     parser.add_argument("--lag", type=float, default=1.0, help="s")
     parser.add_argument("--repeats", type=int, default=5)
+    parser.add_argument("--device", default="cpu", help="torch device, e.g. cuda (design online-speed S5)")
     args = parser.parse_args()
+    torch.set_default_device(args.device)
     triplets = 6
     cochleagram = FFTCochleagram()
     waveform = torch.tensor(bu.buildup_stimulus(triplets, args.semitones, lead=LEAD).data[:, 0], dtype=DTYPE)
     print(
-        f"{args.semitones:g} st, lag {args.lag:g} s, {torch.get_num_threads()} threads, "
+        f"{args.semitones:g} st, lag {args.lag:g} s, {args.device}, {torch.get_num_threads()} threads, "
         f"median of {args.repeats}; times in ms (Hessian in s)"
     )
     print(

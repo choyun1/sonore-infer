@@ -99,7 +99,9 @@ def main():
         default=None,
         help="batch fits stop once they gain less than 1 over this many steps (--batch-steps is then a cap)",
     )
+    parser.add_argument("--device", default="cpu", help="torch device, e.g. cuda (design online-speed S5)")
     args = parser.parse_args()
+    torch.set_default_device(args.device)
     cochleagram = FFTCochleagram()
     sound = bu.buildup_stimulus(args.triplets, args.semitones, lead=LEAD)
     waveform = torch.tensor(sound.data[:, 0], dtype=DTYPE)
@@ -119,7 +121,7 @@ def main():
         f"{args.steps} Adam steps per window"
         + (f", evidence every {args.evidence_every:g} s and at each triplet's end" if evidence_ends else "")
         + (", past summarized" if args.summarize_past else "")
-        + ", fft-bass-gain cochleagram, all timing inferred"
+        + f", fft-bass-gain cochleagram, all timing inferred, {args.device}"
     )
 
     batch = {}
