@@ -1,10 +1,10 @@
 # Relative pitch from Shepard tones — design
 
-Status: **draft, not accepted.** Written 2026-10-15; P8's cost updated
-2026-10-18 for the speed-ups (S1). AI-assisted (Claude),
+Status: **accepted by Cho on 2026-10-18** (P1 to P9 as recommended; see
+§6). Written 2026-10-15; P8's cost updated 2026-10-18 for the speed-ups
+(S1); P1, P2 and P9 revised the same day after Cho's questions. AI-assisted (Claude),
 from the sonore project's handoff (HANDOFF-relative-pitch.md, 2026-10-14),
 Shepard (1964), a feasibility note (§2), and the code as of `151018e` (P8 as of `0798ab8`).
-No library code is written until Cho accepts the decisions below.
 
 **How numbers are marked.**
 
@@ -19,11 +19,9 @@ belong to other documents.
 
 ## Decisions at a glance
 
-Recommendations, for Cho to accept or change. The options and reasons are
-in §4. P1 and P2 were revised and P9 added on 2026-10-18, after Cho's
-questions about intervals, timing and listener experience.
+What Cho accepted on 2026-10-18. The options and reasons are in §4.
 
-| Decision | Recommended |
+| Decision | Accepted |
 |---|---|
 | P1. What is inferred | The interval between the tones, in log frequency, as the latent (D); the paper's f0 per tone (B) run beside it |
 | P2. Observation | The cochleagram as it is for now; Shepard tones become a test case for the planned timing likelihood |
@@ -310,4 +308,8 @@ hand.
 
 ## 6. Cho's answers
 
-Not yet.
+2026-10-18: all nine accepted as recommended. Before that, Cho asked
+whether P1 should infer the interval rather than f0 (pitch is heard as
+relative), whether timing information should enter the observation (P2),
+and noted the task depends on listener experience; P1 option D, P2 option
+C and P9 came from those questions.

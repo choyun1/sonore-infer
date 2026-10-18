@@ -22,7 +22,7 @@ has its own design documents, tools and results.
 | | [design/online-speed.md](design/online-speed.md): faster online inference, each change checked against O1 | S1-S6 | 2026-10-15 |
 | | [design/order-effects.md](design/order-effects.md): reset after silence and the previous trial's context, run online | E1-E6 | draft |
 | **Source and room** | [design/source-reverb.md](design/source-reverb.md): a random spectrogram and its room's RT60, inferred together | R1-R8 | 2026-10-10 |
-| **Relative pitch** | [design/relative-pitch.md](design/relative-pitch.md): direction of pitch change between Shepard tones (Shepard, 1964) | P1-P9 | draft |
+| **Relative pitch** | [design/relative-pitch.md](design/relative-pitch.md): direction of pitch change between Shepard tones (Shepard, 1964) | P1-P9 | 2026-10-18 |
 
 ## Names used across the code
 
