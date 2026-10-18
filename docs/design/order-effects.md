@@ -1,6 +1,7 @@
 # Order effects in streaming — design
 
-Status: **draft for Cho, 2026-10-15; E7 added 2026-10-17.** Nothing is
+Status: **draft for Cho, 2026-10-15; E7 added 2026-10-17, checked against
+Carlyon et al. (2001) 2026-10-18.** Nothing is
 accepted yet; §8 lists the questions in short form.
 
 ## Decisions at a glance
@@ -16,7 +17,7 @@ Recommendations; nothing is accepted yet. The options and reasons are in
 | E4. Readout | The leaky decision (O10), τ 2.5 s fixed, never fitted to these data; the window terms reported beside it |
 | E5. Cost | One window spanning each gap, so silence costs one update; runs on Cho's PC |
 | E6. What the model is expected to get wrong | Stated before running: the context effect of the previous Δf, which listeners show as contrast |
-| E7. Compute per window | A fixed budget, part of the model, chosen once before these runs and never fitted to listeners; tying it to attention waits for the papers |
+| E7. Compute per window | A fixed budget, part of the model, chosen once before these runs and never fitted to listeners; attention modelled later as a gate on what is integrated, not as less compute (Carlyon et al. 2001) |
 
 **How numbers and sources are marked** (as in online.md).
 
@@ -207,18 +208,44 @@ stopping-rule sweep]. A perception model does not have to fit perfectly; listene
 limited time and effort too, which is the idea of resource-rational models
 (Lieder & Griffiths, 2020, Behav. Brain Sci. 43:e1).
 
-**What less compute should do** [inferred, the O2 sweep checks it]. The
+**What less compute does** [measured: O2 sweep; the reason inferred]. The
 two-stream fit already stops at the floor in nearly every window; the
 one-stream fit needs hundreds of steps each time its whistle has to jump
 to a B tone. With less compute the one-stream fit falls further behind, so
 the log odds for two streams rise faster: less compute, faster buildup.
 
-**Where that may conflict with listeners.** Buildup was smaller when
-attention was drawn away from the tones (Carlyon, Cusack, Foxton &
-Robertson, 2001, JEP:HPP 27:115–127 [abstract; not read in full]). If less
-attention meant less compute, the model would predict the opposite. That
-mapping from attention to compute is my inference, not something the model
-or the papers say.
+**What listeners do without attention** (Carlyon, Cusack, Foxton &
+Robertson, 2001, JEP:HPP 27:115–127 [paper, read 2026-10-18]).
+
+- *Experiment 1.* The stimulus was 21 s of ABA– triplets in the left ear:
+  A 400 Hz, B 4, 6, 8 or 10 semitones up, 125 ms tones at 55 dB, a 125 ms
+  silence after each triplet. Six listeners took part.
+- *Two tasks.* For the first 10 s the listeners judged noise bursts in the
+  right ear, then switched to judging the tones. When they switched,
+  streaming was much lower than in the baseline at the same time. It was
+  close to the baseline's level at the start: the comparison with the
+  baseline shifted back 10 s just missed significance, p = .055 (their
+  Fig. 3).
+- *Ignored bursts.* The same bursts, merely ignored, changed nothing.
+- *Experiment 2.* A task on the tones themselves (telling 8 from 16 Hz
+  amplitude modulation for the first 10 s) left buildup intact: streaming
+  had built up by the switch, as in the one-task condition (their Fig. 5).
+- *What follows.* Attention to the tones, not to the streaming question,
+  is what buildup needs. The authors read this as attention being needed
+  for streaming itself, and suggest it could gate an evidence-accumulation
+  process.
+
+**What this means for the model** [my inference]. Less attention cannot be
+less compute per window: in the model that gives *faster* buildup, the
+opposite of Experiment 1. The paper fits a gate better: sound heard
+without attention adds no window terms, or adds them to nothing that
+carries over, so buildup starts afresh when attention returns.
+
+In the model that is a reset of the evidence, the same kind of reset as
+E3 (B)'s restart after a silent gap. It also makes this paper a test case
+alongside E1's: inducer unattended, then the test, with a prediction that
+can be stated before running. Its tones (400 Hz A, 125 ms) are not O1's,
+so E2's stimulus choice applies here too.
 
 **Options.**
 
@@ -228,13 +255,15 @@ or the papers say.
   before any order-effect run, reported with every result, never fitted to
   listeners; other budgets only as a check.
 - **(C) Compute as attention**: varied across conditions to model attended
-  and unattended listening.
+  and unattended listening. Ruled out by the above: it predicts the wrong
+  direction.
+- **(D) Fixed compute, attention as a gate**: (B), plus unattended
+  stretches of sound not integrated into the hypotheses' evidence.
 
-**Recommendation: (B).** It keeps the rule visible as a model choice
-without adding a free parameter. (C) is the interesting one but rests on
-the inference above and on a direction that may be wrong; it waits for the
-sweep's direction and for Carlyon et al. (2001) and later attention studies
-to be read in full.
+**Recommendation: (B) now, (D) as the way to model attention later.** (B)
+keeps the rule visible as a model choice without adding a free parameter.
+(D) would be its own design, after E1's reset runs show whether the model
+already resets its evidence across a gap.
 
 ## 5. What counts as success
 
@@ -275,5 +304,5 @@ a plot, as for O1.
 7. Can you add the PDFs of Beauvois & Meddis (1997), Cusack et al. (2004)
    and Snyder et al. (2008) to the project? I could not open them from here.
 8. **E7** Compute per window a fixed model parameter, chosen once from the
-   O2 sweep and reported, with attention left for later? (recommended: yes)
-   Carlyon et al. (2001) as a PDF would help here too.
+   O2 sweep and reported, with attention modelled later as a gate rather
+   than less compute? (recommended: yes)
