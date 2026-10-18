@@ -1,0 +1,22 @@
+control:200: steps 15000, tolerance 0.5, seed 0, f0 scales 0.98 0.99 1 1.01 1.02
+onset groups: 1
+  0.047 s: w[203x1] + w[402x1] + w[603x1] + w[801x1] + w[1006x1] + w[1201x1] + w[1389x1] + w[1578x1] + w[1795x1] + w[2138x1] | h[200x1] | h[399x1] | h[100x1]
+stage                 end_s  fit_steps  laplace_posterior  structure
+round 1 of 1          0.500       2475            -9957.8  h[200x1]
+round 1 of 1          0.500       5451           -10162.0  h[100x1]
+round 1 of 1          0.500       1609           -11041.6  h[399x1]
+cleanup               0.500       1025           -15518.4  w[200x1]
+cleanup               0.500       1426           -15518.4  w[100x1]
+final               laplace_posterior  variational_posterior  elbo_posterior  structure
+                               -9957.8                -9960.3         -9961.5  h[200x1]
+                     fitted: h200Hz[50-450]
+                              -10162.0               -10160.2        -10159.3  h[100x1]
+                     fitted: h108Hz[50-452]
+                              -11041.6               -11035.7        -11036.8  h[399x1]
+                     fitted: h367Hz[52-449]
+                              -15518.4               -15518.1        -15518.7  w[100x1]
+                     fitted: w202Hz[51-450]
+                              -15518.4               -15518.4        -15517.7  w[200x1]
+                     fitted: w202Hz[51-450]
+best: h[200x1]
+hypotheses fitted: 5, seconds: 1884

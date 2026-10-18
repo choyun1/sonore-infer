@@ -155,10 +155,34 @@ varies by 2 to 3 across seeds at one mode, so the comparison is still close.
 The search fits each hypothesis from one start, and 16 would multiply its
 harmonic fits by 16.
 
+### Five f0 starts in the search (2026-10-18)
+
+The search now takes `f0_scales` (`--f0-scales` in `search_scene.py`).
+Each hypothesis with a harmonic source is fitted once per scale, with every
+harmonic f0 start multiplied by it, and the fit with the highest log joint
+is kept. The four (b) searches were rerun with scales 0.98, 0.99, 1, 1.01
+and 1.02 (`data/C3/multistart/`, on current main):
+
+| Stimulus | Search's best | Its log posterior | One start (above) | Enumerative winner | Same structure? | Time (min) |
+| --- | --- | --- | --- | --- | --- | --- |
+| Control, 200 Hz | one note | −63.8 | −64.7 | one note | yes | 31 |
+| Octave, 40 ms | one note | −86.1 | −86.6 | one note | yes | 31 |
+| Tritone, 40 ms | two notes | −129.8 | −124.3 | two notes | yes | not recorded |
+| Just fifth, 0 ms | two notes | −115.3 | −117.5 (note + whistle) | two notes | **yes** | 64 |
+
+The fifth's note plus whistle came second, at −117.4. The tritone's two
+notes came out 5.5 lower than with one start. Why has not been checked;
+the one-start run used code from before PR #61. The tritone's time
+was lost when the container restarted near the end; it ran with four
+threads, the others with one. The ABA searches are unchanged, because
+their candidates are all single tones (whistles), which `f0_scales` does
+not touch.
+
 ## What it says
 
-- **Six of seven match.** The control, the octave, the tritone and all
-  three ABA sequences end with the enumerative winner's structure. On ABA
+- **Seven of seven match with five f0 starts.** With one start, six of seven
+  matched: the control, the octave, the tritone and all three ABA sequences
+  ended with the enumerative winner's structure, and the fifth did not. On ABA
   the search's log posteriors are within 1.2 of C2's, despite the kernel
   difference.
 - **The octave matches for the wrong reason.** The detector does not find
@@ -180,13 +204,16 @@ harmonic fits by 16.
   0.7% off, which the detector can reach, lose 4 to 9. So the comparison
   hinges on which mode of the two-note posterior the fit reaches, and the
   one-mode evidence cannot settle it. Fitting from 16 nearby starts and
-  keeping the highest log joint does find the right two-note mode. Two notes
-  then lead by 5.5 (importance) or 0.7 (ELBO), one seed.
+  keeping the highest log joint does find the right two-note mode. With five
+  starts in the search, two notes come first (−115.3 against −117.4 for
+  the note plus whistle), one seed.
 - **Cost.** 5 to 23 hypotheses and 20 to 74 minutes per 0.5 s stimulus on
   one cloud CPU, within decision C9's estimate of 1 to 3 hours. The ABA
   sequences (3.1 s with the 12 tones in the first 1.5 s, 12 rounds) took 82 to 100 hypotheses and 5.7 to 9.2
   hours each on the PC. Every round refits its hypotheses from scratch on the
   sound so far; starting each round from the previous fit would cut this.
+  Five f0 starts took the fifth from 37 to 64 minutes and the control from
+  20 to 31.
 
 ## Reproduce
 
@@ -199,6 +226,7 @@ python tools/grammar/search_scene.py aba:1:0.1 --threads 2
 python tools/grammar/search_scene.py aba:6:0.1 --threads 2
 python tools/grammar/search_scene.py aba:12:0.1 --threads 2
 python tools/grammar/search_starts.py true-f0 --seed 1
+python tools/grammar/search_scene.py two:just_fifth:0.0 --f0-scales 0.98 0.99 1 1.01 1.02
 ```
 
 Defaults: `--steps 15000 --tolerance 0.5 --variational-steps 2000 --keep 5
@@ -211,7 +239,8 @@ Defaults: `--steps 15000 --tolerance 0.5 --variational-steps 2000 --keep 5
 - Warm starts between rounds, to bring the ABA cost down.
 - The octave's upper onset: the detector would need a cue other than a rise
   in level at new frequencies, or the residual pass would need to find it.
-- Several starts per harmonic hypothesis in the search, at a cost of up to 16
-  times the fits. Which starts are worth it, and how few find the right mode,
-  is not measured. Also more seeds at the fifth's best modes.
+- Five f0 starts are the fewest tried that make the fifth match. Whether
+  they are enough elsewhere, and more seeds at the fifth (two notes lead by
+  2.1, within the seed SD of 1.5 to 3), are open. The ABA searches were not
+  rerun with them; their candidates have no f0.
 - More (b) stimuli and asynchronies, and more seeds.
