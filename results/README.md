@@ -144,9 +144,25 @@ What every experiment here shares unless its page says otherwise:
 
 ## Planned
 
-Experiments agreed on but not yet designed. Each gets a design document,
-with its decisions for Cho, before any run.
+Experiments agreed on but not yet run. Each has, or gets, a design
+document with its decisions for Cho before any run.
 
+- **Order effects in streaming** (design drafted 2026-10-15, decisions E1
+  to E7 open: [order-effects.md](../docs/design/order-effects.md)). Reset
+  of buildup after a silent gap, then the context of the previous trial,
+  which the model is expected to get wrong (assimilation where listeners
+  show contrast). Needs the PDFs of Beauvois & Meddis (1997), Cusack et
+  al. (2004) and Snyder et al. (2008). Later: attention as a gate on what is
+  integrated (E7 (D)), tested on Carlyon et al. (2001), Experiment 1.
+- **Relative pitch from Shepard tones** (design drafted 2026-10-15,
+  decisions P1 to P8 open, draft PR #63). Whether the model hears the
+  direction of a step between octave-complex tones as Shepard's (1964)
+  listeners did. Waiting for the online speed-ups, then its cost estimate
+  is refreshed.
+- **ABA margins against graded listener data.** C2's log odds are far
+  larger than the paper's (up to +217); whether that matters is deferred
+  until graded listener data are compared (the "Against the paper"
+  section below).
 - **Timing in the likelihood** (Cho, 2026-10-18). The likelihood compares
   BASS's cochleagram: 64 half-ERB channels from a magnitude spectrum,
   25 ms windows every 10 ms. It keeps no phase, so no phase locking,
