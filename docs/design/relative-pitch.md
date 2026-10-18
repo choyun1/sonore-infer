@@ -20,11 +20,12 @@ belong to other documents.
 ## Decisions at a glance
 
 Recommendations, for Cho to accept or change. The options and reasons are
-in §4.
+in §4. P1 was revised and P9 added on 2026-10-18, after Cho's question
+about intervals and listener experience.
 
 | Decision | Recommended |
 |---|---|
-| P1. What is inferred | f0 per tone with its octave reading; "up" is the posterior probability that the second f0 is higher |
+| P1. What is inferred | The interval between the tones, in log frequency, as the latent (D); the paper's f0 per tone (B) run beside it |
 | P2. Observation | The cochleagram as it is (FFT, BASS gain, 64 channels, 20 Hz to 9.4 kHz) |
 | P3. Spectrum prior | Unchanged for the first experiments; decide whether to change it only from what experiment P1 shows |
 | P4. Hypotheses | Enumerated: one harmonic source per octave reading, and a set of whistles; the search (C3) on a few stimuli only, as a check |
@@ -32,6 +33,7 @@ in §4.
 | P6. Stimuli | Shepard's Eqs. 1–3 and his parameters, without the noise bursts |
 | P7. Experiments | P1 one tone, P2 octave against minor-third spacing, P3 all 90 pairs, P4 the half octave by pitch class, as a prediction |
 | P8. Scale, seeds | One seed and one starting tone first, then all pairs, then 10 seeds |
+| P9. Listener experience | One listener first; experience as fitted noise per Shepard group when comparing with Fig. 3; learned interval categories later |
 
 ---
 
@@ -122,9 +124,34 @@ file and its data are not in hand.
   [Shepard Introduction], but a new source type with no counterpart in the
   paper's grammar.
 
-**Recommendation: B.** It asks what the paper's model, unchanged, hears.
-If the answer is "a chord" (P3), the question becomes how the whistles'
-frequencies move, and P5 says how that becomes "up".
+- **(D) The interval as the latent.** The first tone's f0 is a nuisance,
+  integrated out under its wide prior; the second tone is the first plus an
+  interval Δ in log frequency (semitones), with a zero-mean prior on Δ, and
+  the octave reading becomes a choice of Δ. "Up" is P(Δ > 0), and the
+  posterior over Δ is the model's heard interval.
+
+What separates B and D is the scale of the prior on the change. In B the
+change is penalized in ERB number, so the same musical interval costs more
+at high f0 than at low f0: proximity is weak near 100 Hz and the half
+octave leans "down" (§2). In D the prior is the same at every register and
+symmetric at the half octave, so any lean there comes from the sound.
+Shepard writes that, except for listeners with absolute pitch, tonality
+"seems to be a purely relative property" [Shepard §V], which fits D; it is
+his reading, not a measurement. D's prior width is a free parameter: the
+f0 prior of B implies about 4 semitones (SD) at the envelope peak, 155.6 Hz
+[estimate: 0.87 ERB at 2.6 ERB per octave there], which can be the
+starting value.
+
+D departs from the paper's grammar, where f0 follows one Gaussian process
+within a source; it needs a pair model or an f0 prior in log frequency for
+these runs. B costs nothing extra, since it is the existing source.
+
+**Recommendation: D, with B run beside it.** D is the quantity the task
+asks about and is register-free; B shows what the paper's model, unchanged,
+predicts, and their differences (register, the half-octave lean) are
+predictions that set them apart. If the model hears a chord (P3), the
+interval is the shared shift of the whistles' frequencies, and P5 says how
+that becomes "up".
 
 ### P2. Observation (handoff D2)
 
@@ -234,11 +261,35 @@ P1 times its first fits, which replaces this estimate with a measurement.
 
 **Recommendation: as above.**
 
+### P9. Listener experience
+
+Relative-pitch judgments depend on the listener. Shepard's 50 listeners
+ranged from no errors to chance on pure-tone pairs, and he grouped them by
+that accuracy, not by training [Shepard §IV]. He adds that listeners who
+were interested in music or played an instrument generally made few, if
+any, errors, without numbers [Shepard §IV; part of the line is obscured in
+the scan]. His own suggestion for the less accurate listeners is a larger
+difference limen [Shepard §V].
+
+- **(A) One listener.** The model with its priors as set, no experience
+  term. It predicts one curve, to be compared with Group I.
+- **(B) Experience as noise.** A per-group parameter, such as the
+  likelihood SD, the width of the interval prior, or decision noise (P5's
+  option B), fitted to Group I and Group III. It follows Shepard's
+  difference-limen idea.
+- **(C) Experience as learned intervals.** For trained listeners, a prior
+  on Δ peaked at whole semitones (a learned scale). Shepard's steps are 1.2
+  semitones, off that grid, so C predicts something testable, but no data
+  in hand split listeners by training.
+
+**Recommendation: A first, B when comparing with Fig. 3, C only with data
+that separate musicians.**
+
 ## 5. Not in scope
 
-Absolute pitch, musical training, and the Risset glide. Any claim that the
-model matches listeners waits for data; Shepard's Fig. 3 is the only
-listener data in hand.
+Absolute pitch, and the Risset glide. Any claim that the model matches
+listeners waits for data; Shepard's Fig. 3 is the only listener data in
+hand.
 
 ## 6. Cho's answers
 
