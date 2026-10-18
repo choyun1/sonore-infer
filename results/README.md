@@ -142,6 +142,28 @@ What every experiment here shares unless its page says otherwise:
 | [R1](R1-source-and-room.md) | Source and room (RT60) from one sound | none in this paper | done | RT60 within 3%; 90% intervals cover 66% (overconfident) |
 | [R2](R2-atypical-rooms.md) | Atypical rooms, exponential room model | none in this paper | done | Biased like T20 × 3; time-reversed rooms do not fit |
 
+## Planned
+
+Experiments agreed on but not yet designed. Each gets a design document,
+with its decisions for Cho, before any run.
+
+- **Timing in the likelihood** (Cho, 2026-10-18). The likelihood compares
+  BASS's cochleagram: 64 half-ERB channels from a magnitude spectrum,
+  25 ms windows every 10 ms. It keeps no phase, so no phase locking,
+  temporal fine structure or interaural time differences, and it smooths
+  envelope modulation above a few tens of Hz. The paper lowered a
+  modulation cutoff from 50 to 10 Hz for this reason [App. C.4] and puts
+  periodic notes heard as noise down to the cochleagram's poor
+  periodicity resolution [Fig. G.7]. The question is whether a likelihood
+  that keeps periodicity changes what the model hears.
+  - *Candidates:* a correlogram (per-channel autocorrelation), envelope
+    modulation channels, or fine structure itself. Only the last makes each
+    harmonic's phase a latent to infer.
+  - *Likely test cases:* pitch from unresolved harmonics; the 100 Hz
+    mistuned-harmonic gap of A5 to A8 (whether it is related is not
+    checked); co-modulation masking release at the original 50 Hz cutoff;
+    interaural time differences.
+
 ## Against the paper
 
 Where our results match Cusimano et al. (2024), where they differ, and
