@@ -20,13 +20,13 @@ belong to other documents.
 ## Decisions at a glance
 
 Recommendations, for Cho to accept or change. The options and reasons are
-in §4. P1 was revised and P9 added on 2026-10-18, after Cho's question
-about intervals and listener experience.
+in §4. P1 and P2 were revised and P9 added on 2026-10-18, after Cho's
+questions about intervals, timing and listener experience.
 
 | Decision | Recommended |
 |---|---|
 | P1. What is inferred | The interval between the tones, in log frequency, as the latent (D); the paper's f0 per tone (B) run beside it |
-| P2. Observation | The cochleagram as it is (FFT, BASS gain, 64 channels, 20 Hz to 9.4 kHz) |
+| P2. Observation | The cochleagram as it is for now; Shepard tones become a test case for the planned timing likelihood |
 | P3. Spectrum prior | Unchanged for the first experiments; decide whether to change it only from what experiment P1 shows |
 | P4. Hypotheses | Enumerated: one harmonic source per octave reading, and a set of whistles; the search (C3) on a few stimuli only, as a check |
 | P5. Response | The model's output is P(up); no lapse or noise model until it is compared with listeners |
@@ -162,7 +162,26 @@ that becomes "up".
   tell up from down by construction (handoff §3), and a new observation
   would take every earlier result out of comparison.
 
-**Recommendation: A.**
+- **(C) A representation that keeps timing.** The cochleagram keeps
+  magnitude only, in 25 ms windows every 10 ms: no phase, no temporal fine
+  structure, and envelope modulation above a few tens of Hz smoothed away
+  (results/README.md, "Planned", the first entry). Pitch reaches it only by
+  place, from resolved components. A per-channel autocorrelation
+  (correlogram) or envelope modulation channels would add periodicity. That
+  is a likelihood change of its own, planned but not yet designed.
+
+For Shepard tones, place is enough to locate each component: they are an
+octave apart, far wider than one channel, so every component is resolved.
+What timing could change is the octave reading and the grouping. A
+correlogram shows a common period across channels (here the lowest
+component's), and a shared period is a standard cue for hearing components
+as one tone. That bears on P3 (one tone or a chord) and on which octave the
+model hears. These are expectations, not checked.
+
+**Recommendation: A for these experiments, and Shepard tones as a test case
+for C when the timing likelihood is designed.** A keeps these runs
+comparable with every earlier result, and the first question (P3) is about
+the spectrum prior, which a new likelihood would not remove.
 
 ### P3. Spectrum prior (handoff D3)
 
