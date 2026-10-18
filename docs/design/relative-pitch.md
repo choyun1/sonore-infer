@@ -161,7 +161,6 @@ that becomes "up".
 - **(B) Chroma or the semitone filter bank** (sonore PR #214). Chroma cannot
   tell up from down by construction (handoff §3), and a new observation
   would take every earlier result out of comparison.
-
 - **(C) A representation that keeps timing.** The cochleagram keeps
   magnitude only, in 25 ms windows every 10 ms: no phase, no temporal fine
   structure, and envelope modulation above a few tens of Hz smoothed away
