@@ -123,7 +123,6 @@ file and its data are not in hand.
 - **(C) Pitch class and height as separate latents.** Closer to the helix
   [Shepard Introduction], but a new source type with no counterpart in the
   paper's grammar.
-
 - **(D) The interval as the latent.** The first tone's f0 is a nuisance,
   integrated out under its wide prior; the second tone is the first plus an
   interval Δ in log frequency (semitones), with a zero-mean prior on Δ, and
