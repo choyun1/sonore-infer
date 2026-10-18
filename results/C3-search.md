@@ -141,6 +141,20 @@ f0s, and the evidence, estimated around one mode, depends on which mode the
 fit reaches, by up to 15. B2's −115 comes from a fit started at the true
 f0s, which the model would not have.
 
+Several starts do find it. Both hypotheses were fitted from 16 starts, with
+the detector's f0s scaled by 0.99 to 1.02 (lower) and 0.98 to 1.01 (upper)
+(`data/C3/fifth_starts/multi_start.txt`). Of the two-note fits, 1 of 16
+reached 200.0 and 300.0 Hz. That fit has the highest log joint of the 16,
+by 4. The rest stopped 4 to 27 below it, in modes with an f0 up to 5% off. Keeping the fit with the highest log joint, as
+`evaluate` does with several starts, therefore picks the right mode. Its
+variational log posterior is −110.9 and its ELBO −117.5. The note plus
+whistle reaches nearly the same log joint from every start (within 2.3), at
+−116.4 and −118.2 for its best. With one seed, that is two notes ahead by
+5.5 by the importance estimate and 0.7 by the ELBO. The importance estimate
+varies by 2 to 3 across seeds at one mode, so the comparison is still close.
+The search fits each hypothesis from one start, and 16 would multiply its
+harmonic fits by 16.
+
 ## What it says
 
 - **Six of seven match.** The control, the octave, the tritone and all
@@ -165,7 +179,9 @@ f0s, which the model would not have.
   seeds with SDs of 1.5 and 2.3. But only the exact f0s give that. Starts
   0.7% off, which the detector can reach, lose 4 to 9. So the comparison
   hinges on which mode of the two-note posterior the fit reaches, and the
-  one-mode evidence cannot settle it.
+  one-mode evidence cannot settle it. Fitting from 16 nearby starts and
+  keeping the highest log joint does find the right two-note mode. Two notes
+  then lead by 5.5 (importance) or 0.7 (ELBO), one seed.
 - **Cost.** 5 to 23 hypotheses and 20 to 74 minutes per 0.5 s stimulus on
   one cloud CPU, within decision C9's estimate of 1 to 3 hours. The ABA
   sequences (3.1 s with the 12 tones in the first 1.5 s, 12 rounds) took 82 to 100 hypotheses and 5.7 to 9.2
@@ -195,7 +211,7 @@ Defaults: `--steps 15000 --tolerance 0.5 --variational-steps 2000 --keep 5
 - Warm starts between rounds, to bring the ABA cost down.
 - The octave's upper onset: the detector would need a cue other than a rise
   in level at new frequencies, or the residual pass would need to find it.
-- The fifth's two-note evidence depends on which posterior mode the fit
-  reaches. Fitting from several nearby starts and combining their evidence
-  would show how much that matters.
+- Several starts per harmonic hypothesis in the search, at a cost of up to 16
+  times the fits. Which starts are worth it, and how few find the right mode,
+  is not measured. Also more seeds at the fifth's best modes.
 - More (b) stimuli and asynchronies, and more seeds.
