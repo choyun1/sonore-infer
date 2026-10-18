@@ -59,6 +59,13 @@ def main():
     parser.add_argument("--keep", type=int, default=5, help="finalists given variational evidence")
     parser.add_argument("--max-cleanup", type=int, default=8)
     parser.add_argument("--infer-kernel", action="store_true")
+    parser.add_argument(
+        "--f0-scales",
+        type=float,
+        nargs="+",
+        default=[1.0],
+        help="fit each hypothesis with a harmonic source from each of these multiples of its f0 start",
+    )
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--threads", type=int, default=0, help="torch CPU threads (0: torch's default)")
     args = parser.parse_args()
@@ -76,10 +83,12 @@ def main():
         max_cleanup=args.max_cleanup,
         variational_steps=args.variational_steps,
         infer_kernel=args.infer_kernel,
+        f0_scales=tuple(args.f0_scales),
         generator=generator,
         report=lambda message: print(f"status: {message}", file=sys.stderr, flush=True),
     )
-    print(f"{args.stimulus}: steps {args.steps}, tolerance {args.tolerance}, seed {args.seed}")
+    scales = "" if args.f0_scales == [1.0] else f", f0 scales {' '.join(f'{x:g}' for x in args.f0_scales)}"
+    print(f"{args.stimulus}: steps {args.steps}, tolerance {args.tolerance}, seed {args.seed}{scales}")
     print(f"onset groups: {len(result.groups)}")
     for group in result.groups:
         options = " | ".join(describe(tuple(_single(c) for c in e)) for e in group.explanations)

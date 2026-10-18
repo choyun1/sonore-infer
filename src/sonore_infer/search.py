@@ -48,6 +48,7 @@ import torch
 
 from sonore_infer.cochleagram import Cochleagram
 from sonore_infer.detect import Candidate, OnsetGroup, detect
+from sonore_infer.erb import erb_to_freq, freq_to_erb
 from sonore_infer.evidence import variational_evidence
 from sonore_infer.scene import Harmonic, Params, Scene, SceneResult, SceneTiming, Whistle, evaluate
 
@@ -154,6 +155,22 @@ def build(
                 dtype=dtype,
             )
     return Scene(tuple(sources), timing), init
+
+
+def _scaled_starts(scene: Scene, init: Params, f0_scales: tuple[float, ...]) -> list[Params]:
+    """``init`` once per scale, every harmonic source's f0 multiplied by it; just
+    ``init`` if the scene has no harmonic source."""
+    harmonics = [source for source in scene.sources if isinstance(source, Harmonic)]
+    if not harmonics or tuple(f0_scales) == (1.0,):
+        return [init]
+    starts = []
+    for scale in f0_scales:
+        start = dict(init)
+        for source in harmonics:
+            key = source.key("f0_mean")
+            start[key] = freq_to_erb(erb_to_freq(init[key]) * scale)
+        starts.append(start)
+    return starts
 
 
 def overlap(a: Candidate, b: Candidate) -> float:
@@ -332,12 +349,18 @@ def search(
     generator: torch.Generator | None = None,
     report: Callable[[str], None] | None = None,
     detect_options: dict | None = None,
+    f0_scales: tuple[float, ...] = (1.0,),
 ) -> SearchResult:
     """Search for the hypothesis that best explains ``waveform`` (see the module docstring).
 
     ``steps`` and ``tolerance`` set each MAP fit as in
     :func:`~sonore_infer.scene.evaluate`; ``n_samples`` is its importance
     sampling's (unused in the ranking). ``report`` receives progress messages.
+    A hypothesis with a harmonic source is fitted once from each of
+    ``f0_scales``, every harmonic source's f0 start multiplied by it, and the
+    fit with the highest log joint is kept (as :func:`~sonore_infer.scene.evaluate`
+    does with several starts). The just fifth's two-note fit reaches the
+    notes' f0s only from about 1% above the detector's (results/C3-search.md).
     """
     started = time.perf_counter()
     fs = cochleagram.fs
@@ -360,7 +383,7 @@ def search(
             try:
                 result = evaluate(
                     scene,
-                    [init],
+                    _scaled_starts(scene, init, f0_scales),
                     observed,
                     cochleagram,
                     steps=steps,
