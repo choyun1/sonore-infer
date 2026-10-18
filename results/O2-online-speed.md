@@ -4,7 +4,7 @@
 > results. The work was done with AI assistance (Claude) and has not yet been
 > checked carefully. Numbers, methods and interpretations may change.
 
-**Status:** S1 and S2 checked (2026-10-15), S2 the online tool's default since 2026-10-16 (Cho); S3 tried in two forms, both failed its check, dropped; stopping-rule and window sweep run 2026-10-17; 100 ms windows the online tool's default since 2026-10-18 (Cho); S4 checked 2026-10-18 and the online tool's default since (Cho).
+**Status:** S1 and S2 checked (2026-10-15), S2 the online tool's default since 2026-10-16 (Cho); S3 tried in two forms, both failed its check, dropped; stopping-rule and window sweep run 2026-10-17; 100 ms windows the online tool's default since 2026-10-18 (Cho); S4 checked 2026-10-18 and the online tool's default since (Cho); S5 measured 2026-10-18.
 **Paper target:** none; this is about cost, checked against
 [O1](O1-online-buildup.md). **Code:** `src/sonore_infer/sources.py`
 (`trajectory_event`), `src/sonore_infer/online.py` (`run_online`),
@@ -222,7 +222,36 @@ to 41 ms between 0.5 and 3 s without S4, and from 10 to 24 ms with it.
 What still grows is, I infer, the prior, whose trajectories cover the whole
 sound so far; I have not timed it separately.
 
+### S5: Cho's GPU is slower than its CPU, in float64
+
+Design S5 (B): the same code on Cho's PC (Ryzen 5 7600X3D, 6 threads; RTX
+2070 SUPER), with `--device cuda` or `cpu` [`data/O2/s5/`]. One window of
+the 8-semitone case, median of 5, ms (Hessian in s), next to the cloud
+CPU's (4 threads, `data/O2/online_cost_st8.txt`):
+
+| Sound so far | Hypothesis | Adam step: GPU / PC CPU / cloud | Hessian: GPU / PC CPU / cloud |
+|---|---|---|---|
+| 0.55 s | one | 23 / 8 / 59 | 2.5 / 0.7 / 1.4 |
+| 1.05 s | two | 57 / 13 / 16 | 18 / 5.0 / 9.7 |
+| 3.05 s | one | 98 / 27 / 36 | 19 / 6.6 / 12 |
+| 3.05 s | two | 86 / 34 / 48 | 41 / 16 / 26 |
+
+(The cloud's 59 ms at 0.55 s is likely a first-call cost; the other
+cloud rows follow the PC CPU's.) The GPU is 2.5 to 4.5 times slower than the
+PC's CPU at every size, and the PC's CPU 1.3 to 2 times faster than the
+cloud's. The whole 8-semitone run with S4 on the GPU gives the same answer
+(log odds within 0.15 of the cloud run at every triplet, the same modes)
+in 1,288 s of windows against the cloud CPU's 528 s.
+
+Why, I infer: each Adam step is many small operations on vectors of a few
+thousand samples, each a separate GPU launch, and the fit reads the log
+joint back every step; the 2070 also runs float64 at a small fraction of
+its float32 rate. Design S5 (C), float32 for the fit, might change the
+second but not the first; not tried. So the online runs stay on CPUs, and
+the PC's CPU is the faster one for long jobs [inferred from the window
+costs; no full run on the PC's CPU yet].
+
 ## What is open
 
-- What still grows with the sound under S4 (the prior, inferred), and S5;
-  S3 (D) is answered above and dropped.
+- What still grows with the sound under S4 (the prior, inferred). S3 (D)
+  is answered above and dropped; S5 (C), float32 on the GPU, not tried.
