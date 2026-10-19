@@ -30,8 +30,12 @@ starts the offsets at 0 dB for harmonics the stimulus has and at
 ``ABSENT_OFFSET_DB`` for the others, with the presence probability at the
 fraction present. A second start has every harmonic present, as without a
 sparse spectrum (its 30 dB-down harmonics lie between the two parts of the
-offset prior, so a fit from one start rarely reaches the other's mode); the
-fit keeps the better.
+offset prior, so a fit from one start rarely reaches the other's mode).
+The two modes differ in which harmonics are present, so each start's mode
+gets its own evidence estimate, printed as ``label [start k]``, and the
+hypothesis's evidence is their log-sum-exp (the modes are taken as
+separate; if both starts reach the same mode this overcounts by at most
+log 2). ``--start`` fits one start only.
 
 Prints one line per fit and, per tone, the log posterior of each hypothesis
 relative to the best (0 is the best).
@@ -195,6 +199,7 @@ def main():
     parser.add_argument("--only", nargs="+", help="fit only hypotheses whose label starts with one of these")
     parser.add_argument("--exact", action="store_true", help="--only labels must match exactly")
     parser.add_argument("--list", action="store_true", help="print each tone's hypothesis labels and stop")
+    parser.add_argument("--start", type=int, help="fit only this start (1 or 2) of a two-start hypothesis")
     parser.add_argument("--max-steps", type=int, default=15000, help="Adam steps at most")
     parser.add_argument(
         "--tolerance",
@@ -241,29 +246,35 @@ def main():
             if args.list:
                 print(f"{step} {label}")
                 continue
-            begin = time.perf_counter()
-            result = evaluate(
-                scene,
-                starts,
-                observed,
-                cochleagram,
-                steps=args.max_steps,
-                tolerance=args.tolerance,
-                n_samples=args.samples,
-                generator=torch.Generator().manual_seed(args.seed),
-                variational_steps=args.variational_steps,
-                report=status(f"step {step} {label}"),
-            )
-            e, v = result.evidence, result.variational
-            n_params = sum(value.numel() for value in starts[0].values())
-            print(
-                f"{step:4d}  {label:34s}  {n_params:5d}  {result.structure_log_prior:7.2f}"
-                f"  {e.log_joint_at_mode:9.1f}  {e.laplace:9.1f}"
-                + (f"  {v.elbo:9.1f}  {v.importance:9.1f}  {v.effective_sample_size:5.0f}" if v else "")
-                + f"  {time.perf_counter() - begin:7.1f}",
-                flush=True,
-            )
-            posteriors[label] = result.log_posterior_variational if v else result.log_posterior_laplace
+            if args.start and len(starts) > 1:
+                starts = [starts[args.start - 1]]
+            per_start = []
+            for index, start in enumerate(starts):
+                begin = time.perf_counter()
+                result = evaluate(
+                    scene,
+                    [start],
+                    observed,
+                    cochleagram,
+                    steps=args.max_steps,
+                    tolerance=args.tolerance,
+                    n_samples=args.samples,
+                    generator=torch.Generator().manual_seed(args.seed),
+                    variational_steps=args.variational_steps,
+                    report=status(f"step {step} {label} start {index + 1}"),
+                )
+                e, v = result.evidence, result.variational
+                n_params = sum(value.numel() for value in start.values())
+                name = f"{label} [start {index + 1}]" if len(starts) > 1 else label
+                print(
+                    f"{step:4d}  {name:34s}  {n_params:5d}  {result.structure_log_prior:7.2f}"
+                    f"  {e.log_joint_at_mode:9.1f}  {e.laplace:9.1f}"
+                    + (f"  {v.elbo:9.1f}  {v.importance:9.1f}  {v.effective_sample_size:5.0f}" if v else "")
+                    + f"  {time.perf_counter() - begin:7.1f}",
+                    flush=True,
+                )
+                per_start.append(result.log_posterior_variational if v else result.log_posterior_laplace)
+            posteriors[label] = torch.logsumexp(torch.tensor(per_start, dtype=DTYPE), 0).item()
         if posteriors:
             best = max(posteriors.values())
             text = ", ".join(f"{label} {value - best:.1f}" for label, value in posteriors.items())
