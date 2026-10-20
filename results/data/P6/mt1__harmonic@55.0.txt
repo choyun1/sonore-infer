@@ -1,0 +1,4 @@
+Shepard tones, minor-third spacing; up to 15000 Adam steps, stop at a rise under 0.5 over 1000; 2000 variational steps, 128 samples, seed 0; fft-bass-gain cochleagram, sigma 10 dB; floor 30.0 Hz, sparse spectrum
+step  hypothesis  n_params  structure  log_joint_at_mode  laplace  elbo  vi_importance  vi_ess  seconds
+   1  harmonic@55.0                         231    -1.91    -4557.2    -4455.1    -4447.2    -4448.3      2    512.9
+step 1: log posterior relative to the best: harmonic@55.0 0.0

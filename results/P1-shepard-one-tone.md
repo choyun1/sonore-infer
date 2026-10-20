@@ -4,6 +4,7 @@
 > results. The work was done with AI assistance (Claude) and has not yet been
 > checked carefully. Numbers, methods and interpretations may change.
 
+**Rerun** with sparse spectra and a 30 Hz floor: [P5](P5-shepard-one-tone-sparse.md).
 **Status:** first pass, one seed, all 10 tones; search on tone 1.
 **Paper target:** none in Cusimano et al.; listeners in Shepard (1964) §I.
 **Code:** `src/sonore_infer/stimuli/shepard.py`,

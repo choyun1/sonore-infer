@@ -1,0 +1,91 @@
+step 1
+  hypothesis                          log_posterior  relative  modes
+  harmonic@77.8                              -65.4       0.0  -91.2, -65.4
+  harmonic@155.6+whistle@77.8                -67.5      -2.1  -97.1, -67.5
+  harmonic@38.9                              -76.7     -11.3  -135.4, -76.7
+  harmonic@77.8+whistle@38.9                 -80.9     -15.5  -113.4, -80.9
+  harmonic@311.2+whistle@155.6               -95.2     -29.7  -96.2, -95.6
+  harmonic@155.6                            -108.4     -43.0  -126.1, -108.4
+  whistles×6                                -116.0     -50.6  -116.0
+  harmonic@311.2                            -265.4    -200.0  -265.6, -267.0
+step 2
+  hypothesis                          log_posterior  relative  modes
+  harmonic@83.4                              -64.2       0.0  -93.4, -64.2
+  harmonic@166.8+whistle@83.4                -72.3      -8.1  -92.6, -72.3
+  harmonic@41.7                              -79.4     -15.2  -136.8, -79.4
+  harmonic@83.4+whistle@41.7                 -81.3     -17.1  -111.9, -81.3  (ELBO)
+  harmonic@333.6+whistle@166.8               -97.5     -33.3  -97.5, -102.2
+  whistles×6                                -118.8     -54.6  -118.8
+  harmonic@166.8                            -122.4     -58.2  -138.0, -122.4
+  harmonic@333.6                            -280.7    -216.4  -280.7, -283.5
+step 3
+  hypothesis                          log_posterior  relative  modes
+  harmonic@89.4                              -67.3       0.0  -99.7, -67.3
+  harmonic@44.7                              -73.3      -6.0  -125.6, -73.3
+  harmonic@178.8+whistle@89.4                -75.6      -8.3  -90.5, -75.6
+  harmonic@89.4+whistle@44.7                 -80.9     -13.6  -113.8, -80.9
+  whistles×6                                -115.7     -48.4  -115.7  (ELBO)
+  harmonic@178.8                            -137.3     -70.0  -147.9, -137.3
+step 4
+  hypothesis                          log_posterior  relative  modes
+  harmonic@95.8                              -70.2       0.0  -96.2, -70.2
+  harmonic@47.9                              -75.0      -4.8  -124.0, -75.0
+  harmonic@191.6+whistle@95.8                -76.2      -6.0  -88.8, -76.2
+  harmonic@95.8+whistle@47.9                 -80.4     -10.2  -113.8, -80.4  (ELBO)
+  whistles×6                                -118.8     -48.6  -118.8
+  harmonic@191.6                            -143.8     -73.6  -150.0, -143.8
+step 5
+  hypothesis                          log_posterior  relative  modes
+  harmonic@102.7                             -71.9       0.0  -98.1, -71.9
+  harmonic@51.3                              -73.1      -1.2  -102.0, -73.1
+  harmonic@205.3+whistle@102.7               -76.3      -4.4  -85.0, -76.3
+  harmonic@102.7+whistle@51.3                -83.7     -11.8  -106.0, -83.7
+  whistles×5                                -103.7     -31.8  -103.7
+  harmonic@205.3                            -172.0    -100.1  -177.5, -172.0
+step 6
+  hypothesis                          log_posterior  relative  modes
+  harmonic@55.0                              -72.9       0.0  -114.5, -72.9
+  harmonic@110.0                             -77.2      -4.3  -104.5, -77.2
+  harmonic@110.0+whistle@55.0                -79.1      -6.2  -107.1, -79.1  (ELBO)
+  harmonic@220.1+whistle@110.0               -79.6      -6.7  -87.0, -79.6
+  whistles×5                                -102.9     -30.0  -102.9
+  harmonic@220.1                            -181.1    -108.2  -185.8, -181.1
+step 7
+  hypothesis                          log_posterior  relative  modes
+  harmonic@59.0                              -73.6       0.0  -112.8, -73.6
+  harmonic@117.9+whistle@59.0                -79.9      -6.3  -106.9, -79.9
+  harmonic@117.9                             -82.6      -9.0  -108.4, -82.6
+  harmonic@235.9+whistle@117.9               -82.8      -9.2  -86.3, -82.8
+  whistles×5                                -100.0     -26.4  -100.0
+  harmonic@235.9                            -200.5    -126.9  -201.7, -200.8
+step 8
+  hypothesis                          log_posterior  relative  modes
+  harmonic@63.2                              -69.8       0.0  -110.4, -69.8
+  harmonic@126.4+whistle@63.2                -75.6      -5.8  -107.1, -75.6
+  harmonic@126.4                             -86.6     -16.8  -111.6, -86.6
+  harmonic@31.6                              -86.8     -17.0  -156.8, -86.8
+  harmonic@63.2+whistle@31.6                 -88.8     -19.0  -124.4, -88.8
+  harmonic@252.8+whistle@126.4               -88.9     -19.0  -89.0, -90.9
+  whistles×6                                -119.9     -50.1  -119.9  (ELBO)
+  harmonic@252.8                            -212.8    -143.0  -215.1, -212.9
+step 9
+  hypothesis                          log_posterior  relative  modes
+  harmonic@67.7                              -69.9       0.0  -105.5, -69.9
+  harmonic@135.5+whistle@67.7                -77.0      -7.1  -104.4, -77.0
+  harmonic@67.7+whistle@33.9                 -85.8     -15.9  -123.9, -85.8  (ELBO)
+  harmonic@33.9                              -87.0     -17.1  -153.9, -87.0
+  harmonic@270.9+whistle@135.5               -90.7     -20.8  -92.0, -91.0
+  harmonic@135.5                             -94.9     -25.0  -117.1, -94.9
+  whistles×6                                -112.8     -42.9  -112.8  (ELBO)
+  harmonic@270.9                            -236.3    -166.4  -237.7, -236.6
+step 10
+  hypothesis                          log_posterior  relative  modes
+  harmonic@72.6                              -71.8       0.0  -101.8, -71.8
+  harmonic@145.2+whistle@72.6                -79.6      -7.8  -100.6, -79.6
+  harmonic@36.3                              -84.3     -12.5  -142.2, -84.3
+  harmonic@72.6+whistle@36.3                 -87.1     -15.3  -115.4, -87.1
+  harmonic@290.4+whistle@145.2               -92.8     -21.0  -92.8, -97.0
+  harmonic@145.2                            -103.1     -31.3  -122.7, -103.1
+  whistles×6                                -121.6     -49.8  -121.6
+  harmonic@290.4                            -248.0    -176.2  -248.1, -250.4
+130 fits, 189 to 922 s each
