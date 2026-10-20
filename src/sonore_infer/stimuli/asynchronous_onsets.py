@@ -58,8 +58,8 @@ FIT_WINDOW = (0.020, 0.044)
 
 def vowel(f1: float, fs: float = FS) -> so.Sound:
     """One vowel of the basic continuum, ramped and at 56 dB."""
-    sound = so.klatt_synthesize(VOWEL_DURATION, fs, F0=VOWEL_F0, F1=f1, SS=1, **VOWEL_FORMANTS)
-    return sound.ramp(RAMP, shape="linear").normalize(rms_from_db(VOWEL_LEVEL_DB))
+    sound = so.klatt_synthesize(VOWEL_DURATION, fs, VOWEL_FORMANTS, F0=VOWEL_F0, F1=f1, SS=1)
+    return sound.ramp(RAMP, shape="linear").normalize(rms=rms_from_db(VOWEL_LEVEL_DB))
 
 
 def harmonic_component(sound: so.Sound, f0: float, number: int, window: tuple[float, float]) -> complex:
