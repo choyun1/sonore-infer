@@ -4,6 +4,7 @@
 > results. The work was done with AI assistance (Claude) and has not yet been
 > checked carefully. Numbers, methods and interpretations may change.
 
+**Rerun** with sparse spectra and a 30 Hz floor: [P6](P6-shepard-minor-third-sparse.md).
 **Status:** first pass, one seed, tones 1 and 4; search on tone 1.
 **Paper target:** none in Cusimano et al.; listeners in Shepard (1964) §V.
 **Code:** as [P1](P1-shepard-one-tone.md), with `--minor-third`.

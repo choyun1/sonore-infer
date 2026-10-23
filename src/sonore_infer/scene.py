@@ -26,11 +26,18 @@ Table A.2 medians unless a source has ``infer_kernel=True`` (design C3 (B)).
 Then each is a latent too, named e.g. ``"h0.f0_sigma_free"``: the value
 mapped to the whole real line, under the paper's truncated normal prior
 (see :class:`~sonore_infer.priors.KernelParameterPrior`).
+
+Two options depart from the paper, both off by default (design
+relative-pitch-prior P10 to P13): ``frequency_floor_hz`` lowers the floor of
+the uniform prior on the mean f0 (or whistle frequency) from Table A.2's
+3 ERB number (87.5 Hz), and a harmonic source's ``sparse_spectrum`` lets each
+harmonic be absent (see :class:`Harmonic`).
 """
 
 from __future__ import annotations
 
 import copy
+import dataclasses
 import functools
 import math
 from collections.abc import Callable, Sequence
@@ -57,9 +64,11 @@ from sonore_infer.priors import (
     BoundedUniform,
     KernelParameterPrior,
     NormalGammaMarginal,
+    StandardLogistic,
     TrajectoryPrior,
     log_duration_distribution,
     log_prior_structure,
+    presence_offset_distribution,
     sample_structure,
     spectrum_distribution,
 )
@@ -258,6 +267,7 @@ class _Source:
     name: str
     n_events: int
     infer_kernel: bool
+    frequency_floor_hz: float | None
     RATES: ClassVar[dict[str, float]]
     TRAJECTORIES: ClassVar[dict[str, TrajectoryPrior]]
     # each Gaussian process: its fixed (sigma, lengthscale), the priors on them, and its prior term
@@ -312,6 +322,9 @@ class _Source:
     ) -> tuple[torch.Tensor, torch.Tensor]:
         """The GP trajectory's mean and deviations on the grid, through ``sample``."""
         prior, term = self.TRAJECTORIES[gp], self.KERNELS[gp][2]
+        if gp in ("f0", "freq") and self.frequency_floor_hz is not None:
+            low = freq_to_erb_float(self.frequency_floor_hz)
+            prior = dataclasses.replace(prior, mean_range=(low, prior.mean_range[1]))
         if self.infer_kernel:
             prior = prior.with_kernel(*self._kernel(sample, gp, dtype))
         mean = sample(self.key(f"{gp}_mean"), prior.mean_distribution(dtype), term)
@@ -363,12 +376,23 @@ class _Source:
 
 @dataclass(frozen=True)
 class Harmonic(_Source):
-    """A harmonic source with ``n_harmonics`` harmonics of a time-varying f0, and ``n_events`` events."""
+    """A harmonic source with ``n_harmonics`` harmonics of a time-varying f0, and ``n_events`` events.
+
+    With ``sparse_spectrum`` (design relative-pitch-prior P10 (B), P11 (B)),
+    each harmonic's level is the Gaussian-process spectrum plus an offset
+    (``spectrum_offset_db``) whose prior is a mixture, present (about 0 dB)
+    or absent (far below; see
+    :func:`~sonore_infer.priors.presence_offset_distribution`), with the
+    probability of present a latent too (``presence_logit``, its logit,
+    uniform on (0, 1)).
+    """
 
     name: str
     n_harmonics: int
     n_events: int = 1
     infer_kernel: bool = False
+    sparse_spectrum: bool = False
+    frequency_floor_hz: float | None = None
     kind: ClassVar[str] = "harmonic"
     TRAJECTORIES: ClassVar = {"f0": F0_TRAJECTORY, "level": HARMONIC_LEVEL_TRAJECTORY}
     KERNELS: ClassVar = {
@@ -387,6 +411,8 @@ class Harmonic(_Source):
         "level_mean": 0.5,
         "level_deviation": 0.1,
         "spectrum_db": 0.5,
+        "spectrum_offset_db": 0.5,
+        "presence_logit": 0.05,
         "onset": 2e-4,
         "log_duration": 1e-3,
         "log_rest": 1e-3,
@@ -401,12 +427,16 @@ class Harmonic(_Source):
         onset: float | Sequence[float],
         duration: float | Sequence[float],
         spectrum_db: torch.Tensor | None = None,
+        spectrum_offset_db: torch.Tensor | None = None,
+        presence_logit: float = 2.0,
         dtype: torch.dtype = torch.float64,
     ) -> Params:
         """Constant trajectories at ``f0`` [Hz] and ``level_db``, a flat spectrum unless given.
 
         With several events, ``onset`` and ``duration`` [s] give each event's,
-        and ``f0`` may too (held from each onset to the next).
+        and ``f0`` may too (held from each onset to the next). With
+        ``sparse_spectrum``, the offsets are zero unless given (every harmonic
+        present) and the presence logit starts at ``presence_logit``.
         """
         if self.n_events == 1 or isinstance(f0, (int, float)):
             f0_mean = torch.tensor(freq_to_erb_float(_number(f0, "f0")), dtype=dtype)
@@ -433,7 +463,25 @@ class Harmonic(_Source):
             | _timing_init(self.n_events, onset, duration, dtype)
             | self._kernel_init(dtype)
         )
+        if self.sparse_spectrum:
+            values["spectrum_offset_db"] = (
+                torch.zeros(self.n_harmonics, dtype=dtype)
+                if spectrum_offset_db is None
+                else torch.as_tensor(spectrum_offset_db, dtype=dtype).clone()
+            )
+            values["presence_logit"] = torch.tensor(presence_logit, dtype=dtype)
         return {self.key(name): value for name, value in values.items()}
+
+    def _parameter_names(self) -> list[str]:
+        names = super()._parameter_names()
+        if self.sparse_spectrum:
+            return names
+        return [name for name in names if name not in ("spectrum_offset_db", "presence_logit")]
+
+    def spectrum(self, params: Params) -> torch.Tensor:
+        """Each harmonic's level relative to the source's [dB]: the spectrum, plus the offsets if sparse."""
+        spectrum = params[self.key("spectrum_db")]
+        return spectrum + params[self.key("spectrum_offset_db")] if self.sparse_spectrum else spectrum
 
     def f0_erb(self, params: Params) -> torch.Tensor:
         """The f0 trajectory [ERB number] on the grid."""
@@ -447,7 +495,7 @@ class Harmonic(_Source):
         level = HARMONIC_LEVEL_TRAJECTORY.trajectory(
             params[key("level_mean")], params[key("level_deviation")]
         )
-        spectrum = params[key("spectrum_db")]
+        spectrum = self.spectrum(params)
         numbers = torch.arange(1, spectrum.shape[-1] + 1, dtype=f0.dtype)
         return self._render_events(params, timing, numbers[:, None] * f0, level + spectrum[:, None], start)
 
@@ -462,6 +510,10 @@ class Harmonic(_Source):
         f0 = erb_to_freq(F0_TRAJECTORY.trajectory(f0_mean, f0_deviation).mean())
         spectrum = spectrum_distribution(self.n_harmonics, f0, *self._kernel(sample, "spectrum", dtype))
         sample(self.key("spectrum_db"), spectrum, TERM_SPECTRUM)
+        if self.sparse_spectrum:
+            presence_logit = sample(self.key("presence_logit"), StandardLogistic(dtype), TERM_SPECTRUM)
+            offsets = presence_offset_distribution(self.n_harmonics, presence_logit)
+            sample(self.key("spectrum_offset_db"), offsets, TERM_SPECTRUM)
 
 
 @dataclass(frozen=True)
@@ -471,6 +523,7 @@ class Whistle(_Source):
     name: str
     n_events: int = 1
     infer_kernel: bool = False
+    frequency_floor_hz: float | None = None
     kind: ClassVar[str] = "whistle"
     TRAJECTORIES: ClassVar = {"freq": F0_TRAJECTORY, "level": WHISTLE_LEVEL_TRAJECTORY}
     KERNELS: ClassVar = {

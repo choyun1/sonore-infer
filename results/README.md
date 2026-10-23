@@ -141,6 +141,8 @@ What every experiment here shares unless its page says otherwise:
 | [O2](O2-online-speed.md) | Faster online inference | none (cost; checked against O1) | S1, S2, S4 checked; S3 dropped; S5 measured; stopping-rule sweep run | Rendering each event over its span changes no answer; with the evidence every 0.5 s, odds stay within 1.2 of O1 in a seventh of the time; L-BFGS, plain or paired with Adam, fails online; shorter look-backs save little, 100 ms windows a sixth; summarizing the past (S4) changes no answer and saves more as the sound grows |
 | [P1](P1-shepard-one-tone.md) | One Shepard tone alone: one tone or whistles, which octave | none (Shepard 1964 §I) | first pass, one seed | Whistles win by 9–20 at 7 of 10 tones, within noise at the other 3; the octave read is set by the 87.5 Hz f0 prior floor; search finds a tone plus a whistle better still |
 | [P2](P2-shepard-minor-third.md) | Octave against minor-third spacing | none (Shepard 1964 §V) | first pass, one seed, 2 tones | Minor-third complex heard as one low tone by about 270: Shepard's contrast backwards |
+| [P5](P5-shepard-one-tone-sparse.md) | P1 with sparse harmonic spectra and a 30 Hz floor | none (Shepard 1964 §I) | first pass, one seed | One tone at all 10 tones, whistles 26–55 behind; the octave read is the component between 52 and 104 Hz, so it drops an octave between tones 5 and 6 |
+| [P6](P6-shepard-minor-third-sparse.md) | P2 with sparse harmonic spectra and a 30 Hz floor | none (Shepard 1964 §V) | first pass, one seed, 2 tones | Minor-third complex still one low tone, about 100 ahead of a chord of four tones |
 | [R1](R1-source-and-room.md) | Source and room (RT60) from one sound | none in this paper | done | RT60 within 3%; 90% intervals cover 66% (overconfident) |
 | [R2](R2-atypical-rooms.md) | Atypical rooms, exponential room model | none in this paper | done | Biased like T20 × 3; time-reversed rooms do not fit |
 
@@ -159,9 +161,12 @@ document with its decisions for Cho before any run.
 - **Relative pitch from Shepard tones** (design accepted 2026-10-18,
   decisions P1 to P9: [relative-pitch.md](../docs/design/relative-pitch.md)).
   Whether the model hears the direction of a step between octave-complex
-  tones as Shepard's (1964) listeners did. P1 and P2 done (above); the pair
-  experiments P3 and P4 wait on whether the spectrum prior or the 87.5 Hz
-  f0 floor changes first (decision P3).
+  tones as Shepard's (1964) listeners did. P1 and P2 done (above), then
+  rerun as P5 and P6 with the options of
+  [relative-pitch-prior.md](../docs/design/relative-pitch-prior.md)
+  (decisions P10 to P14, accepted 2026-10-18). Next under decision P14: the
+  mistuned harmonic and two simultaneous notes with the options, then the
+  pair experiments P3 and P4.
 - **ABA margins against graded listener data.** C2's log odds are far
   larger than the paper's (up to +217); whether that matters is deferred
   until graded listener data are compared (the "Against the paper"
