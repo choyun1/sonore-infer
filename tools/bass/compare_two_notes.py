@@ -23,6 +23,11 @@ alternative), by the Laplace and the importance-sampling estimates.
 
     python tools/bass/compare_two_notes.py --interval octave --asynchronies 0 0.02
     python tools/bass/compare_two_notes.py --controls
+
+With ``--sparse-spectrum`` (and ``--floor``), the options of design
+relative-pitch-prior: each start with harmonics 30 dB down gets a twin with
+them marked absent, and each start is scored on its own
+(``sparse_options.py``).
 """
 
 import argparse
@@ -30,6 +35,7 @@ import math
 import sys
 import time
 
+import sparse_options
 import torch
 
 from sonore_infer.cochleagram import FFTCochleagram
@@ -76,16 +82,19 @@ def harmonic_start(source, f0, onset, duration, levels):
     )
 
 
-def hypotheses(condition, infer_kernel=False):
+def hypotheses(condition, infer_kernel=False, harmonic_options=None, whistle_options=None):
     """(label, scene, starts) for every hypothesis fitted to this stimulus; with
-    ``infer_kernel``, the sources infer their GPs' sigma and lengthscale."""
+    ``infer_kernel``, the sources infer their GPs' sigma and lengthscale; the
+    options are passed to every harmonic source and whistle."""
+    harmonic_options = harmonic_options or {}
+    whistle_options = whistle_options or {}
     levels = components(condition)
     note_list = notes(condition)
     lower_f0, _, lower_onset, lower_duration = note_list[0]
     out = []
     one_f0s = sorted({f0 for f0, *_ in note_list} | {100.0}, reverse=True)
     for f0 in one_f0s:
-        source = Harmonic("h0", len(tn.harmonic_numbers(f0)), infer_kernel=infer_kernel)
+        source = Harmonic("h0", len(tn.harmonic_numbers(f0)), infer_kernel=infer_kernel, **harmonic_options)
         start = harmonic_start(source, f0, lower_onset, lower_duration, levels)
         out.append((f"one@{f0:g}", Scene((source,), TIMING), [start]))
     if len(note_list) == 1:
@@ -95,16 +104,20 @@ def hypotheses(condition, infer_kernel=False):
         split = {
             freq: (half[freq] if round(freq / lower_f0) % 2 == 0 else level) for freq, level in levels.items()
         }
-        lower = Harmonic("h0", len(tn.harmonic_numbers(lower_f0)), infer_kernel=infer_kernel)
-        upper = Harmonic("h1", len(tn.harmonic_numbers(2 * lower_f0)), infer_kernel=infer_kernel)
+        lower = Harmonic(
+            "h0", len(tn.harmonic_numbers(lower_f0)), infer_kernel=infer_kernel, **harmonic_options
+        )
+        upper = Harmonic(
+            "h1", len(tn.harmonic_numbers(2 * lower_f0)), infer_kernel=infer_kernel, **harmonic_options
+        )
         start = harmonic_start(lower, lower_f0, lower_onset, lower_duration, split) | harmonic_start(
             upper, 2 * lower_f0, lower_onset, lower_duration, half
         )
         out.append(("two", Scene((lower, upper), TIMING), [start]))
         return out
     upper_f0, falling, upper_onset, upper_duration = note_list[1]
-    lower = Harmonic("h0", len(tn.harmonic_numbers(lower_f0)), infer_kernel=infer_kernel)
-    upper = Harmonic("h1", len(tn.harmonic_numbers(upper_f0)), infer_kernel=infer_kernel)
+    lower = Harmonic("h0", len(tn.harmonic_numbers(lower_f0)), infer_kernel=infer_kernel, **harmonic_options)
+    upper = Harmonic("h1", len(tn.harmonic_numbers(upper_f0)), infer_kernel=infer_kernel, **harmonic_options)
     upper_levels = dict(
         zip(
             [round(n * upper_f0, 2) for n in tn.harmonic_numbers(upper_f0)],
@@ -119,7 +132,10 @@ def hypotheses(condition, infer_kernel=False):
     out.append(("two", Scene((lower, upper), TIMING), [start]))
     unshared = tn.unshared_upper_harmonics(condition["interval"])
     if len(unshared):
-        whistles = [Whistle(f"w{index}", infer_kernel=infer_kernel) for index in range(len(unshared))]
+        whistles = [
+            Whistle(f"w{index}", infer_kernel=infer_kernel, **whistle_options)
+            for index in range(len(unshared))
+        ]
         start = harmonic_start(lower, lower_f0, lower_onset, lower_duration, levels)
         for whistle, number in zip(whistles, unshared, strict=True):
             freq = number * upper_f0
@@ -184,6 +200,7 @@ def main():
         action="store_true",
         help="infer each GP's sigma and lengthscale instead of fixing them at the medians (design C3 (B))",
     )
+    sparse_options.add_arguments(parser)
     args = parser.parse_args()
     if args.controls is not None:
         conditions = [{"interval": "control", "f0": float(f0)} for f0 in (args.controls or tn.CONTROL_F0S)]
@@ -198,6 +215,7 @@ def main():
         + f", {args.samples} samples, sigma {args.sigma:g} dB, seed {args.seed}, "
         "fft-bass-gain cochleagram, trajectories, all timing inferred"
         + (", GP sigma and lengthscale inferred" if args.infer_kernel else "")
+        + sparse_options.describe(args)
     )
     print(
         "stimulus  hypothesis  n_params  structure  laplace  importance  ess  floored"
@@ -211,12 +229,21 @@ def main():
             sound = tn.two_notes_stimulus(condition["interval"], condition["asynchrony"])
         observed = cochleagram(torch.tensor(sound.data[:, 0], dtype=DTYPE))
         results = {}
-        for hypothesis, scene, starts in hypotheses(condition, args.infer_kernel):
+        for hypothesis, scene, starts in hypotheses(
+            condition,
+            args.infer_kernel,
+            sparse_options.harmonic_options(args),
+            sparse_options.whistle_options(args),
+        ):
             if args.only and hypothesis not in args.only:
                 continue
             begin = time.perf_counter()
             generator = torch.Generator().manual_seed(args.seed)
-            result = evaluate(
+            fit = evaluate
+            if args.sparse_spectrum:
+                starts = sparse_options.with_sparse_starts(scene, starts)
+                fit = sparse_options.evaluate_modes
+            result = fit(
                 scene,
                 starts,
                 observed,
@@ -245,6 +272,8 @@ def main():
                 ),
                 flush=True,
             )
+            if args.sparse_spectrum:
+                print("\n".join(sparse_options.mode_lines(result, " " * 36)), flush=True)
         ones = [r for h, r in results.items() if h.startswith("one@")]
         if not ones:
             continue

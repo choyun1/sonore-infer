@@ -6,12 +6,18 @@ initializations, step sizes, parameter order and random draws) and prints
 the same table, so the two outputs can be compared line by line.
 
     python tools/bass/scene_mistuned_harmonic.py --f0 200 --harmonic 3
+
+With ``--sparse-spectrum`` (and ``--floor``), the options of design
+relative-pitch-prior: each start with the mistuned harmonic 30 dB down gets a
+twin with it marked absent, the one-source hypothesis gets such a start too,
+and each start is scored on its own (``sparse_options.py``).
 """
 
 import argparse
 import sys
 import time
 
+import sparse_options
 import torch
 
 from sonore_infer.cochleagram import FFTCochleagram
@@ -63,11 +69,17 @@ def main():
         action="store_true",
         help="infer each GP's sigma and lengthscale instead of fixing them at the medians (design C3 (B))",
     )
+    sparse_options.add_arguments(parser)
     args = parser.parse_args()
     dtype = torch.float64
     cochleagram = FFTCochleagram()
-    harmonic = Harmonic("h0", len(mh.harmonic_numbers(args.f0)), infer_kernel=args.infer_kernel)
-    whistle = Whistle("w0", infer_kernel=args.infer_kernel)
+    harmonic = Harmonic(
+        "h0",
+        len(mh.harmonic_numbers(args.f0)),
+        infer_kernel=args.infer_kernel,
+        **sparse_options.harmonic_options(args),
+    )
+    whistle = Whistle("w0", infer_kernel=args.infer_kernel, **sparse_options.whistle_options(args))
     one = Scene((harmonic,), TIMING)
     two = Scene((harmonic, whistle), TIMING)
     timing = dict(onset=mh.PADDING, duration=mh.DURATION, dtype=dtype)
@@ -79,6 +91,7 @@ def main():
         "fft-bass-gain cochleagram, cosine phases, whistle timing inferred, trajectories, "
         "harmonic timing inferred (through sonore_infer.scene)"
         + (", GP sigma and lengthscale inferred" if args.infer_kernel else "")
+        + sparse_options.describe(args)
     )
     print(
         f"log prior of structure: one source {one.structure_log_prior():.2f}, "
@@ -109,10 +122,17 @@ def main():
                 | {"h0.spectrum_db": spectrum}
                 | whistle.initial(TIMING, freq=mistuned_freq, level_db=whistle_db, **timing)
             )
+        one_inits = [base]
+        if args.sparse_spectrum:
+            dropped = base["h0.spectrum_db"].clone()
+            dropped[args.harmonic - 1] -= 30.0
+            one_inits = sparse_options.with_sparse_starts(one, [base, base | {"h0.spectrum_db": dropped}])
+            inits = sparse_options.with_sparse_starts(two, inits)
+        fit = sparse_options.evaluate_modes if args.sparse_spectrum else evaluate
         generator = torch.Generator().manual_seed(args.seed)
-        r1 = evaluate(
+        r1 = fit(
             one,
-            [base],
+            one_inits,
             observed,
             cochleagram,
             steps=args.steps,
@@ -122,7 +142,7 @@ def main():
             tolerance=args.tolerance,
             report=status(f"{percent:g}%, one source"),
         )
-        r2 = evaluate(
+        r2 = fit(
             two,
             inits,
             observed,
@@ -144,6 +164,10 @@ def main():
             + (variational_columns(r1, r2) if args.variational_steps else ""),
             flush=True,
         )
+        if args.sparse_spectrum:
+            for name, result in [("one source", r1), ("two sources", r2)]:
+                print(f"         {name}:")
+                print("\n".join(sparse_options.mode_lines(result, "           ")))
         if e1.floored_eigenvalues or e2.floored_eigenvalues:
             print(
                 "         note: floored Hessian eigenvalues"
