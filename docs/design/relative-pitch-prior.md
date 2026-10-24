@@ -178,3 +178,14 @@ P1 measures that.
 
 2026-10-18: all five as recommended ("Accept all" on the decision card,
 after PR #74 merged). P12's two papers are still to be checked.
+
+2026-10-24: P12's papers checked. Pressnitzer, Patterson & Krumbholz (2001,
+JASA 109, 2074–2084) put the lower limit of melodic pitch at about 30 Hz for
+broadband harmonic tones and whenever there is energy below 800 Hz, rising
+to about 270 Hz when the energy is only above 3.2 kHz; Krumbholz et al.
+(2000) is its companion. A fixed 30 Hz floor fits Shepard tones and the
+other stimuli here, all with energy below 800 Hz; it would be too low for
+high-passed sounds. Results of P14: [P5](../../results/P5-shepard-one-tone-sparse.md),
+[P6](../../results/P6-shepard-minor-third-sparse.md),
+[P7](../../results/P7-earlier-experiments-sparse.md); the options stay off
+by default.
