@@ -144,6 +144,7 @@ What every experiment here shares unless its page says otherwise:
 | [P5](P5-shepard-one-tone-sparse.md) | P1 with sparse harmonic spectra and a 30 Hz floor | none (Shepard 1964 §I) | first pass, one seed | One tone at all 10 tones, whistles 26–55 behind; the octave read is the component between 52 and 104 Hz, so it drops an octave between tones 5 and 6 |
 | [P6](P6-shepard-minor-third-sparse.md) | P2 with sparse harmonic spectra and a 30 Hz floor | none (Shepard 1964 §V) | first pass, one seed, 2 tones | Minor-third complex still one low tone, about 100 ahead of a chord of four tones |
 | [P7](P7-earlier-experiments-sparse.md) | Mistuned harmonic (100/1, 200/2) and two notes (octave, fifth at 0 ms) with sparse spectra and a 30 Hz floor | Fig. 7D; none for two notes | first pass, one seed | Thresholds 25 to 22% (100/1), 12.5% unchanged (200/2); the just fifth flips to one tone at 100 Hz, by 12.7; octave unchanged |
+| [P3](P3-shepard-pairs.md) | Pairs of Shepard tones from tone 1: P(up) against steps clockwise, sparse spectra and a 30 Hz floor | none (Shepard 1964 Fig. 3) | first pass, one seed, 9 of 90 pairs | Shorter way round, as listeners: up at 1 to 3 steps, down at 5 to 9; ties at 4 where listeners say up 75%; P(up) 0 or 1 elsewhere, where listeners are graded |
 | [R1](R1-source-and-room.md) | Source and room (RT60) from one sound | none in this paper | done | RT60 within 3%; 90% intervals cover 66% (overconfident) |
 | [R2](R2-atypical-rooms.md) | Atypical rooms, exponential room model | none in this paper | done | Biased like T20 × 3; time-reversed rooms do not fit |
 
@@ -166,8 +167,9 @@ document with its decisions for Cho before any run.
   rerun as P5 and P6 with the options of
   [relative-pitch-prior.md](../docs/design/relative-pitch-prior.md)
   (decisions P10 to P14, accepted 2026-10-18), and checked on earlier
-  experiments as P7. Next: whether the options become defaults (decision
-  P13), then the pair experiments P3 and P4.
+  experiments as P7. Pairs from one starting tone done as P3 (with the
+  options). Next: the other starting tones (all 90 pairs) and P4; whether
+  the options become defaults (decision P13).
 - **ABA margins against graded listener data.** C2's log odds are far
   larger than the paper's (up to +217); whether that matters is deferred
   until graded listener data are compared (the "Against the paper"
