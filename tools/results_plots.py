@@ -27,10 +27,11 @@ from sonore_infer.thresholds import probability_from_log_odds, threshold
 
 TOOLS = os.path.dirname(os.path.abspath(__file__))
 # the summaries this script draws from live with their experiments' scripts
-sys.path[:0] = [os.path.join(TOOLS, folder) for folder in ("bass", "grammar", "online")]
+sys.path[:0] = [os.path.join(TOOLS, folder) for folder in ("bass", "grammar", "online", "relative_pitch")]
 
 import aba_map  # noqa: E402
 import mistuning_thresholds  # noqa: E402
+import pair_summary  # noqa: E402
 import two_notes_summary  # noqa: E402
 
 RESULTS = os.path.join(TOOLS, "..", "results")
@@ -971,6 +972,100 @@ def speed_agreement():
     return figure(panels, "O2: log odds minus O1's, lag 1 s, 50 ms windows; S6 allows ±3", legend)
 
 
+# Relative pitch: Shepard pairs
+
+SHEPARD_TONES = 10
+
+
+def shepard_matrix(found):
+    """P(up) by first tone (rows) and second tone (columns), values printed; orange up, blue down."""
+    panel = Panel(600, 330, (0, SHEPARD_TONES), (0, SHEPARD_TONES), left=46, bottom=34)
+    panel.items.append(
+        "<style>.cell-up { fill: var(--s2) } .cell-down { fill: var(--s1) } .cell-none { fill: var(--rule) } "
+        ".cell-value { font-size: 10.5px; fill: var(--text); font-variant-numeric: tabular-nums }</style>"
+    )
+    for first in range(1, SHEPARD_TONES + 1):
+        row = SHEPARD_TONES - first
+        for second in range(1, SHEPARD_TONES + 1):
+            column = second - 1
+            x0, x1 = panel.x(column), panel.x(column + 1)
+            y0, y1 = panel.y(row + 1), panel.y(row)
+            box = f'x="{x0 + 1:.1f}" y="{y0 + 1:.1f}" width="{x1 - x0 - 2:.1f}" height="{y1 - y0 - 2:.1f}"'
+            if first == second:
+                continue
+            if (first, second) not in found:
+                panel.items.append(f'<rect class="cell-none" {box}/>')
+                continue
+            steps, hypotheses = found[(first, second)]
+            p_up = pair_summary.p_up(hypotheses)
+            kind = "cell-up" if p_up > 0.5 else "cell-down"
+            tip = f"{first} to {second}, {steps} steps clockwise: P(up) {p_up:.3f}"
+            panel.items.append(
+                f'<rect class="{kind}" {box} fill-opacity="{abs(p_up - 0.5) * 2:.2f}">'
+                f"<title>{tip}</title></rect>"
+            )
+            panel.text((x0 + x1) / 2, (y0 + y1) / 2 + 3.5, f"{p_up:.2f}", "cell-value", "middle")
+        middle = (panel.y(row) + panel.y(row + 1)) / 2
+        panel.text(panel.left - 6, middle + 3.5, f"{first}", "tick", "end")
+    for second in range(1, SHEPARD_TONES + 1):
+        panel.text(
+            (panel.x(second - 1) + panel.x(second)) / 2, panel.plot_bottom + 14, f"{second}", "tick", "middle"
+        )
+    panel.text((panel.left + panel.plot_right) / 2, panel.height - 4, "second tone", "label", "middle")
+    middle_y = (panel.top + panel.plot_bottom) / 2
+    panel.items.append(
+        text_element("label", 10, middle_y, "first tone", "middle", f"rotate(-90 10 {middle_y:.1f})")
+    )
+    panel.text(panel.left, 14, "Model P(up) for each pair: orange up, blue down, pale near 0.5", "title")
+    return panel
+
+
+def shepard_pairs():
+    found = pair_summary.pairs(sorted(glob.glob(data("P3", "*.txt"))))
+    found = {key: value for key, value in found.items() if len(value[1]) == pair_summary.HYPOTHESES}
+    by_steps = {}
+    for steps, hypotheses in found.values():
+        by_steps.setdefault(steps, []).append(pair_summary.p_up(hypotheses))
+    panel = Panel(600, 240, (1, 9), (0, 1), left=46)
+    panel.axes(
+        list(range(1, 10)),
+        [0, 0.25, 0.5, 0.75, 1],
+        x_label="steps clockwise (second tone from the first)",
+        y_label="P(up), fraction judged higher",
+        title="Against Shepard's (1964) Fig. 3, read by eye",
+    )
+    panel.horizontal(0.5)
+    steps = sorted(by_steps)
+    panel.error_bars(
+        [
+            (s, (max(by_steps[s]) + min(by_steps[s])) / 2, (max(by_steps[s]) - min(by_steps[s])) / 2)
+            for s in steps
+        ],
+        "s2",
+    )
+    model = [(s, sum(by_steps[s]) / len(by_steps[s])) for s in steps]
+    panel.line(model, "s2", tip=lambda x, y: f"model, {x:g} steps: mean P(up) {y:.3f}")
+    for values, color, name in (
+        (pair_summary.GROUP_I, "s1", "Group I"),
+        (pair_summary.GROUP_III, "s5", "Group III"),
+    ):
+        points = list(enumerate(values, start=1))
+        panel.line(
+            points, color, dash=True, tip=lambda x, y, name=name: f"Shepard {name}, {x:g} steps: {y:.2f}"
+        )
+    legend = [
+        ("s2", "model, mean over starting tones (bar: lowest to highest)", "line"),
+        ("s1", "Shepard Group I (most accurate)", "dash"),
+        ("s5", "Shepard Group III (least accurate)", "dash"),
+    ]
+    return figure(
+        [shepard_matrix(found), panel],
+        "P3: Shepard pairs, P(up) by pair and by steps clockwise",
+        legend,
+        columns=1,
+    )
+
+
 PLOTS = {
     "milestone-a-thresholds": threshold_ladder,
     "A1-gammatone-baseline": lambda: mistuning_grid("A1"),
@@ -990,6 +1085,7 @@ PLOTS = {
     "O1-online-buildup": online_buildup,
     "O1-lag-window": online_sweep,
     "O2-speed-agreement": speed_agreement,
+    "P3-shepard-pairs": shepard_pairs,
     "R1-likelihood-slice": likelihood_slice,
     "R1-interval-coverage": interval_coverage,
     "R2-atypical-rooms": atypical_rooms,
