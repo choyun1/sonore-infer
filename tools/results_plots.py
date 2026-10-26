@@ -979,7 +979,14 @@ SHEPARD_TONES = 10
 
 def shepard_matrix(found):
     """P(up) by first tone (rows) and second tone (columns), values printed; orange up, blue down."""
-    panel = Panel(600, 330, (0, SHEPARD_TONES), (0, SHEPARD_TONES), left=46, bottom=34)
+    panel = Panel(600, 330, (0, SHEPARD_TONES), (0, SHEPARD_TONES), left=84, bottom=34)
+    # the first tone's reading: the f0 its harmonic hypotheses start from, from their labels
+    readings = {
+        first: label.split()[2].split("->")[0]
+        for (first, _), (_, hypotheses) in found.items()
+        for label in hypotheses
+        if label.startswith("harmonic up")
+    }
     panel.items.append(
         "<style>.cell-up { fill: var(--s2) } .cell-down { fill: var(--s1) } .cell-none { fill: var(--rule) } "
         ".cell-value { font-size: 10.5px; fill: var(--text); font-variant-numeric: tabular-nums }</style>"
@@ -1006,7 +1013,13 @@ def shepard_matrix(found):
             )
             panel.text((x0 + x1) / 2, (y0 + y1) / 2 + 3.5, f"{p_up:.2f}", "cell-value", "middle")
         middle = (panel.y(row) + panel.y(row + 1)) / 2
-        panel.text(panel.left - 6, middle + 3.5, f"{first}", "tick", "end")
+        panel.text(
+            panel.left - 6,
+            middle + 3.5,
+            f"{first} ({readings[first]})" if first in readings else f"{first}",
+            "tick",
+            "end",
+        )
     for second in range(1, SHEPARD_TONES + 1):
         panel.text(
             (panel.x(second - 1) + panel.x(second)) / 2, panel.plot_bottom + 14, f"{second}", "tick", "middle"
@@ -1014,7 +1027,9 @@ def shepard_matrix(found):
     panel.text((panel.left + panel.plot_right) / 2, panel.height - 4, "second tone", "label", "middle")
     middle_y = (panel.top + panel.plot_bottom) / 2
     panel.items.append(
-        text_element("label", 10, middle_y, "first tone", "middle", f"rotate(-90 10 {middle_y:.1f})")
+        text_element(
+            "label", 10, middle_y, "first tone (its f0, Hz)", "middle", f"rotate(-90 10 {middle_y:.1f})"
+        )
     )
     panel.text(panel.left, 14, "Model P(up) for each pair: orange up, blue down, pale near 0.5", "title")
     return panel
