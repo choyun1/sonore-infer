@@ -112,6 +112,12 @@ def main():
     parser.add_argument("--window-tolerance", type=float, default=1.0, help="log joint gain")
     parser.add_argument("--heard", type=float, default=0.02, help="s of a tone heard before it enters")
     parser.add_argument("--evidence-every", type=float, default=0.5, help="s, within each part")
+    parser.add_argument(
+        "--summarize-past",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="the past's likelihood as a quadratic in the whole-sound latents (online-speed S4)",
+    )
     parser.add_argument("--tau", type=float, nargs="+", default=[1.0, 2.5, 5.0], help="s")
     parser.add_argument(
         "--first-duration", type=float, default=None, help="s; shortens the first part, for timing runs"
@@ -160,7 +166,9 @@ def main():
         + f", gap {gap_start:.3f}-{gap_end:.3f} s, {stimulus.duration:.3f} s in all"
         + f"; window {1000 * args.window:g} ms, lag {args.lag:g} s, at most {args.steps} Adam steps,"
         + f" patience {args.window_patience},"
-        + f" evidence every {args.evidence_every:g} s, past summarized, fft-bass-gain cochleagram"
+        + f" evidence every {args.evidence_every:g} s,"
+        + (" past summarized," if args.summarize_past else "")
+        + " fft-bass-gain cochleagram"
     )
     print("window: hypothesis  end  n_free  term  total  structure  floored  log_joint  seconds  steps")
     cochleagram = FFTCochleagram()
@@ -192,7 +200,7 @@ def main():
                 heard=args.heard,
                 ends=ends,
                 evidence_ends=evidence,
-                summarize_past=True,
+                summarize_past=args.summarize_past,
                 report=report,
             )
         }
