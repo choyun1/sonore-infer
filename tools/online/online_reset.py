@@ -20,6 +20,10 @@ Each tone starts its event; where tones fill their slots (Cusack et al.),
 the event starts half a ramp shorter, since one source's events need a
 positive rest between them.
 
+The compute per window is design E7's fixed budget, the one O2 chose and
+the O1/O2 runs used (``--window 0.1 --steps 2000 --window-patience 50``):
+each window stops once it gains less than 1 over 50 Adam steps.
+
 Window ends are multiples of ``--window`` from the start of each part,
 with one window spanning the silence (design E5). The evidence is taken
 every ``--evidence-every`` s within each part and at the ends of the parts
@@ -98,7 +102,14 @@ def main():
     parser.add_argument("--only", nargs="*", default=None, help="run only these hypotheses")
     parser.add_argument("--window", type=float, default=0.1, help="s between updates")
     parser.add_argument("--lag", type=float, default=1.0, help="s")
-    parser.add_argument("--steps", type=int, default=30, help="Adam steps per window")
+    parser.add_argument("--steps", type=int, default=2000, help="most Adam steps per window")
+    parser.add_argument(
+        "--window-patience",
+        type=int,
+        default=50,
+        help="a window stops once it gains less than --window-tolerance over this many steps (O9)",
+    )
+    parser.add_argument("--window-tolerance", type=float, default=1.0, help="log joint gain")
     parser.add_argument("--heard", type=float, default=0.02, help="s of a tone heard before it enters")
     parser.add_argument("--evidence-every", type=float, default=0.5, help="s, within each part")
     parser.add_argument("--tau", type=float, nargs="+", default=[1.0, 2.5, 5.0], help="s")
@@ -147,7 +158,8 @@ def main():
         )
         + (f", first part cut to {args.first_duration:g} s" if args.first_duration is not None else "")
         + f", gap {gap_start:.3f}-{gap_end:.3f} s, {stimulus.duration:.3f} s in all"
-        + f"; window {1000 * args.window:g} ms, lag {args.lag:g} s, {args.steps} Adam steps,"
+        + f"; window {1000 * args.window:g} ms, lag {args.lag:g} s, at most {args.steps} Adam steps,"
+        + f" patience {args.window_patience},"
         + f" evidence every {args.evidence_every:g} s, past summarized, fft-bass-gain cochleagram"
     )
     print("window: hypothesis  end  n_free  term  total  structure  floored  log_joint  seconds  steps")
@@ -175,6 +187,8 @@ def main():
                 window=args.window,
                 lag=args.lag,
                 steps=args.steps,
+                patience=args.window_patience,
+                tolerance=args.window_tolerance,
                 heard=args.heard,
                 ends=ends,
                 evidence_ends=evidence,
