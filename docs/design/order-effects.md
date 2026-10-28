@@ -1,18 +1,19 @@
 # Order effects in streaming — design
 
-Status: **draft for Cho, 2026-10-15; E7 added 2026-10-17, checked against
-Carlyon et al. (2001) 2026-10-18.** Nothing is
-accepted yet; §8 lists the questions in short form.
+Status: **E1–E7 accepted by Cho, 2026-10-28.** Drafted 2026-10-15; E7
+added 2026-10-17 and checked against Carlyon et al. (2001) 2026-10-18. On
+2026-10-28, after reading Beauvois & Meddis (1997) and Cusack et al. (2004)
+in full, E2 was changed to copy each study's stimuli (Cho accepted it in
+that form), and §2, §3 and E5 were brought up to date.
 
 ## Decisions at a glance
 
-Recommendations; nothing is accepted yet. The options and reasons are in
-§4, and the questions in §8.
+All accepted by Cho on 2026-10-28. The options and reasons are in §4.
 
-| Decision | Recommended |
+| Decision | Accepted |
 |---|---|
 | E1. Which effects first | Reset after silence, then the context effect of the previous trial; hysteresis once a source is found; bistable switching later |
-| E2. Stimuli | The O1 (App. C.11) tones, an inducer, a silent gap of 0 to 8 s, a test; parameters checked against the papers before running |
+| E2. Stimuli | Each study's own: Beauvois & Meddis (1997) and Cusack et al. (2004, Exp. 3) for the reset; the previous trial's context waits for a paper |
 | E3. Hypotheses across a gap | The same two, the whistles continuing through the gap; a third, restarting after the gap, as a check |
 | E4. Readout | The leaky decision (O10), τ 2.5 s fixed, never fitted to these data; the window terms reported beside it |
 | E5. Cost | One window spanning each gap, so silence costs one update; runs on Cho's PC |
@@ -25,10 +26,11 @@ Recommendations; nothing is accepted yet. The options and reasons are in
   generative models*, Cognition 253, 105874.
 - **[measured]**: from a run already in the project, with its path.
 - **[estimate]**: my estimate, with its basis next to it.
-- **[abstract]** or **[cited by]**: what I could read of a paper. I could
-  not open any of the papers below in full from here; every statement about
-  them comes from an abstract or from later papers citing them, and has to
-  be checked against the originals before anything is run (E2).
+- **[paper]**: read in full (Beauvois & Meddis 1997, Cusack et al. 2004,
+  Carlyon et al. 2001, all from PDFs Cho added to the project).
+- **[abstract]** or **[cited by]**: what I could read of a paper I do not
+  have (Snyder et al. 2008 and later papers); to be checked against the
+  original before it is used.
 
 ---
 
@@ -48,14 +50,31 @@ stimuli are a few seconds of tones, as in O1.
 
 ## 2. What listeners do
 
-- **Reset after silence.** Streaming that has built up is reset, at least
-  partly, by a short silent gap or a brief switch of attention (Cusack,
-  Deeks, Aikman & Carlyon, 2004, JEP:HPP 30:643–656 [abstract; "partly":
-  cited by Kondo et al.'s review]). The pull towards two streams left by
-  an inducer decays roughly exponentially with the length of the silence
-  (Beauvois & Meddis, 1997, Percept. Psychophys. 59:81–86 [cited by
-  Frontiers 2014]), though a later study found some of it after 8 s of
-  silence [cited by, 2015, PubMed 26375631].
+- **Bias left by an inducer decays gradually** (Beauvois & Meddis, 1997,
+  Percept. Psychophys. 59:81–86 [paper]). 18 listeners heard 10 s of A
+  tones alone (1000 Hz, 40 ms with 5 ms raised-cosine ramps, one every
+  90 ms, 65 dB SPL, diotic), then a silence of 0 to 8 s in 0.5 s steps,
+  then a test of 8 AB cycles (A 1000 Hz, B 1420 Hz, about 6.1 semitones,
+  same timing, 1.44 s). They listened passively and judged the test
+  coherent or segregated; 5 s between trials, 10 blocks. The test alone
+  "always remained coherent". Segregation responses out of 10 fell as
+  M = 2.14 + 6.1 exp(−S/3.84) with the silence S in seconds (their Fig. 2);
+  the time constant was 7.84 s for 11 musicians and 1.42 s for 7
+  nonmusicians (Fig. 3).
+- **Buildup is reset by even a short gap** (Cusack, Deeks, Aikman &
+  Carlyon, 2004, JEP:HPP 30:643–656 [paper], Experiment 3). 12 listeners
+  heard 10 s ABA– sequences (A 400 Hz, B 4 or 6 semitones up, 504 or
+  566 Hz; 125 ms tones with 20 ms linear ramps, 55 dB SPL, left ear, a
+  125 ms silence after each triplet) separated by silences of 1, 2, 5 or
+  10 s, 8 of each per block in random order, and reported one or two
+  streams continuously. After every gap, even 1 s, streaming started again
+  from mostly one stream and built up as from scratch; there was no
+  Gap × Time interaction (F(48, 528) = 0.58; their Fig. 8). The authors
+  read this as reset, not leaky decay, and note that it differs from
+  Beauvois & Meddis's gradual decay, suggesting the inducer's bias involves
+  more than the mechanisms of streaming. In their Experiment 4 a 5 s
+  switch of attention to noises in the other ear reset streaming as a 5 s
+  gap did.
 - **Context of the previous trial.** With ABA– trials of several Δf, a
   larger Δf on the previous trial gives *less* streaming on the current one
   (contrast); hearing two streams on the previous trial gives *more*
@@ -73,6 +92,8 @@ Attention switches are out of scope: the model has no attention (but see
 E7).
 
 ## 3. What the model should do, before running anything
+
+Written before any run; amended 2026-10-28 for the two papers' stimuli.
 
 With the two fixed hypotheses of O1, a silent gap adds window terms that
 are close to equal for both, since neither hypothesis has a tone to explain
@@ -92,6 +113,23 @@ there. So:
   sequence, the model resets in its evidence, not just its decision. If
   they give the terms of a continuing sequence, only the leak resets it.
   This is what the runs measure.
+- **Cusack et al.'s reset should come out wrong under the leak alone.**
+  With τ = 2.5 s, a 1 s gap keeps e^(−0.4) ≈ 67% of the log odds built over
+  the previous 10 s, and a 2 s gap 45%: the model would start the next
+  sequence leaning to two streams, where listeners start at one, and the
+  lean would depend on the gap, where theirs does not. Only a reset of the
+  evidence, or the restart hypothesis of E3 winning even after 1 s, would
+  match them.
+- **Beauvois & Meddis's inducer may have no effect at all, or one set by
+  the prior's memory** [inference, unchecked]. The inducer has only A
+  tones, which both hypotheses explain alike (the two-stream hypothesis's
+  B source is born with the first B tone, O7), so the inducer adds no
+  window terms to the log odds. What it can change is the cost of the
+  one-stream whistle's first jumps to B in the test: after 10 s at
+  1000 Hz its frequency trajectory is pinned near 1000 Hz, and that pinning
+  fades over a few frequency lengthscales (2.5 s) of silence. If that makes
+  the jumps costlier, the model shows a decay with the silence, set by the
+  lengthscale and not by τ; if not, it shows none.
 - **The context effect of the previous Δf should come out wrong.** The leak
   carries the previous trial's log odds into the next. A larger previous Δf
   gives larger log odds for two streams, so the model predicts *more*
@@ -127,15 +165,25 @@ and long sequences; it belongs with the speed-ups of
   a silence of g seconds, then a test of m triplets.
 - **(B) Each study's own stimuli**, copied from its methods.
 
-**Recommendation: (A), with values checked against the studies.** (A)
-connects to O1 directly: the same tones, the same reference runs, and the
-same code. But the gap lengths and inducer lengths should be the studies'
-own, so that the comparison is fair: I would start with n = 6 (3 s),
-g = 0, 0.5, 1, 2, 4 and 8 s, m = 4 (2 s), at 4 and 8 semitones, and change
-them to match Beauvois & Meddis and Cusack et al. once the papers are read.
-That needs the PDFs (§8, question 7). For the context effect, two sequences
-of 6 triplets at different Δf (4 and 8, both orders, and each after itself),
-separated by the silence the study used between trials.
+**Accepted: (B)** (2026-10-28; the draft had recommended (A) until the
+papers were read). The two reset studies disagree, gradual decay against
+abrupt reset, and the difference lies in their stimuli (an A-only inducer
+against ABA buildup), so each is copied as it was:
+
+- **Beauvois & Meddis (1997):** 10 s of A tones, a silence of 0, 0.5, 1,
+  2, 4 or 8 s (six of their seventeen), the 1.44 s ABAB test, as in §2;
+  and the test alone, which listeners always heard as one stream, as the
+  model's baseline.
+- **Cusack et al. (2004), Experiment 3:** a 10 s ABA– sequence, a silence
+  of 1, 2, 5 or 10 s, then a second sequence, at 4 and 6 semitones. The
+  second sequence is cut to its first 4 s, where listeners' reset shows
+  (their Fig. 8), to save compute; its start is compared with the start of
+  the first sequence.
+- **The previous trial's context** waits for a paper with its stimuli
+  (Snyder et al., 2008, could not be obtained).
+
+The tones are rendered as in `stimuli/bistability.py` and `stimuli/buildup.py`
+(cosine phase), with each study's ramps; the 50 ms lead of O1 is kept.
 
 ### E3. Hypotheses across a gap
 
@@ -179,15 +227,18 @@ window re-renders the whole sound so far [online-realtime.md §3].
   parameter of `run_online`, so the silence becomes one update.
 - **(C) First the speed-ups of online-realtime.md §4.**
 
-**Recommendation: (B), run on Cho's PC.** Nothing is heard in the gap, so
+**Accepted: (B), run on Cho's PC.** Nothing is heard in the gap, so
 nothing is lost by updating once across it; the 10 to 100 ms window sweep
 showed the curve barely depends on the window length [measured: O1 page,
-"Lag and window"]. A run is then about 5 s of tones: about 3 h per
-hypothesis on the cloud CPU, longer for long gaps since the whole sound is
-rendered at every step [estimate: from the O1 rate and online-realtime.md
-§3]. Six gaps, two Δf and three hypotheses come to about 36 runs, or
-four to five days of one cloud CPU; the PC can run several at once. (C) would be
-cheaper per run but delays the science behind engineering.
+"Lag and window"]. (C) is done since: the speed-ups of
+[online-speed.md](online-speed.md) are merged (100 ms windows, evidence
+every 0.5 s, the past summarized), and the 3 s O1 run at 8 semitones, both
+hypotheses, now takes 527 s of window time and 803 s of wall time on the
+cloud CPU [measured: results/O2-online-speed.md, S4].
+These sequences hold 11 to 14 s of tones, so a run is several times
+longer; the cost per run is measured on one run before the rest are
+started (§7). Beauvois & Meddis need 7 sequences and Cusack et al. 8, each
+with two or three hypotheses.
 
 ### E6. What the model is expected to get wrong
 
@@ -283,26 +334,16 @@ a plot, as for O1.
 
 ## 7. Order of work
 
-1. Read the three papers (needs the PDFs), and fix E2's values.
-2. Reset after silence, at 8 semitones first (the larger effect in O1), then
-   4: runs, page O3, PR (O2 is now the speed-up page).
-3. The context of the previous trial: runs, page O4, PR.
+1. Read the papers and fix E2's values. Done 2026-10-28 for the two reset
+   studies.
+2. The stimuli and the tool, with tests; one run timed on the cloud CPU.
+3. Reset after silence on Cho's PC: Beauvois & Meddis, then Cusack et al.;
+   page O3, PR.
+4. The previous trial's context, once a paper with its stimuli is in hand:
+   runs, page O4, PR.
 
-## 8. Questions for Cho, short form
+## 8. Questions for Cho
 
-1. **E1** Reset after silence first, then the previous trial's context?
-   (recommended: yes)
-2. **E2** The O1 tones, with gap and inducer lengths taken from the
-   studies? (recommended: yes)
-3. **E3** A third hypothesis, sources restarting after the gap?
-   (recommended: yes)
-4. **E4** τ 2.5 s fixed, not fitted, with the window terms reported?
-   (recommended: yes)
-5. **E5** One window spanning each gap, runs on your PC? (recommended: yes)
-6. **E6** Record the expected failure (assimilation where listeners show
-   contrast) before running? (recommended: yes)
-7. Can you add the PDFs of Beauvois & Meddis (1997), Cusack et al. (2004)
-   and Snyder et al. (2008) to the project? I could not open them from here.
-8. **E7** Compute per window a fixed model parameter, chosen once from the
-   O2 sweep and reported, with attention modelled later as a gate rather
-   than less compute? (recommended: yes)
+All answered on 2026-10-28: E1–E7 accepted, E2 in the form of §4. Snyder
+et al. (2008) and Snyder & Weintraub (2011) could not be obtained, so the
+previous trial's context (step 4 of §7) waits.
