@@ -5,22 +5,9 @@ site_description: A model of human hearing as inference in a generative model of
 repo_url: https://github.com/choyun1/sonore-infer
 edit_uri: ""
 theme:
-  name: material
-  # system fonts, nothing loaded from Google
-  font: false
-  # light or dark from the reader's system setting, as the results plots do
-  palette:
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: blue grey
-      accent: blue
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: blue grey
-      accent: blue
-  features:
-    - navigation.sections
-    - toc.follow
+  name: readthedocs
+  navigation_depth: 2
+  collapse_navigation: true
 markdown_extensions:
   - tables
   - fenced_code
