@@ -1,4 +1,2 @@
-/* Wide tables scroll inside the page instead of widening it. */
-.rst-content table { display: block; overflow-x: auto; }
-.rst-content .arithmatex { overflow-x: auto; }
-.rst-content table td, .rst-content table th { white-space: normal; }
+/* Wide tables and equations scroll inside the page instead of widening it. */
+.md-typeset .arithmatex { overflow-x: auto; }
