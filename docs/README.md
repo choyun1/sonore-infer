@@ -5,6 +5,11 @@ decisions with options and a recommendation, and a closing section recording
 what Cho accepted and when. Code and docstrings cite decisions by their
 number (for example "design C3 (B)").
 
+[overview.md](overview.md) says what the project is for and how it is
+built, and [methods.md](methods.md) defines the models and the inference
+engine mathematically. Both are also the first pages of the project
+website (see [`website/`](../website/README.md)).
+
 ## Design documents, by direction
 
 The project has five directions. They share the package (whose modules are

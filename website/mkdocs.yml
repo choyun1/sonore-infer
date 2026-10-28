@@ -1,0 +1,29 @@
+# Base configuration of the project website. website/build.py adds the
+# folders and the navigation, and builds the site; see website/README.md.
+site_name: sonore-infer
+site_description: A model of human hearing as inference in a generative model of sound
+repo_url: https://github.com/choyun1/sonore-infer
+edit_uri: ""
+theme:
+  name: readthedocs
+  navigation_depth: 2
+  collapse_navigation: true
+markdown_extensions:
+  - tables
+  - fenced_code
+  - footnotes
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - mdx_truly_sane_lists
+extra_css:
+  - assets/site.css
+extra_javascript:
+  - assets/mathjax-config.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js
+validation:
+  links:
+    not_found: warn
+    anchors: warn
+    unrecognized_links: warn

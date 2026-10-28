@@ -1,0 +1,51 @@
+name: website
+
+# Builds the project website from the repository's Markdown (website/build.py)
+# on every pull request and every push to main. The built site is kept as a
+# download on each run ("website" artifact). It is published to GitHub Pages
+# only when the repository variable PUBLISH_WEBSITE is "true" and Pages is set
+# to deploy from GitHub Actions; until then nothing is published.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+          cache: pip
+      - run: python -m pip install -r website/requirements.txt
+      # --strict: a broken link or a missing page fails the build
+      - run: python website/build.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: website
+          path: website/_build/site
+      - if: github.ref == 'refs/heads/main' && vars.PUBLISH_WEBSITE == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: website/_build/site
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && vars.PUBLISH_WEBSITE == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
