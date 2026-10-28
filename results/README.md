@@ -170,8 +170,11 @@ document with its decisions for Cho before any run.
   (decisions P10 to P14, accepted 2026-10-18), and checked on earlier
   experiments as P7. All 90 pairs done as P3 (with the options), and
   P3's close pairs rechecked with octave-shifted readings as P8, which
-  answers P4 on one seed. Next: other seeds, listener noise (decision
-  P9), and whether the options become defaults (decision P13).
+  answers P4 on one seed. Next: listener noise against Shepard's groups
+  (decision P9, designed in
+  [relative-pitch-listeners.md](../docs/design/relative-pitch-listeners.md),
+  decisions P15 to P18 open), other seeds, and whether the options become
+  defaults (decision P13).
 - **ABA margins against graded listener data.** C2's log odds are far
   larger than the paper's (up to +217); whether that matters is deferred
   until graded listener data are compared (the "Against the paper"
