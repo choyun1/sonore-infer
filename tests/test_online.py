@@ -279,3 +279,22 @@ def test_with_a_lag_the_summary_stays_close_to_the_full_sum():
     plain = run_online(waveform, hypothesis, FFTCochleagram(), **options)
     summarized = run_online(waveform, hypothesis, FFTCochleagram(), summarize_past=True, **options)
     assert summarized[-1].window.total == pytest.approx(plain[-1].window.total, abs=3.0)
+
+
+def test_a_source_born_after_the_lag_is_integrated_once_before_its_past_freezes():
+    # w1 is born at 0.45 s, more than the 0.1 s lag after the start: its grid deviations
+    # reaching back to 0 must be free in its first evidence estimate, then frozen
+    waveform = torch.tensor(bu.buildup_stimulus(2, 8, lead=0.05).data[:, 0], dtype=F64)[: round(0.7 * bu.FS)]
+    cochleagram = FFTCochleagram()
+    spec = (
+        WhistleSpec("w0", (Tone(0.05, 0.05, 500.0, 55.0),)),
+        WhistleSpec("w1", (Tone(0.55, 0.05, 500.0, 55.0),)),
+    )
+    steps = run_online(
+        waveform, spec, cochleagram, fs=bu.FS, ramp=bu.RAMP, window=0.05, lag=0.1, steps=3, heard=0.02
+    )
+    born = next(k for k, step in enumerate(steps) if "w1.freq_deviation" in step.params)
+    n_grid = steps[born].params["w1.freq_deviation"].shape[0]
+    assert n_grid > 40  # reaches back well past the lag
+    assert steps[born].window.n_free - steps[born - 1].window.n_free > 2 * (n_grid - 15)
+    assert steps[born + 1].window.n_free < steps[born].window.n_free - n_grid
