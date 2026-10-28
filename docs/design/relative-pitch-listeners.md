@@ -1,6 +1,6 @@
 # Relative pitch: listener noise against Shepard's groups — design
 
-Status: **draft, waiting on Cho** (decisions P15 to P18).
+Status: **accepted by Cho on 2026-10-28** (P15 to P18 as recommended; see §5).
 Written 2026-10-28. Carries out decision P9 (B) of
 [relative-pitch.md](relative-pitch.md), "experience as noise, fitted per
 Shepard group when comparing with Fig. 3", and its decision P5 (B), a
@@ -17,7 +17,7 @@ P14). AI-assisted (Claude); code as of `197d15c`.
 
 ## Decisions at a glance
 
-| Decision | Recommended |
+| Decision | Accepted |
 |---|---|
 | P15. Where the noise goes | (A) A decision temperature and a lapse rate on the model's log odds of up against down; no refitting |
 | P16. What is fitted | (A) Temperature and lapse per group, to Groups I and III of Fig. 3 by binomial likelihood |
@@ -96,6 +96,25 @@ rise from 0.26 at 8 steps to 0.40 at 9 [Shepard Fig. 3] cannot come from
 the model lacks (for example hearing the second tone an octave off), not to
 noise.
 
+**Guards against overfitting** (added 2026-10-28 at Cho's question). Two
+parameters cannot bend the curve into any shape, but the noise can absorb
+the model's errors: an early crossover, for instance, is smoothed over by a
+larger temperature, and a good fit then hides it. So the page also reports:
+
+1. **A baseline that ignores the model:** P(judged up) = λ/2 + (1 − λ) ·
+   logistic(a − b · steps), 3 parameters per group, the same likelihood.
+   If the model-based fit is not better than this, the model adds nothing
+   beyond "fewer steps clockwise, more up".
+2. **Leave one step out:** fit on 8 steps, predict the 9th, for every step
+   and both fits; the page reports the held-out binomial log likelihood,
+   not only the fit.
+3. **Data not used in the fit:** Shepard's first sequence of complex tones,
+   adjacent pairs only, where Group I judged over 99% as the circle
+   predicts, Group II 87 to 100% per pair and Group III 63 to 82%
+   [Shepard §IV]. Group I's and III's fitted parameters predict their
+   adjacent-pair accuracy (a weak check, since Fig. 3 at 1 step already
+   covers it); Group II has no fit and is not predicted.
+
 ### P17. Which log odds
 
 - **(A) P8's**: at 3 to 5 steps the posterior over all three readings of
@@ -134,4 +153,6 @@ test on made-up log odds whose β and λ it must recover.
 
 ## 5. Cho's answers
 
-(Waiting.)
+2026-10-28: all four as recommended ("Accept all" on the decision card).
+Then, asked whether this overfits, Cho accepted the three guards added
+under P16.
