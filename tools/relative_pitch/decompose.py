@@ -22,8 +22,9 @@ import sys
 import torch
 from pair import DTYPE, ONSETS, TOTAL, hypotheses
 
-from sonore_infer.cochleagram import FFTCochleagram, gaussian_log_likelihood
+from sonore_infer.cochleagram import FFTCochleagram
 from sonore_infer.fit import fit
+from sonore_infer.hearing import dominance_sigma
 from sonore_infer.stimuli import shepard as sh
 
 PARTS = [
@@ -39,32 +40,30 @@ PARTS = [
 
 
 def parts(scene, params, observed, cochleagram, bounds, sigma):
-    """{part: value} of the log joint at ``params``."""
+    """{part: value} of the log joint at ``params``, and the second tone channel by channel."""
     with torch.no_grad():
         predicted = cochleagram(scene.render(params))
         n_windows = observed.shape[-1]
         middle = int(n_windows * (ONSETS[1] - sh.GAP / 2) / TOTAL)
+        # log density of each channel and window; sigma may be one SD per channel
+        sigma = torch.as_tensor(sigma, dtype=observed.dtype).expand(observed.shape[-2], 1)
+        density = -0.5 * ((observed - predicted) / sigma) ** 2 - sigma.log() - 0.5 * math.log(2 * math.pi)
         cfs = torch.tensor(cochleagram.cfs)
         bands = {
             "below": cfs < bounds[0],
             "between": (cfs >= bounds[0]) & (cfs < bounds[1]),
             "above": cfs >= bounds[1],
         }
-        out = {
-            "like_tone1": gaussian_log_likelihood(observed[:, :middle], predicted[:, :middle], sigma).item()
-        }
+        out = {"like_tone1": density[:, :middle].sum().item()}
         for band, channels in bands.items():
-            out[f"like_tone2_{band}"] = gaussian_log_likelihood(
-                observed[channels, middle:], predicted[channels, middle:], sigma
-            ).item()
+            out[f"like_tone2_{band}"] = density[channels, middle:].sum().item()
         terms = [torch.zeros((), dtype=DTYPE)] * 4
         for source in scene.sources:
             for index, term in enumerate(source.log_prior_terms(params, scene.timing)):
                 terms[index] = terms[index] + term
         out |= dict(zip(PARTS[4:], (term.item() for term in terms), strict=True))
-        residual = (observed[:, middle:] - predicted[:, middle:]) / sigma
         channels = {
-            "loglik": (-0.5 * residual**2 - math.log(sigma) - 0.5 * math.log(2 * math.pi)).sum(dim=-1),
+            "loglik": density[:, middle:].sum(dim=-1),
             "observed_db": observed[:, middle:].mean(dim=-1),
             "predicted_db": predicted[:, middle:].mean(dim=-1),
         }
@@ -81,10 +80,18 @@ def main():
     parser.add_argument("--max-steps", type=int, default=15000)
     parser.add_argument("--tolerance", type=float, default=0.5)
     parser.add_argument("--sigma", type=float, default=10.0)
+    parser.add_argument(
+        "--threshold-floor", action="store_true", help="floor channels at the threshold of hearing (P19)"
+    )
+    parser.add_argument(
+        "--dominance", action="store_true", help="likelihood SD per channel by dominance (P20)"
+    )
     parser.add_argument("--channels", action="store_true", help="print the second tone channel by channel")
     parser.add_argument("--only", choices=["up", "down"], help="fit only this direction")
     args = parser.parse_args()
-    cochleagram = FFTCochleagram()
+    cochleagram = FFTCochleagram(threshold_floor=args.threshold_floor)
+    sigma = dominance_sigma(cochleagram.cfs, args.sigma) if args.dominance else args.sigma
+    print(f"threshold floor {args.threshold_floor}, dominance {args.dominance}, sigma {args.sigma:g} dB")
     print(f"first  second  steps  hypothesis  {'  '.join(PARTS)}  total")
     for second in args.seconds:
         sound = sh.pair(args.first, second)
@@ -106,12 +113,12 @@ def main():
                 cochleagram,
                 learning_rates=scene.learning_rates(),
                 steps=args.max_steps,
-                sigma=args.sigma,
+                sigma=sigma,
                 log_prior=scene.log_prior,
                 patience=1000,
                 tolerance=args.tolerance,
             )
-            values, channels = parts(scene, result.params, observed, cochleagram, bounds, args.sigma)
+            values, channels = parts(scene, result.params, observed, cochleagram, bounds, sigma)
             print(
                 f"{args.first:5d}  {second:6d}  {steps:5d}  {label:28s}  "
                 + "  ".join(f"{values[part]:10.1f}" for part in PARTS)

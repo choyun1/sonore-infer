@@ -35,7 +35,7 @@ def fit(
     *,
     learning_rates: dict[str, float],
     steps: int = 300,
-    sigma: float = 10.0,
+    sigma: float | torch.Tensor = 10.0,
     log_prior: Callable[[dict[str, torch.Tensor]], torch.Tensor] | None = None,
     patience: int | None = None,
     tolerance: float = 1.0,

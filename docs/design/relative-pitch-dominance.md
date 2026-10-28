@@ -1,6 +1,6 @@
 # Relative pitch: hearing threshold and spectral dominance — design
 
-Status: **proposed 2026-10-28, waiting on Cho's answers** (P19 to P21).
+Status: **accepted by Cho on 2026-10-28** (P19 to P21 as recommended; see §4).
 Follows [P9](../../results/P9-shepard-listener-noise.md), which traced
 the model's too-sharp crossover on Shepard pairs to the lowest
 cochleagram channels. Decisions continue the numbering of
@@ -22,7 +22,7 @@ AI-assisted (Claude); code as of `13f3638`.
 
 ## Decisions at a glance
 
-| Decision | Recommended |
+| Decision | Accepted |
 |---|---|
 | P19. Hearing threshold | (A) Floor each cochleagram channel at the threshold of hearing, as an option off by default |
 | P20. Spectral dominance | (A) Weight each channel's likelihood by Terhardt's dominance curve, as an option off by default |
@@ -120,7 +120,19 @@ likelihood and acts on every channel the same way for every hypothesis.
 
 **Recommendation: A.**
 
-## 3. Not in scope
+## 3. Code
+
+`src/sonore_infer/hearing.py` (Terhardt's Eq. 8 and dominance factor),
+`Cochleagram.threshold_floor`, and a likelihood SD per channel in
+`gaussian_log_likelihood`; `tools/relative_pitch/pair.py` and
+`decompose.py` take `--threshold-floor` and `--dominance`. Tests in
+`tests/test_hearing.py`.
+
+## 4. Cho's answers
+
+2026-10-28: all three as recommended ("Accept all" on the decision card).
+
+## 5. Not in scope
 
 - Masking between components (Terhardt Eqs. 4 to 7).
 - Changing the defaults for other experiments; that is a later decision,

@@ -26,7 +26,7 @@ but not identical.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from functools import lru_cache
 
 import numpy as np
@@ -35,6 +35,7 @@ from numpy.typing import ArrayLike
 
 # room.py, spectrotemporal.py and some tools import these from here too.
 from sonore_infer.erb import erb_bandwidth, erb_to_freq, freq_to_erb
+from sonore_infer.hearing import threshold_of_hearing_db
 
 REFERENCE_RMS = 1e-6
 
@@ -84,6 +85,10 @@ class Cochleagram:
     time window's length) and ``hop_dur`` (the step between them) are in
     seconds, named as in sonore's views. ``pad`` is the zero-padding at each end in
     samples; ``None`` pads by the slowest filter's ringing to -60 dB.
+    With ``threshold_floor``, each channel's floor is the larger of
+    ``floor_db`` and the threshold of hearing at its center frequency, in the
+    channel's own units (design relative-pitch-dominance, P19); this reads
+    dB re ``REFERENCE_RMS`` as dB SPL.
     """
 
     fs: float = 20_000
@@ -96,11 +101,22 @@ class Cochleagram:
     hop_dur: float = 0.010
     floor_db: float = 20.0
     pad: int | None = None
+    threshold_floor: bool = False
 
     @property
     def cfs(self) -> np.ndarray:
         """Center frequencies [Hz]."""
         return erb_to_freq(np.linspace(freq_to_erb(self.f_lo), freq_to_erb(self.f_hi), self.n_channels))
+
+    @lru_cache(maxsize=8)  # noqa: B019 (frozen dataclass)
+    def channel_floor_db(self) -> np.ndarray:
+        """Per channel, the reading [dB] below which levels are clipped (see ``threshold_floor``)."""
+        if not self.threshold_floor:
+            return np.full(self.n_channels, self.floor_db)
+        from sonore_infer.detect import channel_gains  # detect imports this module
+
+        gains = channel_gains(replace(self, threshold_floor=False))
+        return np.maximum(self.floor_db, threshold_of_hearing_db(self.cfs) - gains)
 
     @property
     def pad_samples(self) -> int:
@@ -180,19 +196,25 @@ class Cochleagram:
         power = self.window_power(self.envelopes(waveform))
         tiny = torch.finfo(power.dtype).tiny
         level_db = 10 * torch.log10(power.clamp_min(tiny) / REFERENCE_RMS**2)
-        return level_db.clamp_min(self.floor_db)
+        if not self.threshold_floor:
+            return level_db.clamp_min(self.floor_db)
+        floor = torch.as_tensor(self.channel_floor_db(), dtype=level_db.dtype, device=level_db.device)
+        return torch.maximum(level_db, floor[:, None])
 
 
 def gaussian_log_likelihood(
-    observed: torch.Tensor, predicted: torch.Tensor, sigma: float = 10.0
+    observed: torch.Tensor, predicted: torch.Tensor, sigma: float | torch.Tensor = 10.0
 ) -> torch.Tensor:
     """Log density of ``observed`` under independent Gaussians of mean ``predicted`` and SD ``sigma`` [dB].
 
     BASS's likelihood [§2.2 of Cusimano et al., 2024], with BASS's sigma as
     the default. Summed over the last two dimensions (channels and time windows).
+    ``sigma`` may be a tensor that broadcasts against them, such as one SD per
+    channel of shape ``(n_channels, 1)`` (design relative-pitch-dominance, P20).
     """
     residual = (observed - predicted) / sigma
-    log_density = -0.5 * residual**2 - np.log(sigma) - 0.5 * np.log(2 * np.pi)
+    log_sigma = sigma.log() if isinstance(sigma, torch.Tensor) else np.log(sigma)
+    log_density = -0.5 * residual**2 - log_sigma - 0.5 * np.log(2 * np.pi)
     return log_density.sum(dim=(-2, -1))
 
 
@@ -257,4 +279,7 @@ class FFTCochleagram(Cochleagram):
         magnitude = (spectrum.real**2 + spectrum.imag**2 + tiny).sqrt()  # smooth at 0, for gradients
         rms = magnitude @ self._weights(waveform.dtype, waveform.device).T  # (..., n_windows, C)
         level_db = 20 * torch.log10(rms.clamp_min(tiny) / REFERENCE_RMS)
-        return level_db.clamp_min(self.floor_db).transpose(-1, -2)
+        if not self.threshold_floor:
+            return level_db.clamp_min(self.floor_db).transpose(-1, -2)
+        floor = torch.as_tensor(self.channel_floor_db(), dtype=level_db.dtype, device=level_db.device)
+        return torch.maximum(level_db, floor).transpose(-1, -2)
