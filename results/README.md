@@ -145,6 +145,7 @@ What every experiment here shares unless its page says otherwise:
 | [P6](P6-shepard-minor-third-sparse.md) | P2 with sparse harmonic spectra and a 30 Hz floor | none (Shepard 1964 §V) | first pass, one seed, 2 tones | Minor-third complex still one low tone, about 100 ahead of a chord of four tones |
 | [P7](P7-earlier-experiments-sparse.md) | Mistuned harmonic (100/1, 200/2) and two notes (octave, fifth at 0 ms) with sparse spectra and a 30 Hz floor | Fig. 7D; none for two notes | first pass, one seed | Thresholds 25 to 22% (100/1), 12.5% unchanged (200/2); the just fifth flips to one tone at 100 Hz, by 12.7; octave unchanged |
 | [P3](P3-shepard-pairs.md) | All 90 pairs of Shepard tones: P(up) against steps clockwise and by starting tone, sparse spectra and a 30 Hz floor | none (Shepard 1964 Fig. 3) | first pass, one seed | Shorter way round at 1–2 and 6–9 steps; crossover early on average (P(up) 0.24 at 5 steps vs listeners 0.53) and moves with the starting tone (after 2 to 5 steps); P(up) 0 or 1 in 81 of 90 pairs |
+| [P8](P8-shepard-pairs-octave-check.md) | P3's 30 pairs 3–5 steps apart with the first tone also heard an octave down or up | none (Shepard 1964 Fig. 3) | first pass, one seed | P3's starting-tone effect at 3–4 steps came from the single reading: every tone now goes up at 1–4 steps; the half octave still varies by starting tone (up from tones 5–7); mean P(up) at 5 steps 0.37 vs listeners 0.53 |
 | [R1](R1-source-and-room.md) | Source and room (RT60) from one sound | none in this paper | done | RT60 within 3%; 90% intervals cover 66% (overconfident) |
 | [R2](R2-atypical-rooms.md) | Atypical rooms, exponential room model | none in this paper | done | Biased like T20 × 3; time-reversed rooms do not fit |
 
@@ -167,8 +168,9 @@ document with its decisions for Cho before any run.
   rerun as P5 and P6 with the options of
   [relative-pitch-prior.md](../docs/design/relative-pitch-prior.md)
   (decisions P10 to P14, accepted 2026-10-18), and checked on earlier
-  experiments as P7. All 90 pairs done as P3 (with the options), which
-  also answers P4 on one seed. Next: other seeds, listener noise (decision
+  experiments as P7. All 90 pairs done as P3 (with the options), and
+  P3's close pairs rechecked with octave-shifted readings as P8, which
+  answers P4 on one seed. Next: other seeds, listener noise (decision
   P9), and whether the options become defaults (decision P13).
 - **ABA margins against graded listener data.** C2's log odds are far
   larger than the paper's (up to +217); whether that matters is deferred

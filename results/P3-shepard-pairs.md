@@ -111,7 +111,10 @@ of 128, as on P5, so the importance estimates are rough.
   is 0.63 at 4 steps and 0.24 at 5, where listeners are at 0.75 and 0.53.
   On tone 1 alone the reason looked like the ERB scale: the same step in
   semitones is smaller in ERB number going down, so down is cheaper.
-- **The crossover moves with the starting tone, by up to 3 steps.** Tones
+- **The crossover moves with the starting tone, by up to 3 steps.**
+  *(Not confirmed: with the first tone also allowed an octave lower or
+  higher, every starting tone says up at 3 and 4 steps;
+  see [P8](P8-shepard-pairs-octave-check.md).)* Tones
   3 to 5, whose f0 sits near the top of the 52 to 104 Hz band, turn down
   after 2 steps; tones 6 and 7, near the bottom, still go up at 5. In
   every pair exactly one of the two harmonic hypotheses keeps the second
