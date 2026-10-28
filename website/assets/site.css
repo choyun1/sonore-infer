@@ -1,2 +1,44 @@
-/* Wide tables and equations scroll inside the page instead of widening it. */
-.md-typeset .arithmatex { overflow-x: auto; }
+/* Wide tables scroll inside the page instead of widening it. */
+.rst-content table { display: block; overflow-x: auto; }
+.rst-content .arithmatex { overflow-x: auto; }
+.rst-content table td, .rst-content table th { white-space: normal; }
+
+/* Dark colors when the reader's system asks for them, as the results plots
+   do (tools/results_plots.py), so page and plots always match. The Read the
+   Docs theme has no dark mode of its own; these override its light colors. */
+@media (prefers-color-scheme: dark) {
+  :root { color-scheme: dark; }
+  body, .wy-body-for-nav { background: #151716; color: #d6d9d6; }
+  .wy-nav-content-wrap, .wy-nav-content { background: #1f2221; }
+  .rst-content h1, .rst-content h2, .rst-content h3, .rst-content h4,
+  .rst-content p, .rst-content li, .rst-content td, .rst-content th { color: #d6d9d6; }
+  .rst-content blockquote { color: #b4b9b5; }
+  a, a code { color: #6fb3ec; }
+  a:visited, a:visited code { color: #b892d6; }
+  hr, .wy-breadcrumbs + hr, footer hr { border-top-color: #333836; }
+  .wy-breadcrumbs li, .wy-breadcrumbs a { color: #b4b9b5; }
+  footer, footer p, .rst-footer-buttons .btn-neutral { color: #b4b9b5; }
+  .btn-neutral { background: #2a2e2c !important; color: #d6d9d6 !important; }
+
+  /* side navigation: the current page's block is light in the theme */
+  .wy-nav-side { background: #151716; }
+  .wy-side-nav-search { background: #24476b; }
+  .wy-side-nav-search input[type=text] { background: #1f2221; color: #d6d9d6; border-color: #333836; }
+  .wy-menu-vertical li.current { background: #262a28; }
+  .wy-menu-vertical li.current a, .wy-menu-vertical li.current > a,
+  .wy-menu-vertical li.on a, .wy-menu-vertical li.toctree-l2.current > a,
+  .wy-menu-vertical li.toctree-l2.current li.toctree-l3 > a {
+    background: #2d3230; color: #d6d9d6; border-color: #333836;
+  }
+  .wy-menu-vertical li.current a:hover, .wy-menu-vertical li.current > a:hover,
+  .wy-menu-vertical li.on a:hover { background: #383e3b; }
+  .wy-nav-top { background: #24476b; }
+
+  /* tables and code */
+  .rst-content table, .rst-content table td, .rst-content table th { border-color: #333836 !important; }
+  .rst-content table td { background: #1f2221 !important; }
+  .rst-content table tr:nth-child(2n-1) td { background: #262a28 !important; }
+  .rst-content code, .rst-content tt, code { background: #262a28; border-color: #333836; color: #f08a7e; }
+  .rst-content pre code { background: #262a28; color: #d6d9d6; }
+  .rst-content div[class^=highlight], .rst-content pre.literal-block { border-color: #333836; }
+}
