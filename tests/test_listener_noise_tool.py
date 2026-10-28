@@ -1,4 +1,4 @@
-"""tools/relative_pitch/listener_noise.py (design relative-pitch-listeners): the grid fit recovers known values."""
+"""tools/relative_pitch/listener_noise.py: the grid fit recovers known values."""
 
 import importlib.util
 import sys

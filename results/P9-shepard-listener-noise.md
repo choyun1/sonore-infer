@@ -1,0 +1,110 @@
+# P9. Shepard pairs: listener noise against Shepard's groups
+
+> **Under review.** This is a working record, not reviewed
+> results. The work was done with AI assistance (Claude) and has not yet been
+> checked carefully. Numbers, methods and interpretations may change.
+
+**Status:** first pass, one seed.
+**Paper target:** none in Cusimano et al.; listeners in Shepard (1964)
+Fig. 3 and §IV.
+**Code:** `tools/relative_pitch/listener_noise.py`,
+`tools/relative_pitch/pair.py` (`--sigma 25.4` for the check).
+Design: [relative pitch listeners](../docs/design/relative-pitch-listeners.md),
+decisions P15 to P18 and the guards against overfitting under P16.
+
+## Question
+
+On [P3](P3-shepard-pairs.md) and [P8](P8-shepard-pairs-octave-check.md)
+the model answers up or down with near certainty, while Shepard's listeners
+are graded. If each group's answers are the model's log odds passed through
+some noise, how much noise does each group need, does the model then
+describe the groups better than a curve that ignores it, and does the noise
+read as a noisier internal representation (Shepard's larger difference
+limen, §V)?
+
+## Setup
+
+As the design. For each pair, L is the model's log odds of up against down
+over all its hypotheses (P8's three readings at 3 to 5 steps, P3's four
+hypotheses elsewhere). A group judges up with probability
+λ/2 + (1 − λ) · logistic(β · L); the predicted fraction at each number of
+steps is the mean over its 10 pairs. β and λ are fitted per group by
+maximum binomial likelihood on a grid, to Fig. 3's fractions read by eye,
+with 260 trials per step for Group I and 140 for Group III [estimate, 26
+or 14 listeners × 10 pairs]. The likelihood values below share these
+counts, so only differences between them mean anything.
+
+The check of decision P18 refitted six pairs (one at 3, 4 and 6 steps,
+three at 5) with all their hypotheses at the likelihood SD that Group I's β
+implies, 10/√β = 25.4 dB: 38 fits, one seed, cloud CPU, 510 to 1435 s
+each; 3 importance estimates failed and their ELBOs stand in.
+
+## Results
+
+All from `data/P9/fit.txt`, made by
+`python tools/relative_pitch/listener_noise.py results/data/P3/[0-9]*.txt results/data/P8/[0-9]*.txt --refits results/data/P9/refits/*.txt`.
+
+**Fits.** Fraction judged up at 1 to 9 steps clockwise:
+
+| | β | λ | Log likelihood | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Group I, Fig. 3 | | | | 1.00 | 1.00 | 0.89 | 0.75 | 0.53 | 0.25 | 0.09 | 0.02 | 0.02 |
+| (A) β and λ | 0.155 | 0.035 | −750.6 | 0.97 | 0.92 | 0.87 | 0.73 | 0.45 | 0.11 | 0.04 | 0.03 | 0.02 |
+| (C) no lapse | 0.126 | 0 | −759.3 | 0.97 | 0.91 | 0.85 | 0.71 | 0.45 | 0.12 | 0.04 | 0.02 | 0.00 |
+| Baseline | | 0 | **−704.6** | 0.99 | 0.97 | 0.92 | 0.77 | 0.51 | 0.24 | 0.09 | 0.03 | 0.01 |
+| Group III, Fig. 3 | | | | 0.74 | 0.78 | 0.83 | 0.75 | 0.52 | 0.29 | 0.24 | 0.26 | 0.40 |
+| (A) β and λ | 0.759 | 0.520 | −742.4 | 0.74 | 0.74 | 0.74 | 0.72 | 0.44 | 0.26 | 0.26 | 0.26 | 0.26 |
+| (C) no lapse | 0.024 | 0 | −792.4 | 0.68 | 0.62 | 0.59 | 0.54 | 0.49 | 0.37 | 0.29 | 0.24 | 0.18 |
+| Baseline | | 0.515 | **−740.1** | 0.74 | 0.74 | 0.74 | 0.73 | 0.52 | 0.27 | 0.26 | 0.26 | 0.26 |
+
+The baseline ignores the model: λ/2 + (1 − λ) · logistic(a − b · steps),
+three parameters. (B), one β for both groups (0.172) and a λ each (0.045
+and 0.485), has a total log likelihood of −1501.2, against −1493.0 for (A).
+
+**Leave one step out**, summed held-out log likelihood: Group I, model (A)
+−773.1, baseline −708.6; Group III, model (A) −746.8, baseline −756.8.
+
+**Adjacent pairs**, Shepard's first sequence of complex tones (not used in
+the fit): (A) predicts 0.97 to 0.98 for Group I (Shepard: over 0.99) and
+0.74 for Group III (Shepard: 0.63 to 0.82 per pair).
+
+**P18 check.** If β · L read as a likelihood SD of 25.4 dB, the refits'
+log odds would match β times the 10 dB log odds:
+
+| Pair | Steps | L at 10 dB | β · L | L refitted at 25.4 dB |
+| --- | --- | --- | --- | --- |
+| 1 → 4 | 3 | +17.4 | +2.69 | +8.56 |
+| 2 → 6 | 4 | +5.9 | +0.92 | +7.20 |
+| 1 → 6 | 5 | −9.7 | −1.51 | −0.15 |
+| 6 → 1 | 5 | +3.1 | +0.48 | −4.16 |
+| 9 → 4 | 5 | −0.5 | −0.08 | −0.23 |
+| 3 → 9 | 6 | −36.5 | −5.65 | −4.00 |
+
+## What it says
+
+- **For Group I the model adds nothing over the number of steps; it does
+  worse.** A curve in steps alone beats the model-based fit by 46 in log
+  likelihood, and by 64 when each step is predicted from the others. The
+  model's answers change too sharply between 4 and 6 steps (0.45 at 5 and
+  0.11 at 6, against 0.53 and 0.25), and noise on its log odds cannot
+  soften that without also losing the near-perfect answers at 1 and 2
+  steps. This is the guard the design added for this case: a noise
+  parameter would otherwise have hidden it.
+- **Group III is mostly guessing in both fits** (λ about 0.5), and model
+  and baseline are about equal (−742.4 and −740.1; held out, the model is
+  10 better). Neither reproduces Group III's rise to 0.40 at 9 steps; the
+  design said in advance that noise cannot, so it points to something the
+  model lacks, such as hearing the second tone an octave off.
+- **The noise does not read as a likelihood SD.** Refitting at 25.4 dB
+  changes the log odds by amounts unrelated to β · L, up to 8 times larger
+  and in one pair (6 → 1) of the opposite sign. So β is a decision noise,
+  and these results do not support "Group III has a noisier internal
+  representation" in the model's own terms; at 25.4 dB the priors, which β
+  does not scale, carry more of the answer.
+- **The groups differ mostly in guessing.** One shared β costs 8.2 in log
+  likelihood for one parameter fewer, and Group III's β is poorly
+  determined once its λ is 0.5.
+- **Not checked:** other seeds; the refits at other SDs; fitting the
+  likelihood SD per group directly (decision P15 (B)), which the P18
+  result makes the relevant next step if a perceptual-noise account is
+  wanted.
