@@ -146,7 +146,7 @@ What every experiment here shares unless its page says otherwise:
 | [P7](P7-earlier-experiments-sparse.md) | Mistuned harmonic (100/1, 200/2) and two notes (octave, fifth at 0 ms) with sparse spectra and a 30 Hz floor | Fig. 7D; none for two notes | first pass, one seed | Thresholds 25 to 22% (100/1), 12.5% unchanged (200/2); the just fifth flips to one tone at 100 Hz, by 12.7; octave unchanged |
 | [P3](P3-shepard-pairs.md) | All 90 pairs of Shepard tones: P(up) against steps clockwise and by starting tone, sparse spectra and a 30 Hz floor | none (Shepard 1964 Fig. 3) | first pass, one seed | Shorter way round at 1–2 and 6–9 steps; crossover early on average (P(up) 0.24 at 5 steps vs listeners 0.53) and moves with the starting tone (after 2 to 5 steps); P(up) 0 or 1 in 81 of 90 pairs |
 | [P8](P8-shepard-pairs-octave-check.md) | P3's 30 pairs 3–5 steps apart with the first tone also heard an octave down or up | none (Shepard 1964 Fig. 3) | first pass, one seed | P3's starting-tone effect at 3–4 steps came from the single reading: every tone now goes up at 1–4 steps; the half octave still varies by starting tone (up from tones 5–7); mean P(up) at 5 steps 0.37 vs listeners 0.53 |
-| [P9](P9-shepard-listener-noise.md) | Decision noise and lapse on the model's log odds, fitted to Shepard's Groups I and III, with guards against overfitting | none (Shepard 1964 Fig. 3, §IV) | first pass, one seed | For Group I a curve in steps alone beats the model by 46 (64 held out): the model's crossover is too sharp; Group III is mostly guessing; the noise does not read as a likelihood SD (refits at 25.4 dB) |
+| [P9](P9-shepard-listener-noise.md) | Decision noise and lapse on the model's log odds, fitted to Shepard's Groups I and III, with guards against overfitting | none (Shepard 1964 Fig. 3, §IV) | first pass, one seed | For Group I a curve in steps alone beats the model by 46 (64 held out): the model's crossover is too sharp, because up or down is decided mostly by faint energy in the lowest channels (20 to 51 Hz); Group III is mostly guessing; the noise does not read as a likelihood SD (refits at 25.4 dB) |
 | [R1](R1-source-and-room.md) | Source and room (RT60) from one sound | none in this paper | done | RT60 within 3%; 90% intervals cover 66% (overconfident) |
 | [R2](R2-atypical-rooms.md) | Atypical rooms, exponential room model | none in this paper | done | Biased like T20 × 3; time-reversed rooms do not fit |
 
@@ -173,9 +173,10 @@ document with its decisions for Cho before any run.
   P3's close pairs rechecked with octave-shifted readings as P8, which
   answers P4 on one seed, and listener noise fitted to Shepard's groups
   as P9 ([relative-pitch-listeners.md](../docs/design/relative-pitch-listeners.md),
-  decisions P15 to P18). Next: why the model's crossover is too sharp
-  for Group I, other seeds, and whether the options become defaults
-  (decision P13).
+  decisions P15 to P18). P9 traces the too-sharp crossover to faint
+  energy in the lowest cochleagram channels. Next: whether listeners hear
+  that energy (calibration and an absolute threshold), other seeds, and
+  whether the options become defaults (decision P13).
 - **ABA margins against graded listener data.** C2's log odds are far
   larger than the paper's (up to +217); whether that matters is deferred
   until graded listener data are compared (the "Against the paper"

@@ -108,3 +108,49 @@ log odds would match β times the 10 dB log odds:
   likelihood SD per group directly (decision P15 (B)), which the P18
   result makes the relevant next step if a perceptual-noise account is
   wanted.
+
+## Why the crossover is too sharp
+
+Measured with `tools/relative_pitch/decompose.py` (outputs in
+`results/data/P9/decompose/`; one seed, the harmonic hypotheses of P3
+from the 52 to 104 Hz reading, refitted to their modes with P3's settings,
+which give the same log joint at the mode as P3, for example −9758.2 for
+1 → 3 up). Each mode's log joint is split into the likelihood of each
+tone and the four prior terms. "Everything else" is P3's ELBO difference
+minus the likelihood difference at the mode: the priors and the Occam
+factor together. Up minus down:
+
+| Pair | Steps | P3 log odds (ELBO) | Likelihood, tone 1 | Likelihood, tone 2 | of which channels below 60 Hz | Everything else |
+|---|---|---|---|---|---|---|
+| 1 → 3 | 2 | +22.8 | +7.5 | +3.9 | −0.7 | +11.4 |
+| 1 → 5 | 4 | +3.3 | +1.7 | −9.3 | −10.9 | +10.9 |
+| 1 → 6 | 5 | −10.4 | +0.4 | −20.2 | −18.5 | +9.4 |
+| 1 → 7 | 6 | −25.0 | −3.1 | −26.2 | −21.6 | +4.3 |
+| 1 → 9 | 8 | −53.6 | −8.1 | −48.5 | −30.5 | +3.0 |
+| 6 → 10 | 4 | +13.3 | +1.7 | +0.6 | −0.3 | +11.0 |
+| 6 → 1 | 5 | +1.3 | −1.5 | −2.9 | −1.8 | +5.7 |
+| 6 → 2 | 6 | −5.7 | −5.3 | −6.6 | −4.1 | +6.2 |
+
+- **The fit to the sound carries the change with steps; the priors do
+  not.** "Everything else" is a steady 3 to 11 in favour of up. From tone
+  1 the likelihood goes from +11.4 at 2 steps to −56.6 at 8.
+- **Most of it is the second tone's lowest channels (20 to 51 Hz).** From
+  tone 1 the up hypothesis's second f0 is 103 to 135 Hz at 4 to 8 steps,
+  so it predicts those channels at or near the cochleagram's 20 dB floor,
+  while they read 25 to 28 dB (means over the second half of the sound).
+  The down hypothesis, with its second f0 at 51 to 68 Hz, covers them. The
+  shortfall grows as the up f0 rises, so the log odds fall steeply with
+  steps.
+- **From tone 6 the effect is much smaller** (−0.3 to −4.1 below 60 Hz),
+  because the up f0 is only 73 to 83 Hz and still spills into those
+  channels. This is the starting-tone dependence P3 and P8 found.
+
+So, inferred from these 8 pairs: the model's up or down answer is
+largely decided by which hypothesis accounts for faint energy in the
+lowest cochleagram channels, not by comparing pitch distances one way and
+the other way round. That energy rises steeply in cost as the up f0 moves
+away from it, which makes the crossover sharp. Whether listeners hear that
+energy at all is not checked: the cochleagram's levels are not calibrated
+to dB SPL here and it has no absolute-threshold or middle-ear weighting.
+Not checked either: other seeds, the octave readings of P8, and pairs
+from other starting tones.
