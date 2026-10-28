@@ -16,6 +16,10 @@ Hypotheses (design E3), each run online with
   sources of the first part end at the silence and new ones start after it
   (``--restart`` adds them; the test alone has no restart).
 
+Each tone starts its event; where tones fill their slots (Cusack et al.),
+the event starts half a ramp shorter, since one source's events need a
+positive rest between them.
+
 Window ends are multiples of ``--window`` from the start of each part,
 with one window spanning the silence (design E5). The evidence is taken
 every ``--evidence-every`` s within each part and at the ends of the parts
@@ -45,8 +49,19 @@ LEAD = 0.05
 
 
 def hypotheses(stimulus: reset.ResetStimulus, restart: bool) -> dict:
+    # Cusack et al.'s tones fill their 125 ms slots, so one source's events would touch, and the
+    # scene needs a positive rest between them: such events start half a ramp shorter, centred
+    # on the tone (an initial value only; the fit moves it)
+    interval = min(b.onset - a.onset for a, b in zip(stimulus.tones, stimulus.tones[1:], strict=False))
+    trim = stimulus.ramp / 2 if stimulus.tone_duration >= interval else 0.0
+
     def tone(placed):
-        return Tone(placed.onset, stimulus.tone_duration, stimulus.freqs[placed.kind], stimulus.level_db)
+        return Tone(
+            placed.onset + trim / 2,
+            stimulus.tone_duration - trim,
+            stimulus.freqs[placed.kind],
+            stimulus.level_db,
+        )
 
     def sources(tones, prefix):
         one = (WhistleSpec(f"{prefix}0", tuple(tone(t) for t in tones)),)
