@@ -30,8 +30,8 @@ artifact).
 
 ## Publishing
 
-Nothing is published yet. To publish at
-https://choyun1.github.io/sonore-infer/: in the repository's Settings,
+The site is published at https://choyun1.github.io/sonore-infer/ when
+both of these are set: in the repository's Settings,
 Pages, set the source to "GitHub Actions"; then in Settings, Secrets and
 variables, Actions, Variables, add `PUBLISH_WEBSITE` with the value `true`.
 The next push to main deploys. Removing the variable stops further deploys;
