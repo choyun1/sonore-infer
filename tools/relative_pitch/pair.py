@@ -14,6 +14,10 @@ events, one per tone:
   first tone at or above 30 dB and above the floor, each moving to the
   nearest component of the second tone above (up) or below (down) it.
 
+With ``--octave k`` the harmonic hypotheses start the first tone's f0 at its
+component k octaves from that reading (experiment P8), and the whistle
+hypotheses, which do not depend on the reading, are left out.
+
 Each hypothesis is fitted and scored as on P5. Its direction is read at its
 fitted mode, not from its start: up when the second event's mean f0 (or,
 for whistles, the mean of the whistles' frequency shifts, in ERB number) is
@@ -95,14 +99,19 @@ def harmonic_start(source, f0s, freqs, levels):
     )
 
 
-def hypotheses(first, second, reading, sparse, floor, whistle_floor):
+def hypotheses(first, second, reading, sparse, floor, whistle_floor, octave=0, harmonic_only=False):
     """(label, scene, start, frequency parameter names) for every hypothesis of this pair."""
     freqs1, levels1 = sh.components(first)
     freqs2, _ = sh.components(second)
     reading = reading or default_reading(freqs1)
+    if octave:
+        # the first tone's component nearest the reading moved by ``octave`` octaves
+        reading = float(freqs1[np.argmin(abs(np.log2(freqs1 / reading) - octave))])
     out = []
     for direction in ("up", "down"):
         f0s = (reading, nearest(freqs2, reading, direction == "up"))
+        if floor and min(f0s) < floor:
+            continue  # starts outside the f0 prior
         source = Harmonic(
             "h0",
             int(sh.F_MAX // min(f0s)),
@@ -112,6 +121,8 @@ def hypotheses(first, second, reading, sparse, floor, whistle_floor):
         )
         label = f"harmonic {direction} {f0s[0]:.1f}->{f0s[1]:.1f}"
         out.append((label, Scene((source,), TIMING), harmonic_start(source, f0s, freqs1, levels1), ["h0.f0"]))
+    if harmonic_only:
+        return out
     lowest = floor or 87.5
     keep = (freqs1 >= lowest) & (levels1 >= whistle_floor)
     for direction in ("up", "down"):
@@ -163,6 +174,12 @@ def main():
     parser.add_argument("--first", type=int, default=1, help="the first tone (1 to 10)")
     parser.add_argument("--seconds", type=int, nargs="+", help="second tones; default every other tone")
     parser.add_argument("--reading", type=float, help="the first tone's starting f0 [Hz]; default 52-104 Hz")
+    parser.add_argument(
+        "--octave",
+        type=int,
+        default=0,
+        help="start the first tone's f0 this many octaves from the reading; whistles are then not fitted",
+    )
     parser.add_argument("--sparse-spectrum", action="store_true", help="design relative-pitch-prior P10")
     parser.add_argument("--floor", type=float, help="lowest f0 and whistle frequency [Hz] (P12)")
     parser.add_argument(
@@ -193,7 +210,14 @@ def main():
         clockwise = sh.steps_clockwise(args.first, second)
         posteriors, shifts = {}, {}
         for label, scene, start, names in hypotheses(
-            args.first, second, args.reading, args.sparse_spectrum, args.floor, args.whistle_floor
+            args.first,
+            second,
+            args.reading,
+            args.sparse_spectrum,
+            args.floor,
+            args.whistle_floor,
+            args.octave,
+            harmonic_only=args.octave != 0,
         ):
             if args.only and not any(label.startswith(prefix) for prefix in args.only):
                 continue
