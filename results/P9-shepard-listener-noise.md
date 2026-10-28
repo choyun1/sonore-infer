@@ -154,3 +154,54 @@ energy at all is not checked: the cochleagram's levels are not calibrated
 to dB SPL here and it has no absolute-threshold or middle-ear weighting.
 Not checked either: other seeds, the octave readings of P8, and pairs
 from other starting tones.
+
+## With a hearing threshold and spectral dominance (design P19 to P21)
+
+Design [relative-pitch-dominance.md](../docs/design/relative-pitch-dominance.md),
+accepted 2026-10-28: `--threshold-floor` floors each cochleagram channel
+at the threshold of hearing (Terhardt et al. 1982, Eq. 8; 73 dB at
+20 Hz, 39 at 35 Hz and 25 at 51 Hz in the cochleagram's units, the flat
+20 dB from 67 Hz up), and `--dominance` gives each channel the likelihood
+SD 10 dB / √w with Terhardt's dominance weight w (1 at 700 Hz, 0.27 at
+51 Hz). Same 8 pairs and settings as above, one seed.
+
+Up minus down, likelihood at the mode [measured, `decompose.py`, outputs
+in `results/data/P9/options/{threshold,dominance,both}/`], and the log
+odds of the harmonic hypotheses by the ELBO with both options [measured,
+`pair.py --only harmonic --threshold-floor --dominance`, outputs in
+`results/data/P9/options/evidence/`]:
+
+| Pair | Steps | Likelihood, neither | threshold | dominance | both | Log odds, neither (P3) | Log odds, both |
+|---|---|---|---|---|---|---|---|
+| 1 → 3 | 2 | +11.4 | +11.4 | +8.3 | +7.9 | +22.8 | +19.9 |
+| 1 → 5 | 4 | −7.6 | +1.9 | +0.8 | +2.1 | +3.3 | +10.3 |
+| 1 → 6 | 5 | −19.8 | −5.2 | −4.0 | −1.7 | −10.4 | +7.6 |
+| 1 → 7 | 6 | −29.3 | −13.3 | −8.6 | −5.6 | −25.0 | −1.0 |
+| 1 → 9 | 8 | −56.6 | −32.0 | −19.9 | −15.0 | −53.6 | −10.6 |
+| 6 → 10 | 4 | +2.3 | +3.4 | +2.2 | +2.4 | +13.3 | +13.0 |
+| 6 → 1 | 5 | −4.4 | −1.1 | −1.0 | −0.5 | +1.3 | +5.2 |
+| 6 → 2 | 6 | −11.9 | −4.8 | −4.2 | −2.9 | −5.7 | −3.0 |
+
+- **Each option alone removes about half of the fall with steps from
+  tone 1, and both together about three quarters** (likelihood at 8 steps
+  −56.6, −32.0, −19.9, −15.0). The lowest channels' share goes from −39.5
+  to −5.1 with both. Part of the dominance option's effect is not specific
+  to the low channels: it raises the SD everywhere except near 700 Hz, so
+  the channels above 60 Hz also count less (their share at 8 steps goes
+  from −17.1 to −10.1).
+- **With both, the log odds cross zero between 5 and 6 steps from both
+  starting tones** (+7.6 and −1.0 from tone 1, +5.2 and −3.0 from tone 6),
+  where without them they crossed between 4 and 5 from tone 1 and between
+  5 and 6 from tone 6. Shepard's listeners cross at about 5 steps (Group I
+  .53 at 5 steps).
+- **The fall is gentler and more even**: from tone 1, +19.9 at 2 steps to
+  −10.6 at 8, against +22.8 to −53.6 before.
+- At the half octave the model now leans up by 5 to 8 from both tones.
+- **The importance estimates are less clear.** With an effective sample
+  size of 1 to 7 they differ from the ELBO by up to 5.9 in one
+  hypothesis, and their log odds from tone 1 are +24.0, +4.7, +3.4, +1.6
+  and −13.2 at 2, 4, 5, 6 and 8 steps, so by them the crossover from tone
+  1 is between 6 and 8 steps. P9's fit used the importance estimate where
+  it was finite; the rerun should report both.
+- **Not checked:** the listener fit itself, which needs all 90 pairs
+  (P3 and P8) rerun with the options; other seeds.

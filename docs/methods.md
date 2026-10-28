@@ -244,6 +244,17 @@ cochleagram are deterministic and differentiable, so gradients of the log
 likelihood with respect to $\boldsymbol\theta$ come from automatic
 differentiation. Experiment B3 uses $\sigma_y = 5$ dB.
 
+- **Options, off by default** (design relative-pitch-dominance, P19 and
+  P20; tried on 8 Shepard pairs in [P9](../results/P9-shepard-listener-noise.md)).
+  `Cochleagram.threshold_floor` floors channel $c$ of both $\mathbf{y}$ and
+  $\mathbf{c}(\boldsymbol\theta)$ at the larger of 20 dB and the threshold
+  of hearing at $f_c$ (Terhardt et al., 1982, Eq. 8), converted to the
+  channel's units, which reads dB re $r_0$ as dB SPL. A per-channel SD
+  $\sigma_c = \sigma_y / \sqrt{w(f_c)}$, with
+  $w(f) = [1 + 0.07 (f/700 - 700/f)^2]^{-1/2}$ ($f$ in Hz; Terhardt et
+  al., Eq. 12), weights the channels by spectral dominance
+  (`hearing.dominance_sigma`).
+
 ### 1.7 The cochleagram
 
 **FFT cochleagram** (the default from experiment A2 on;

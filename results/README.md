@@ -174,9 +174,11 @@ document with its decisions for Cho before any run.
   answers P4 on one seed, and listener noise fitted to Shepard's groups
   as P9 ([relative-pitch-listeners.md](../docs/design/relative-pitch-listeners.md),
   decisions P15 to P18). P9 traces the too-sharp crossover to faint
-  energy in the lowest cochleagram channels. Next: whether listeners hear
-  that energy (calibration and an absolute threshold), other seeds, and
-  whether the options become defaults (decision P13).
+  energy in the lowest cochleagram channels; on 8 pairs, a threshold of
+  hearing and spectral dominance (design relative-pitch-dominance, P19 to
+  P21) move the crossover to between 5 and 6 steps. Next: all 90 pairs
+  with those options and the listener fit, other seeds, and whether the
+  options become defaults (decision P13).
 - **ABA margins against graded listener data.** C2's log odds are far
   larger than the paper's (up to +217); whether that matters is deferred
   until graded listener data are compared (the "Against the paper"
