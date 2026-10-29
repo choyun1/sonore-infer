@@ -1,8 +1,7 @@
 # Live input: what sonore 0.10.0's streams give this project
 
-Status: **note for Cho, 2026-10-29**, written with the move from sonore
-0.8.0 to 0.10.0. It proposes three decisions (L1-L3); nothing is accepted
-yet.
+Status: **accepted by Cho, 2026-10-29** (all three recommendations, L1 to
+L3), written with the move from sonore 0.8.0 to 0.10.0 (PR #89).
 
 Every number below is measured, with the script that printed it, or
 labeled an estimate with its basis. Measurements are on the cloud CPU
@@ -10,9 +9,9 @@ labeled an estimate with its basis. Measurements are on the cloud CPU
 
 ## Decisions at a glance
 
-Recommendations; nothing is accepted yet. The reasons are in §5.
+All three accepted by Cho on 2026-10-29. The options and reasons are in §5.
 
-| Decision | Recommended |
+| Decision | Accepted |
 |---|---|
 | L1. A second check of the cochleagram | Yes: a test that our `Cochleagram` agrees with sonore's streamed gammatone envelopes, beside the existing FFT check |
 | L2. Live input to `online.py` now | No: wait until an online run is within a few times real time; the front end is not what is slow |
@@ -149,7 +148,9 @@ touches sonore-infer; it belongs in a sonore-sketch thread.
 our windows, within a tolerance set from §3.1 (the lowest channels need a
 looser one). (B) Leave the checks as they are.
 *Recommended: (A).* It is cheap, and it is the first check of the
-cochleagram that does not share its method.
+cochleagram that does not share its method. Done:
+`tests/test_cochleagram.py::test_levels_match_sonore_time_domain_envelopes`,
+within 0.15 dB above 50 Hz and 1 dB in every channel.
 
 **L2. Live input to `online.py` now.** (A) Add a path that feeds
 `run_online` a streamed observed cochleagram, from a file read in blocks or
@@ -162,3 +163,7 @@ perception and little about the app. The perception model comes first.
 **L3. sonore's F0 track as a proposal for new sources.** (A) Design it
 with online structure search (O1 (C)). (B) Not at all.
 *Recommended: (A), later.* No work now.
+
+## 6. Accepted
+
+Cho accepted L1 (A), L2 (B) and L3 (A, later) on 2026-10-29.
