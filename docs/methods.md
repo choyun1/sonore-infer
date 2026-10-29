@@ -483,7 +483,13 @@ latents.
   Their prior terms stay in the log joint, so the free latents are
   conditioned on them exactly. Trajectory means and kernel latents are never
   frozen. With $L = \infty$ the terms telescope to the batch Laplace
-  estimate of the whole prefix.
+  estimate of the whole prefix. A latent is frozen only after it has been
+  free in one window term, so a source born more than $L$ after the start
+  (or a grid point inside a long silence) is integrated once before its past
+  freezes. In that window most of the free grid points enter only the
+  Gaussian prior, so the Hessian is taken as the prior's over all free
+  latents plus the rest of the log joint's over the latents the likelihood
+  touches; the sum is the full Hessian.
 - **Leaky decision variable** (O10). With $\Delta_j^{(a)}$ and
   $\Delta_j^{(b)}$ two hypotheses' window terms,
   $D_k = \sum_{j \le k} e^{-(t_k - t_j)/\tau_D} \left(\Delta_j^{(a)} - \Delta_j^{(b)}\right)$;
