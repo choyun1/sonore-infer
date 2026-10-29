@@ -37,11 +37,13 @@ online inference; and inferring a source together with its room.
 
 | Path | What it holds |
 |---|---|
+| `docs/` | [overview.md](docs/overview.md): the project in a page; [methods.md](docs/methods.md): the models and inference, defined mathematically. |
 | `docs/design/` | Design documents: each lists numbered decisions, the options, and what Cho accepted. Start with [docs/README.md](docs/README.md). |
 | `src/sonore_infer/` | The package (map below). |
 | `src/sonore_infer/stimuli/` | Stimuli from App. C of the paper (mistuned harmonic, asynchronous onsets, ABA bistability and buildup), and milestone (b)'s two notes, made with sonore. |
 | `tests/` | One test file per module, plus `tests/stimuli/`. |
 | `tools/` | Standalone scripts: experiment runners and measurements, one folder per direction. Every number in the design documents comes from one of them or is marked as an estimate. Index: [tools/README.md](tools/README.md). |
+| `website/` | Builds the project website from this Markdown ([website/README.md](website/README.md)). |
 | `notebooks/` | `appendix_c_stimuli.ipynb`: listen to and plot the stimuli. |
 
 The package holds two models that share no code beyond the ERB scale

@@ -8,7 +8,10 @@ posterior mass of the hypotheses whose fitted shift is upward, as in pair.py.
 
 Per pair: steps clockwise, the best hypothesis, harmonic up minus harmonic
 down (log posterior), the better whistle hypothesis relative to the best, the
-fitted shifts of the two harmonic hypotheses [ERB number], and P(up). Shepard
+fitted shifts of the two harmonic hypotheses [ERB number], and P(up), over
+all hypotheses and over those whose harmonic source starts at the reading
+between 52 and 104 Hz (the same unless pair.py was also run with
+``--octave``; the other columns use that reading). Shepard
 (1964, Fig. 3, read by eye) gives the fraction of presentations judged
 higher, pooled over all 90 pairs, for his most accurate (Group I) and least
 accurate (Group III) listeners. With ``--by-steps``, P(up) is also averaged
@@ -50,6 +53,11 @@ def pairs(paths):
     return {key: (steps[key], hypotheses) for key, hypotheses in found.items()}
 
 
+def in_band(label):
+    """Whether a harmonic hypothesis starts at the first tone's reading between 52 and 104 Hz."""
+    return 52 <= float(label.split()[2].split("->")[0]) < 104
+
+
 def p_up(hypotheses):
     top = max(value for value, _ in hypotheses.values())
     weights = [(math.exp(value - top), shift) for value, shift in hypotheses.values()]
@@ -66,7 +74,7 @@ def main():
     found = pairs(args.paths)
     print(
         "first  second  steps  best                        harmonic_up_minus_down  best_whistles"
-        "  shift_up_erb  shift_down_erb  p_up  shepard_I  shepard_III"
+        "  shift_up_erb  shift_down_erb  p_up  p_up_band  shepard_I  shepard_III"
     )
     by_steps = defaultdict(list)
     for (first, second), (steps, hypotheses) in sorted(found.items()):
@@ -80,15 +88,22 @@ def main():
             label: value - max(v for v, _ in hypotheses.values()) for label, (value, _) in hypotheses.items()
         }
         best = max(relative, key=relative.get)
-        up = next(label for label in relative if label.startswith("harmonic up"))
-        down = next(label for label in relative if label.startswith("harmonic down"))
+        up = next(label for label in relative if label.startswith("harmonic up") and in_band(label))
+        down = next(label for label in relative if label.startswith("harmonic down") and in_band(label))
         whistles = max(value for label, value in relative.items() if label.startswith("whistles"))
         probability = p_up(hypotheses)
+        band = p_up(
+            {
+                label: v
+                for label, v in hypotheses.items()
+                if not label.startswith("harmonic") or in_band(label)
+            }
+        )
         by_steps[steps].append(probability)
         print(
             f"{first:5d}  {second:6d}  {steps:5d}  {best:26s}  {relative[up] - relative[down]:22.1f}"
             f"  {whistles:13.1f}  {hypotheses[up][1]:+12.3f}  {hypotheses[down][1]:+14.3f}"
-            f"  {probability:4.3f}"
+            f"  {probability:4.3f}  {band:9.3f}"
             f"  {GROUP_I[steps - 1]:9.2f}  {GROUP_III[steps - 1]:11.2f}"
         )
     if args.by_steps:
