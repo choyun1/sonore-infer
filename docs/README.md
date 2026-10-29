@@ -26,6 +26,7 @@ has its own design documents, tools and results.
 | | [design/online-realtime.md](design/online-realtime.md): what real time would take, measured on the buildup runs | none | n/a |
 | | [design/online-speed.md](design/online-speed.md): faster online inference, each change checked against O1 | S1-S6 | 2026-10-15 |
 | | [design/order-effects.md](design/order-effects.md): reset after silence and the previous trial's context, run online | E1-E6 | draft |
+| | [design/live-input.md](design/live-input.md): what sonore 0.10.0's streams give the online work, with the upgrade's check that no stimulus changes | L1-L3 | draft |
 | **Source and room** | [design/source-reverb.md](design/source-reverb.md): a random spectrogram and its room's RT60, inferred together | R1-R8 | 2026-10-10 |
 | **Relative pitch** | [design/relative-pitch.md](design/relative-pitch.md): direction of pitch change between Shepard tones (Shepard, 1964) | P1-P9 | 2026-10-18 |
 | | [design/relative-pitch-prior.md](design/relative-pitch-prior.md): sparse harmonic spectra and a lower f0 floor, after experiments P1 and P2 | P10-P14 | 2026-10-18 |

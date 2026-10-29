@@ -34,11 +34,12 @@ Source = "https://github.com/choyun1/sonore-infer"
 # differentiable core never imports it. Pinned so its output cannot change
 # under us. 0.6.0 was the first release with gaussian_spectrogram
 # (docs/design/source-reverb.md section 7); 0.8.0 changes only the Klatt
-# vowels among our stimuli: Klatt synthesis no longer opens with a click.
-stimuli = ["sonore==0.8.0"]
+# vowels among our stimuli: Klatt synthesis no longer opens with a click;
+# 0.10.0 (streams, and 0.9.0's fixes) changes none of our stimuli.
+stimuli = ["sonore==0.10.0"]
 # Scene.model() hands a scene to Pyro (design C7); the core never needs it.
 pyro = ["pyro-ppl>=1.9"]
-dev = ["pytest>=8", "ruff>=0.5", "mypy>=1.11", "sonore==0.8.0", "pyro-ppl>=1.9"]
+dev = ["pytest>=8", "ruff>=0.5", "mypy>=1.11", "sonore==0.10.0", "pyro-ppl>=1.9"]
 
 [tool.hatch.version]
 path = "src/sonore_infer/__init__.py"
