@@ -6,6 +6,7 @@ import sonore as so
 import torch
 
 from sonore_infer.cochleagram import (
+    REFERENCE_RMS,
     Cochleagram,
     FFTCochleagram,
     freq_to_erb,
@@ -141,3 +142,28 @@ def test_bass_gain_is_a_fixed_offset_per_channel_and_largest_at_low_frequencies(
     low, high = np.argmin(np.abs(bass.cfs - 104)), np.argmin(np.abs(bass.cfs - 3165))
     # BASS's own gammatonegram, run on 60 dB tones, read about 47 dB at 104 Hz and 56 dB at 3165 Hz
     np.testing.assert_allclose(per_channel[[low, high]], [12.9, 3.7], atol=0.5)
+
+
+@pytest.mark.parametrize("stimulus", ["mistuned harmonic", "Shepard pair"])
+def test_levels_match_sonore_time_domain_envelopes(stimulus):
+    # Design L1: sonore's causal gammatones run as recursive filters, 10 ms at a time,
+    # with the complex output's magnitude as envelope (no FFT, no Hilbert transform),
+    # pooled into our time windows. Tolerances from tools/measurements/streamed_cochleagram.py:
+    # 0.09 dB at most above 50 Hz, 0.79 dB in the 20 Hz channel on a Shepard pair.
+    from sonore_infer.stimuli import mistuned_harmonic, shepard
+
+    sound = (
+        mistuned_harmonic.mistuned_harmonic_set()[0][1]
+        if stimulus == "mistuned harmonic"
+        else shepard.pair(1, 4)
+    )
+    cochleagram = Cochleagram()
+    bank = sonore_bank(cochleagram)
+    parts = [part.envelopes().data for part in so.stream(bank, so.blocks(sound, 200))]
+    envelopes = torch.as_tensor(np.concatenate(parts)[:, :, 0].T)
+    power = cochleagram.window_power(envelopes)
+    theirs = (10 * torch.log10(power / REFERENCE_RMS**2)).clamp_min(cochleagram.floor_db).numpy()
+    ours = cochleagram(torch.as_tensor(sound.data[:, 0])).numpy()
+    above_50_hz = cochleagram.cfs > 50
+    np.testing.assert_allclose(theirs[above_50_hz], ours[above_50_hz], rtol=0, atol=0.15)
+    np.testing.assert_allclose(theirs, ours, rtol=0, atol=1.0)
