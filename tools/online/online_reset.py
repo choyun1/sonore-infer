@@ -33,6 +33,12 @@ log posterior and the log odds of two streams over one: the full sum and
 the leaky decision (O10) for each ``--tau``, without the structure prior,
 as ``leaky_odds.py`` prints them, and the structure prior's log odds.
 
+Several runs at once on one machine must split its cores (for example
+``OMP_NUM_THREADS=2`` each for two runs on four cores): left to take every
+core each, two runs on the cloud's four were 20 to 100 times slower per
+window than one alone, while capped at two threads each they ran as fast
+as one alone.
+
     python tools/online/online_reset.py bm --silence 2 --restart
     python tools/online/online_reset.py cusack --semitones 6 --silence 1 --restart
 """

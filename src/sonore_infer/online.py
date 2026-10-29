@@ -144,23 +144,9 @@ class LaplaceState:
 
 
 def laplace(
-    log_joint: Callable[[Params], torch.Tensor],
-    mode: Params,
-    free: Free,
-    min_eigenvalue: float = 1e-6,
-    log_prior: Callable[[Params], torch.Tensor] | None = None,
+    log_joint: Callable[[Params], torch.Tensor], mode: Params, free: Free, min_eigenvalue: float = 1e-6
 ) -> LaplaceState:
-    """The Laplace state of ``log_joint`` at ``mode`` over the free entries.
-
-    With ``log_prior`` (the part of ``log_joint`` that is the prior), the
-    Hessian is taken in two parts: the prior's over every free entry, which
-    is cheap, and the rest's (the likelihood's) only over the entries it
-    depends on. Grid deviations where no event sounds, such as a whole
-    silence after a gap, enter the prior alone, and the full Hessian would
-    cost one pass through the render for each of them. An entry counts as a
-    dependence when the rest's gradient is nonzero at the mode or at a
-    random point near it.
-    """
+    """The Laplace state of ``log_joint`` at ``mode`` over the free entries."""
     vector, keys, unflatten = free_vector(mode, free)
 
     def negative(flat: torch.Tensor) -> torch.Tensor:
@@ -168,35 +154,10 @@ def laplace(
 
     with torch.no_grad():
         peak = -negative(vector).item()
-    if not keys:
-        hessian = torch.zeros(0, 0, dtype=vector.dtype)
-    elif log_prior is None:
+    if keys:
         hessian = torch.autograd.functional.hessian(negative, vector)
     else:
-        prior = log_prior
-
-        def negative_prior(flat: torch.Tensor) -> torch.Tensor:
-            return -prior(unflatten(flat))
-
-        def negative_rest(flat: torch.Tensor) -> torch.Tensor:
-            params = unflatten(flat)
-            return prior(params) - log_joint(params)
-
-        nudge = 1e-3 * torch.randn(
-            vector.shape, generator=torch.Generator().manual_seed(0), dtype=vector.dtype
-        )
-        touched = torch.zeros(vector.shape, dtype=torch.bool)
-        for point in (vector, vector + nudge):
-            touched |= torch.autograd.functional.jacobian(negative_rest, point) != 0
-        hessian = torch.autograd.functional.hessian(negative_prior, vector)
-        index = torch.nonzero(touched).flatten()
-        if index.numel():
-
-            def negative_rest_on(sub: torch.Tensor) -> torch.Tensor:
-                return negative_rest(vector.index_put((index,), sub))
-
-            block = torch.autograd.functional.hessian(negative_rest_on, vector[index])
-            hessian[index[:, None], index[None, :]] += block
+        hessian = torch.zeros(0, 0, dtype=vector.dtype)
     return LaplaceState(peak, keys, hessian.detach(), min_eigenvalue)
 
 
@@ -633,7 +594,7 @@ def run_online(
         if evidence_ends is not None and end != final and not any(abs(end - e) < 1e-9 for e in evidence_ends):
             continue
         # what is free is decided before the fit and kept: the evidence's terms need one set
-        state = laplace(log_joint, mode, free, log_prior=scene.log_prior)
+        state = laplace(log_joint, mode, free)
         term, floored = evidence.add(state)
         integrated = {name: _grown(integrated.get(name), mask.shape) | mask for name, mask in free.items()}
         step = OnlineStep(

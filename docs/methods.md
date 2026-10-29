@@ -486,10 +486,7 @@ latents.
   estimate of the whole prefix. A latent is frozen only after it has been
   free in one window term, so a source born more than $L$ after the start
   (or a grid point inside a long silence) is integrated once before its past
-  freezes. In that window most of the free grid points enter only the
-  Gaussian prior, so the Hessian is taken as the prior's over all free
-  latents plus the rest of the log joint's over the latents the likelihood
-  touches; the sum is the full Hessian.
+  freezes.
 - **Leaky decision variable** (O10). With $\Delta_j^{(a)}$ and
   $\Delta_j^{(b)}$ two hypotheses' window terms,
   $D_k = \sum_{j \le k} e^{-(t_k - t_j)/\tau_D} \left(\Delta_j^{(a)} - \Delta_j^{(b)}\right)$;

@@ -298,21 +298,3 @@ def test_a_source_born_after_the_lag_is_integrated_once_before_its_past_freezes(
     assert n_grid > 40  # reaches back well past the lag
     assert steps[born].window.n_free - steps[born - 1].window.n_free > 2 * (n_grid - 15)
     assert steps[born + 1].window.n_free < steps[born].window.n_free - n_grid
-
-
-def test_the_split_hessian_matches_the_full_one():
-    # a source whose grid reaches back past its one event: deviations there enter the prior alone
-    waveform = torch.tensor(bu.buildup_stimulus(2, 8, lead=0.05).data[:, 0], dtype=F64)[: round(0.7 * bu.FS)]
-    cochleagram = FFTCochleagram()
-    spec = (
-        WhistleSpec("w0", (Tone(0.05, 0.05, 500.0, 55.0),)),
-        WhistleSpec("w1", (Tone(0.55, 0.05, 500.0, 55.0),)),
-    )
-    scene, params = prefix_scene(spec, 0.7, bu.FS, bu.RAMP)
-    log_joint = scene.log_joint(cochleagram(waveform), cochleagram)
-    free = {name: torch.ones(value.shape, dtype=torch.bool) for name, value in params.items()}
-    full = laplace(log_joint, params, free)
-    split = laplace(log_joint, params, free, log_prior=scene.log_prior)
-    assert split.keys == full.keys
-    torch.testing.assert_close(split.hessian, full.hessian, rtol=1e-9, atol=1e-8)
-    assert split.value == pytest.approx(full.value, abs=1e-8)
