@@ -84,6 +84,8 @@ not import the package.
 |---|---|
 | `measurements/channel_bandwidths.py` | Measures the effective bandwidth of the cochleagram's channels, gammatone against FFT |
 | `measurements/table_a2_quartiles.py` | Which reading of Table A.2's parameters reproduces its quartiles (decision C3) |
+| `measurements/sonore_stimuli.py` | Writes every stimulus made with sonore to a file, and compares two such files, to check a sonore upgrade |
+| `measurements/streamed_cochleagram.py` | Our cochleagram from sonore's streamed gammatone envelopes, 10 ms at a time, against `Cochleagram`, and its time per block |
 
 ## Machine and timing
 
