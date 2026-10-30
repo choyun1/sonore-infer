@@ -168,7 +168,7 @@ w(f), so channels far from 700 Hz count less.
   4 at a time], cloud CPU.
 - **(B) P7's set only.** Leaves out streaming, where the components are
   at 1000 Hz and above and the threshold should change nothing, but
-  dominance (0.81 at 2 kHz) still reweights the channels [computed].
+  dominance (0.83 at 2 kHz) still reweights the channels [computed].
 - **(C) Everything** (A1 to C3, about two days of cloud CPU [estimate]).
 
 **Recommendation: A.** It covers the three kinds of result the paper
