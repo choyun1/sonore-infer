@@ -191,3 +191,4 @@ harmonic 1, the octave at 100 and 200 Hz).
 together change a result.
 
 2026-10-30: Cho chose P22 (A) on the decision card; P23 (A) as recommended.
+Results: [P10](../../results/P10-earlier-experiments-hearing.md).

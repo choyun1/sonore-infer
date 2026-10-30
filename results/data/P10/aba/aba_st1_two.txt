@@ -1,0 +1,3 @@
+300 Adam steps, 128 samples, seed 0, fft-bass-gain cochleagram, trajectories, all timing inferred, GP sigma and lengthscale inferred, threshold floor, dominance
+stimulus  hypothesis  n_params  structure  fit_steps  laplace  importance  ess  floored  log_joint_at_mode  seconds  elbo  vi_importance  vi_ess
+1 st 100 ms       two    1280   -11.31        300   -68150.3   -68159.0     1    0   -66438.1   2299.9   -68157.2   -68149.7     5
