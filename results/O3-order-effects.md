@@ -5,7 +5,7 @@
 > checked carefully. Numbers, methods and interpretations may change.
 
 **Status:** first pass, one run per stimulus; Cusack et al.'s 10 s gaps
-still running. **Paper target:** none (the paper has no order effects); the
+not run (see Cost). **Paper target:** none (the paper has no order effects); the
 references are two listening studies.
 **Code:** `src/sonore_infer/online.py`, `src/sonore_infer/stimuli/reset.py`,
 `tools/online/online_reset.py`, `tools/online/reset_summary.py`. Design:
@@ -39,7 +39,7 @@ assumptions), after 50 ms of silence:
 - **Beauvois & Meddis:** A 1000 Hz, B 1420 Hz, 40 ms tones every 90 ms,
   65 dB; silences 0, 0.5, 1, 2, 4 and 8 s, and the test alone.
 - **Cusack et al.:** A 400 Hz, B 4 or 6 semitones up, 125 ms tones in
-  500 ms ABA– triplets, 55 dB; silences 1, 2 and 5 s (10 s still running);
+  500 ms ABA– triplets, 55 dB; silences 1, 2 and 5 s (10 s not run);
   the second sequence cut to its first 4 s.
 
 Four hypotheses (design E3): one whistle with every tone (**one**), one
@@ -202,7 +202,10 @@ times slower per window than one alone, and with two threads each as fast
 as one alone. The prior's cost grows with the cube of the sound's length
 (a Gaussian process over every 10 ms grid point), so a 10 s gap makes each
 fit step after it about 8 times slower (0.26 s before, 2 s after,
-measured on the cloud).
+measured on the cloud). Cusack et al.'s 10 s gaps were dropped for this
+reason: two cloud runs got only partway through the first of four
+hypotheses before the cloud machine was shut down, and on the PC they
+would take about a day or more [estimate].
 
 ## Reproduce
 
