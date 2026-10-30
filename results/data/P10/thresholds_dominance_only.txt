@@ -1,0 +1,2 @@
+f0_hz  harmonic  mistunings  threshold_laplace  threshold_is  threshold_elbo  threshold_vi_is  dropped
+  100         1           7               30.0          30.0            30.0             30.0        0
