@@ -75,6 +75,7 @@ not import the package.
 | `online/online_buildup.py` | Buildup of streaming (App. C.11) in one online pass, against batch fits at each triplet's end |
 | `online/leaky_odds.py` | Leaky log odds (decision O10) from `online_buildup.py` outputs, no new inference |
 | `online/online_reset.py` | Reset of streaming after silence: Beauvois & Meddis (1997) and Cusack et al. (2004) sequences online, with restart hypotheses (order-effects E3) |
+| `online/reset_summary.py` | O3's numbers from `online_reset.py` outputs: evidence over the test, leaky decision, restart gains, second sequence against the first, no new inference |
 | `online/online_cost.py` | Where an online window's time goes (render, cochleagram, prior, Adam step, Hessian) as the sound grows |
 
 ## Measurements of the cochleagram, and readings of the paper

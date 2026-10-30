@@ -32,6 +32,7 @@ sys.path[:0] = [os.path.join(TOOLS, folder) for folder in ("bass", "grammar", "o
 import aba_map  # noqa: E402
 import mistuning_thresholds  # noqa: E402
 import pair_summary  # noqa: E402
+import reset_summary  # noqa: E402
 import two_notes_summary  # noqa: E402
 
 RESULTS = os.path.join(TOOLS, "..", "results")
@@ -1081,6 +1082,88 @@ def shepard_pairs():
     )
 
 
+# O3: reset of streaming after silence
+
+BM_SILENCES = (0, 0.5, 1, 2, 4, 8)
+
+
+def beauvois_meddis_listeners(silence):
+    """Segregation responses out of 10, Beauvois & Meddis (1997), their fit to Fig. 2."""
+    return 2.14 + 6.1 * math.exp(-silence / 3.84)
+
+
+def reset_beauvois_meddis():
+    alone = reset_summary.summary(data("O3", "bm_alone.txt"))
+    runs = {s: reset_summary.summary(data("O3", f"bm_s{s:g}.txt")) for s in BM_SILENCES}
+    model = Panel(340, 230, (-0.3, 8.3), (0, 200), left=44)
+    model.axes(
+        [0, 1, 2, 4, 8],
+        [0, 50, 100, 150, 200],
+        x_label="silence after the inducer, s",
+        y_label="log odds, two vs one",
+        title="Model, over the 1.44 s test",
+    )
+    model.horizontal(0)
+    for key, color, name in (("test_evidence", "s1", "evidence"), ("leaky_end", "s3", "leaky τ 2.5 s")):
+        points = [(s, runs[s][key]) for s in BM_SILENCES]
+        model.line(points, color, tip=lambda x, y, name=name: f"{name}, {x:g} s: {y:+.1f}")
+        model.horizontal(alone[key], kind=f"vertical {color} dash")
+    listeners = Panel(340, 230, (-0.3, 8.3), (0, 10), left=44)
+    listeners.axes(
+        [0, 1, 2, 4, 8],
+        [0, 2, 4, 6, 8, 10],
+        x_label="silence after the inducer, s",
+        y_label="segregated, out of 10",
+        title="Listeners (their fit to Fig. 2)",
+    )
+    fit = [(s / 10, beauvois_meddis_listeners(s / 10)) for s in range(0, 81, 5)]
+    listeners.line(fit, "s2", markers=False)
+    listeners.line(
+        [(s, beauvois_meddis_listeners(s)) for s in BM_SILENCES],
+        "s2",
+        tip=lambda x, y: f"listeners, {x:g} s: {y:.2f} of 10",
+    )
+    listeners.horizontal(0.05, kind="vertical s2 dash")
+    legend = [
+        ("s1", "model: evidence over the test", "line"),
+        ("s3", "model: leaky decision at the end", "line"),
+        ("s2", "listeners", "line"),
+        ("s5", "dashed: test alone", "dash"),
+    ]
+    return figure([model, listeners], "O3: Beauvois & Meddis (1997), inducer then test", legend)
+
+
+def reset_cusack():
+    panels = []
+    for semitones, y_range, y_ticks in (
+        (4, (-30, 80), [-25, 0, 25, 50, 75]),
+        (6, (-30, 100), [-25, 0, 25, 50, 75, 100]),
+    ):
+        panel = Panel(340, 230, (-0.2, 4.2), y_range, left=44)
+        panel.axes(
+            [0, 1, 2, 3, 4],
+            y_ticks,
+            x_label="s from the sequence's first tone",
+            y_label="leaky log odds, two vs one",
+            title=f"{semitones} semitones",
+        )
+        panel.horizontal(0)
+        runs = {g: reset_summary.summary(data("O3", f"cu{semitones}_s{g}.txt")) for g in (1, 2, 5)}
+        panel.line(runs[1]["first"], "s5", tip=lambda x, y: f"first sequence, {x:g} s: {y:+.1f}")
+        for g, color in ((1, "s1"), (2, "s3"), (5, "s2")):
+            panel.line(
+                runs[g]["second"], color, tip=lambda x, y, g=g: f"after {g} s silence, {x:g} s: {y:+.1f}"
+            )
+        panels.append(panel)
+    legend = [
+        ("s5", "first sequence", "line"),
+        ("s1", "after 1 s silence", "line"),
+        ("s3", "after 2 s", "line"),
+        ("s2", "after 5 s", "line"),
+    ]
+    return figure(panels, "O3: Cusack et al. (2004), second sequence against the first", legend)
+
+
 PLOTS = {
     "milestone-a-thresholds": threshold_ladder,
     "A1-gammatone-baseline": lambda: mistuning_grid("A1"),
@@ -1100,6 +1183,8 @@ PLOTS = {
     "O1-online-buildup": online_buildup,
     "O1-lag-window": online_sweep,
     "O2-speed-agreement": speed_agreement,
+    "O3-beauvois-meddis": reset_beauvois_meddis,
+    "O3-cusack": reset_cusack,
     "P3-shepard-pairs": shepard_pairs,
     "R1-likelihood-slice": likelihood_slice,
     "R1-interval-coverage": interval_coverage,

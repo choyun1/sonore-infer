@@ -139,6 +139,7 @@ What every experiment here shares unless its page says otherwise:
 | [C3](C3-search.md) | Search over structures from detected events | App. B.2 | first pass on 4 (b) and 3 ABA stimuli | Same structure as enumerated on 6 of 7; fifth at 0 ms gives note + whistle |
 | [O1](O1-online-buildup.md) | Buildup of streaming, batch and online | Fig. 8F, App. C.11 | first pass, sweeps | Converged batch odds rise with triplets; online with per-window convergence reproduces them in one pass; the lag, not the window, sets the slope |
 | [O2](O2-online-speed.md) | Faster online inference | none (cost; checked against O1) | S1, S2, S4 checked; S3 dropped; S5 measured; stopping-rule sweep run | Rendering each event over its span changes no answer; with the evidence every 0.5 s, odds stay within 1.2 of O1 in a seventh of the time; L-BFGS, plain or paired with Adam, fails online; shorter look-backs save little, 100 ms windows a sixth; summarizing the past (S4) changes no answer and saves more as the sound grows |
+| [O3](O3-order-effects.md) | Reset of streaming after silence (Beauvois & Meddis 1997; Cusack et al. 2004, Exp. 3), online | none (listening studies) | first pass, one run each; Cusack 10 s gaps running | Both wrong: the test alone already gives two streams, the inducer acts the wrong way at 0 s and does not decay; after a gap the leak carries the lean over, and the per-source rhythm prior pushes the next triplet towards one stream, more after longer gaps, where listeners reset fully after 1 s |
 | [P1](P1-shepard-one-tone.md) | One Shepard tone alone: one tone or whistles, which octave | none (Shepard 1964 §I) | first pass, one seed | Whistles win by 9–20 at 7 of 10 tones, within noise at the other 3; the octave read is set by the 87.5 Hz f0 prior floor; search finds a tone plus a whistle better still |
 | [P2](P2-shepard-minor-third.md) | Octave against minor-third spacing | none (Shepard 1964 §V) | first pass, one seed, 2 tones | Minor-third complex heard as one low tone by about 270: Shepard's contrast backwards |
 | [P5](P5-shepard-one-tone-sparse.md) | P1 with sparse harmonic spectra and a 30 Hz floor | none (Shepard 1964 §I) | first pass, one seed | One tone at all 10 tones, whistles 26–55 behind; the octave read is the component between 52 and 104 Hz, so it drops an octave between tones 5 and 6 |
@@ -154,13 +155,13 @@ What every experiment here shares unless its page says otherwise:
 Experiments agreed on but not yet run. Each has, or gets, a design
 document with its decisions for Cho before any run.
 
-- **Order effects in streaming** (design drafted 2026-10-15, decisions E1
-  to E7 open: [order-effects.md](../docs/design/order-effects.md)). Reset
-  of buildup after a silent gap, then the context of the previous trial,
-  which the model is expected to get wrong (assimilation where listeners
-  show contrast). Needs the PDFs of Beauvois & Meddis (1997), Cusack et
-  al. (2004) and Snyder et al. (2008). Later: attention as a gate on what is
-  integrated (E7 (D)), tested on Carlyon et al. (2001), Experiment 1.
+- **Order effects in streaming** (design accepted 2026-10-28, decisions
+  E1 to E7: [order-effects.md](../docs/design/order-effects.md)). Reset
+  after silence done as [O3](O3-order-effects.md), first pass. Next: the
+  context of the previous trial, which the model is expected to get wrong
+  (assimilation where listeners show contrast), once Snyder et al. (2008)
+  can be obtained. Later: attention as a gate on what is integrated
+  (E7 (D)), tested on Carlyon et al. (2001), Experiment 1.
 - **Relative pitch from Shepard tones** (design accepted 2026-10-18,
   decisions P1 to P9: [relative-pitch.md](../docs/design/relative-pitch.md)).
   Whether the model hears the direction of a step between octave-complex
@@ -216,7 +217,7 @@ or changes how the model compares with listeners.
 | ABA streaming, size of the log odds and its fall with slower rates | changes little across intervals (its color scale stops at ±20) | up to +217, falling with slower rates | **differs, deferred**: matters only once graded listener data are compared |
 | Buildup of streaming (Fig. 8F) | odds rise with triplets | see [O1](O1-online-buildup.md) | see that page |
 | Search over structures (App. B.2) | learned proposals, no per-stimulus results reported | hand-built detector ([C3](C3-search.md)) | **not applicable**: no paper numbers to compare; the test is against our own enumeration |
-| Two simultaneous notes (B), source and room (R) | not in the paper | | **not applicable** |
+| Two simultaneous notes (B), source and room (R), order effects (O3) | not in the paper | | **not applicable** |
 
 One check is of our own inference, not of the paper: milestones (a) and (b)
 fitted each hypothesis with 300 Adam steps, which in C2 left the one-stream
