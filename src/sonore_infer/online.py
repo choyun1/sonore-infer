@@ -9,7 +9,13 @@ is added to a running total.
 **Fixed lag (O3 (B)).** Grid deviations older than ``lag`` seconds, and the
 timing of events that ended before then, are frozen at their current values;
 their prior terms stay in the log joint, so the free latents are conditioned
-on them exactly (O4 (A)). Trajectory means, and GP kernel latents when
+on them exactly (O4 (A)). A latent is frozen only once it has been free in
+one evidence estimate, so its volume has entered the evidence once: a
+source born more than ``lag`` after the start has grid deviations reaching
+back to the start, which would otherwise be frozen at their initial values
+without ever being integrated out, counting only the prior's density there
+(a bias of hundreds of log units for a source born seconds late; found with
+the restart hypotheses of docs/design/order-effects.md E3). Trajectory means, and GP kernel latents when
 inferred, are never frozen: they belong to the whole sound, like a filter's
 static parameters [Särkkä 2013, §12.1].
 
@@ -545,6 +551,7 @@ def run_online(
     evidence: FixedLagEvidence | None = None
     past = PastSummary() if summarize_past else None
     previous: Params = {}
+    integrated: Free = {}  # entries that have been free in an evidence estimate
     steps_out: list[OnlineStep] = []
     last_silent_end = 0.0
     final = ends[-1]
@@ -572,6 +579,8 @@ def run_online(
             evidence = FixedLagEvidence(initial)
         init = extend(scene, fresh, previous, hypothesis) if previous else fresh
         free = lag_free(scene, init, end, lag)
+        for name, mask in free.items():
+            free[name] = mask | ~_grown(integrated.get(name), mask.shape)
         if past is None:
             log_joint = scene.log_joint(observed, cochleagram, sigma)
         else:
@@ -587,6 +596,7 @@ def run_online(
         # what is free is decided before the fit and kept: the evidence's terms need one set
         state = laplace(log_joint, mode, free)
         term, floored = evidence.add(state)
+        integrated = {name: _grown(integrated.get(name), mask.shape) | mask for name, mask in free.items()}
         step = OnlineStep(
             WindowTerm(
                 end,
@@ -606,6 +616,15 @@ def run_online(
             report(step)
         begin, fit_steps = time.perf_counter(), 0
     return steps_out
+
+
+def _grown(mask: torch.Tensor | None, shape: torch.Size) -> torch.Tensor:
+    """``mask`` extended with False to ``shape``; all False if None. Tensors only grow
+    at the end, so the flattened entries keep their places (see :data:`Coordinate`)."""
+    out = torch.zeros(shape, dtype=torch.bool)
+    if mask is not None and 0 < mask.numel() <= out.numel():
+        out.reshape(-1)[: mask.numel()] = mask.reshape(-1)
+    return out
 
 
 def _recent_log_joint(

@@ -1,0 +1,13 @@
+bm, silence none s, gap 0.050-0.050 s, 1.490 s in all; window 100 ms, lag 1 s, at most 2000 Adam steps, patience 50, evidence every 0.5 s, past summarized, fft-bass-gain cochleagram
+window: hypothesis  end  n_free  term  total  structure  floored  log_joint  seconds  steps
+window: one  0.500   114  -10004.60   -10004.60   -4.82   0    -9870.96    41.17  3857
+window: one  1.000   226  -10427.92   -20432.52   -9.26   1   -20168.94   104.20  5027
+window: one  1.490   226  -10205.97   -30638.48  -13.02   0   -30224.81   129.41  4642
+window: two  0.500   218   -9971.61    -9971.61   -6.62   0    -9720.06     6.69  251
+window: two  1.000   430  -10370.55   -20342.15  -10.36   0   -19822.46    19.06  273
+window: two  1.490   430  -10153.26   -30495.41  -13.72   0   -29713.51    25.09  267
+odds: end  logpost_one  logpost_two  structure  full_sum  tau_1  tau_2.5  tau_5  (two vs one)
+odds: 0.500    -10009.43     -9978.22    -1.79      32.99      32.99      32.99      32.99
+odds: 1.000    -20441.78    -20352.52    -1.10      90.36      77.38      84.38      87.22
+odds: 1.490    -30651.51    -30509.14    -0.70     143.07     100.11     122.07     131.79
+wall 326 s
