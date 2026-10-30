@@ -21,6 +21,7 @@ import sparse_options
 import torch
 
 from sonore_infer.cochleagram import FFTCochleagram
+from sonore_infer.hearing import dominance_sigma
 from sonore_infer.scene import Harmonic, Scene, SceneTiming, Whistle, evaluate
 from sonore_infer.stimuli import mistuned_harmonic as mh
 
@@ -70,9 +71,20 @@ def main():
         help="infer each GP's sigma and lengthscale instead of fixing them at the medians (design C3 (B))",
     )
     sparse_options.add_arguments(parser)
+    parser.add_argument(
+        "--threshold-floor",
+        action="store_true",
+        help="floor channels at the threshold of hearing (design relative-pitch-dominance P19)",
+    )
+    parser.add_argument(
+        "--dominance",
+        action="store_true",
+        help="likelihood SD per channel by spectral dominance (design relative-pitch-dominance P20)",
+    )
     args = parser.parse_args()
     dtype = torch.float64
-    cochleagram = FFTCochleagram()
+    cochleagram = FFTCochleagram(threshold_floor=args.threshold_floor)
+    sigma = dominance_sigma(cochleagram.cfs) if args.dominance else 10.0
     harmonic = Harmonic(
         "h0",
         len(mh.harmonic_numbers(args.f0)),
@@ -92,6 +104,8 @@ def main():
         "harmonic timing inferred (through sonore_infer.scene)"
         + (", GP sigma and lengthscale inferred" if args.infer_kernel else "")
         + sparse_options.describe(args)
+        + (", threshold floor" if args.threshold_floor else "")
+        + (", dominance" if args.dominance else "")
     )
     print(
         f"log prior of structure: one source {one.structure_log_prior():.2f}, "
@@ -140,6 +154,7 @@ def main():
             generator=generator,
             variational_steps=args.variational_steps,
             tolerance=args.tolerance,
+            sigma=sigma,
             report=status(f"{percent:g}%, one source"),
         )
         r2 = fit(
@@ -152,6 +167,7 @@ def main():
             generator=generator,
             variational_steps=args.variational_steps,
             tolerance=args.tolerance,
+            sigma=sigma,
             report=status(f"{percent:g}%, harmonic plus whistle"),
         )
         e1, e2 = r1.evidence, r2.evidence

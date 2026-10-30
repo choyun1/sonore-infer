@@ -26,6 +26,8 @@ AI-assisted (Claude); code as of `13f3638`.
 |---|---|
 | P19. Hearing threshold | (A) Floor each cochleagram channel at the threshold of hearing, as an option off by default |
 | P20. Spectral dominance | (A) Weight each channel's likelihood by Terhardt's dominance curve, as an option off by default |
+| P22. Earlier results to recheck | (A) P7's set (mistuned harmonic 100/1 and 200/2, octave and fifth at 0 ms) and 3 ABA stimuli |
+| P23. What to compare | (A) sparse spectrum and 30 Hz floor with and without both options |
 | P21. How to test | (A) The 8 pairs of P9's decomposition first, each option alone and both; the 90 pairs only for an option that changes them |
 
 ---
@@ -125,7 +127,9 @@ likelihood and acts on every channel the same way for every hypothesis.
 `src/sonore_infer/hearing.py` (Terhardt's Eq. 8 and dominance factor),
 `Cochleagram.threshold_floor`, and a likelihood SD per channel in
 `gaussian_log_likelihood`; `tools/relative_pitch/pair.py` and
-`decompose.py` take `--threshold-floor` and `--dominance`. Tests in
+`decompose.py` take `--threshold-floor` and `--dominance`, as do
+`tools/bass/scene_mistuned_harmonic.py`, `tools/bass/compare_two_notes.py`
+and `tools/grammar/compare_aba.py` for §6. Tests in
 `tests/test_hearing.py`.
 
 ## 4. Cho's answers
@@ -139,3 +143,52 @@ likelihood and acts on every channel the same way for every hypothesis.
   like P13 for the sparse spectrum and the f0 floor.
 - Moore, Glasberg & Peters (1985), Ritsma (1967) and Plomp (1967) were not
   available; their results are cited in Dai and Terhardt but not used.
+
+## 6. Check on earlier results (P22, P23; accepted 2026-10-30)
+
+On all 90 Shepard pairs the two options bring Group I's fit to within 12
+of the curve in steps alone, from 46 [measured, P9]. Before either could
+become a default (decision P13), they need checking on results they were
+not designed for, as P14 did for the sparse spectrum and the 30 Hz floor.
+Both options change every likelihood: the threshold floor removes the
+lowest channels below about 60 Hz (a 73 dB floor at 20 Hz, 39 at 35 Hz,
+25 at 51 Hz in the cochleagram's units [measured,
+`Cochleagram.channel_floor_db`]), and dominance weights every channel by
+w(f), so channels far from 700 Hz count less.
+
+### P22. Which earlier results
+
+- **(A) P7's set plus 3 ABA stimuli.** The mistuned harmonic at 100 Hz
+  harmonic 1 and 200 Hz harmonic 2, 0 to 30% in steps of 5, and two
+  simultaneous notes (octave and just fifth at 0 ms), as
+  [P7](../../results/P7-earlier-experiments-sparse.md); and ABA streaming
+  ([C2](../../results/C2-aba-streaming.md)) at 1, 3 and 6 semitones, 100
+  ms, where the model goes from one stream to two. About 2.5 hours for
+  P7's set [estimate, P7's 28 to 37 min per mistuning level and 5 to 17
+  min per two-note hypothesis, 4 at a time] and about 3 hours for ABA
+  [estimate, C2's 1 to 1.5 h per hypothesis with kernels inferred on
+  Cho's PC, 6 fits 4 at a time; the cloud CPU is 1.3 to 2 times slower],
+  cloud CPU.
+- **(B) P7's set only.** Leaves out streaming, where the components are
+  at 1000 Hz and above and the threshold should change nothing, but
+  dominance (0.83 at 2 kHz) still reweights the channels [computed].
+- **(C) Everything** (A1 to C3, about two days of cloud CPU [estimate]).
+
+**Recommendation: A.** It covers the three kinds of result the paper
+reports and the conditions most sensitive to low channels (100 Hz
+harmonic 1, the octave at 100 and 200 Hz).
+
+### P23. What to compare
+
+- **(A) With and without both options**, all runs with the sparse
+  spectrum and 30 Hz floor as for Shepard; P7's own runs are the "without"
+  for its set, and C2's are for ABA. The ABA hypotheses are whistles only,
+  so the sparse spectrum and the f0 floor do not apply to them, and C2's
+  runs serve unchanged.
+- **(B) Each option alone as well**, doubling the cost.
+
+**Recommendation: A.** Each option alone can follow where the two
+together change a result.
+
+2026-10-30: Cho chose P22 (A) on the decision card; P23 (A) as recommended.
+Results: [P10](../../results/P10-earlier-experiments-hearing.md).

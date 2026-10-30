@@ -1,0 +1,5 @@
+15000 Adam steps at most, stopping at a rise under 0.5 over 1000, 128 samples, sigma 10 dB, seed 0, fft-bass-gain cochleagram, trajectories, all timing inferred, sparse spectra, frequency floor 30 Hz, threshold floor, dominance
+stimulus  hypothesis  n_params  structure  laplace  importance  ess  floored  log_joint_at_mode  seconds  elbo  vi_importance  vi_ess
+just_fifth 0 ms                     one@100      155    -2.05   -10694.2   -10697.1     4    0   -10681.7    972.4   -10696.2   -10693.5     2
+                                    mode 1: log_joint_at_mode -10717.3, laplace -10739.4, importance -10744.0, elbo -10745.2, vi_importance -10744.9
+                                    mode 2: log_joint_at_mode -10681.7, laplace -10694.2, importance -10697.1, elbo -10696.2, vi_importance -10693.5
