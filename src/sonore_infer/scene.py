@@ -698,7 +698,7 @@ class Scene:
         return rates
 
     def log_joint(
-        self, observed: torch.Tensor, cochleagram: Cochleagram, sigma: float = 10.0
+        self, observed: torch.Tensor, cochleagram: Cochleagram, sigma: float | torch.Tensor = 10.0
     ) -> Callable[[Params], torch.Tensor]:
         """``params -> log p(observed | params) + log p(params)``, for the evidence.
 
@@ -755,7 +755,7 @@ def evaluate(
     n_samples: int = 128,
     generator: torch.Generator | None = None,
     variational_steps: int = 0,
-    sigma: float = 10.0,
+    sigma: float | torch.Tensor = 10.0,
     report: Callable[[str], None] | None = None,
     tolerance: float | None = None,
 ) -> SceneResult:

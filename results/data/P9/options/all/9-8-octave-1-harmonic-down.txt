@@ -1,0 +1,5 @@
+Shepard pairs from tone 9; up to 15000 Adam steps, stop at a rise under 0.5 over 1000; 2000 variational steps, 128 samples, seed 0; fft-bass-gain cochleagram, sigma 10 dB; threshold floor True, dominance True; floor 30 Hz, sparse spectrum
+first  second  steps_clockwise  hypothesis  n_params  structure  log_joint_at_mode  laplace  elbo  vi_importance  vi_ess  shift_erb  seconds
+    9       8                9  harmonic down 33.9->31.6              421    -2.73   -10754.5   -10267.3   -10268.4   -10265.7      1    -0.077   1235.2
+9->8: relative to the best: harmonic down 33.9->31.6 0.0
+9->8: steps clockwise 9, P(up) 0.000

@@ -39,6 +39,7 @@ import torch
 
 from sonore_infer.cochleagram import FFTCochleagram
 from sonore_infer.erb import freq_to_erb_float
+from sonore_infer.hearing import dominance_sigma
 from sonore_infer.priors import ABSENT_OFFSET_DB
 from sonore_infer.scene import GRID_STEP, Harmonic, Scene, SceneTiming, Whistle, evaluate
 from sonore_infer.stimuli import shepard as sh
@@ -186,6 +187,22 @@ def main():
         "--whistle-floor", type=float, default=30.0, help="components below this [dB] get none"
     )
     parser.add_argument("--only", nargs="+", help="fit only hypotheses whose label starts with one of these")
+    parser.add_argument(
+        "--sigma",
+        type=float,
+        default=10.0,
+        help="the likelihood's SD [dB] (design relative-pitch-listeners P18)",
+    )
+    parser.add_argument(
+        "--threshold-floor",
+        action="store_true",
+        help="floor each channel at the threshold of hearing (design relative-pitch-dominance P19)",
+    )
+    parser.add_argument(
+        "--dominance",
+        action="store_true",
+        help="likelihood SD per channel by spectral dominance (design relative-pitch-dominance P20)",
+    )
     parser.add_argument("--max-steps", type=int, default=15000)
     parser.add_argument("--tolerance", type=float, default=0.5)
     parser.add_argument("--variational-steps", type=int, default=2000)
@@ -193,11 +210,13 @@ def main():
     parser.add_argument("--seed", type=int, default=0)
     args = parser.parse_args()
     seconds = args.seconds or [s for s in range(1, sh.STEPS_PER_OCTAVE + 1) if s != args.first]
-    cochleagram = FFTCochleagram()
+    cochleagram = FFTCochleagram(threshold_floor=args.threshold_floor)
+    sigma = dominance_sigma(cochleagram.cfs, args.sigma) if args.dominance else args.sigma
     print(
         f"Shepard pairs from tone {args.first}; up to {args.max_steps} Adam steps, stop at a rise under "
         f"{args.tolerance} over 1000; {args.variational_steps} variational steps, {args.samples} samples, "
-        f"seed {args.seed}; fft-bass-gain cochleagram, sigma 10 dB; "
+        f"seed {args.seed}; fft-bass-gain cochleagram, sigma {args.sigma:g} dB; "
+        f"threshold floor {args.threshold_floor}, dominance {args.dominance}; "
         f"floor {args.floor or 87.5:g} Hz, {'sparse' if args.sparse_spectrum else 'GP'} spectrum"
     )
     print(
@@ -232,6 +251,7 @@ def main():
                 n_samples=args.samples,
                 generator=torch.Generator().manual_seed(args.seed),
                 variational_steps=args.variational_steps,
+                sigma=sigma,
                 report=status(f"{args.first}->{second} {label}"),
             )
             e, v = result.evidence, result.variational
