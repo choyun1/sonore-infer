@@ -20,6 +20,7 @@ import time
 import torch
 
 from sonore_infer.cochleagram import FFTCochleagram
+from sonore_infer.hearing import dominance_sigma
 from sonore_infer.scene import Scene, SceneTiming, Whistle, evaluate
 from sonore_infer.stimuli import bistability as ab
 
@@ -103,14 +104,27 @@ def main():
         action="store_true",
         help="infer each GP's sigma and lengthscale instead of fixing them at the medians (design C3 (B))",
     )
+    parser.add_argument(
+        "--threshold-floor",
+        action="store_true",
+        help="floor channels at the threshold of hearing (design relative-pitch-dominance P19)",
+    )
+    parser.add_argument(
+        "--dominance",
+        action="store_true",
+        help="likelihood SD per channel by spectral dominance (design relative-pitch-dominance P20)",
+    )
     args = parser.parse_args()
-    cochleagram = FFTCochleagram()
+    cochleagram = FFTCochleagram(threshold_floor=args.threshold_floor)
+    sigma = dominance_sigma(cochleagram.cfs) if args.dominance else 10.0
     print(
         f"{args.steps} Adam steps"
         + (f" at most, stopping at a rise under {args.tolerance} over 1000" if args.tolerance else "")
         + f", {args.samples} samples, seed {args.seed}, "
         "fft-bass-gain cochleagram, trajectories, all timing inferred"
         + (", GP sigma and lengthscale inferred" if args.infer_kernel else "")
+        + (", threshold floor" if args.threshold_floor else "")
+        + (", dominance" if args.dominance else "")
     )
     print(
         "stimulus  hypothesis  n_params  structure  fit_steps  laplace  importance  ess  floored"
@@ -137,6 +151,7 @@ def main():
                     variational_steps=args.variational_steps,
                     report=status(hypothesis),
                     tolerance=args.tolerance,
+                    sigma=sigma,
                 )
                 results[hypothesis] = result
                 e = result.evidence
