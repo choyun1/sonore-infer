@@ -176,9 +176,11 @@ document with its decisions for Cho before any run.
   decisions P15 to P18). P9 traces the too-sharp crossover to faint
   energy in the lowest cochleagram channels; on 8 pairs, a threshold of
   hearing and spectral dominance (design relative-pitch-dominance, P19 to
-  P21) move the crossover to between 5 and 6 steps. Next: all 90 pairs
-  with those options and the listener fit, other seeds, and whether the
-  options become defaults (decision P13).
+  P21) move the crossover to between 5 and 6 steps, and on all 90 pairs
+  they bring the Group I fit to within 12 of the curve in steps alone
+  (from 46). Next: the remaining early crossover, Group III's rise at 9
+  steps, other seeds, and whether the options become defaults (decision
+  P13).
 - **ABA margins against graded listener data.** C2's log odds are far
   larger than the paper's (up to +217); whether that matters is deferred
   until graded listener data are compared (the "Against the paper"

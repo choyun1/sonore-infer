@@ -205,3 +205,46 @@ odds of the harmonic hypotheses by the ELBO with both options [measured,
   it was finite; the rerun should report both.
 - **Not checked:** the listener fit itself, which needs all 90 pairs
   (P3 and P8) rerun with the options; other seeds.
+
+## All 90 pairs with both options, and the listener fit again
+
+Every pair rerun with `--threshold-floor --dominance`, harmonic hypotheses
+only (the whistles were 91 to 147 behind on P3), from all three readings
+of the first tone (the 52 to 104 Hz reading and an octave either side, as
+P8 did for 3 to 5 steps): 510 fits, one seed [measured, `pair.py`,
+outputs in `results/data/P9/options/all/`; fit by `listener_noise.py`,
+output in `results/data/P9/options/fit_all.txt`]. A first fit with the
+extra readings at 3 to 5 steps only, as decision P17 had it, made the
+predicted fraction rise from 0.40 at 5 steps to 0.46 at 6, because at 5
+steps the extra readings turned 5 of the 10 pairs from up to down and at
+6 steps there were none (`fit_all_p17.txt`); so all steps now have them.
+Whistles are left out here, unlike above.
+
+| | Before (above) | Both options, all readings | Baseline in steps |
+|---|---|---|---|
+| Group I, β | 0.155 | 0.247 | |
+| Group I, λ | 0.035 | 0.010 | |
+| Group I, log likelihood | −750.6 | −716.5 | −704.6 |
+| Group I, held out | −773.1 | −723.8 | −708.6 |
+| Group III, λ | 0.520 | 0.500 | |
+| Group III, log likelihood | −742.4 | −745.1 | −740.1 |
+| Group III, held out | −746.8 | −749.7 | −756.8 |
+
+Fitted fractions at 1 to 9 steps, Group I: 0.99 0.97 0.89 0.69 0.42 0.21
+0.06 0.02 0.01, against Shepard's 1.00 1.00 .89 .75 .53 .25 .09 .02 .02.
+
+- **The options close most of Group I's gap.** The model-based fit gains
+  34 in log likelihood and 49 held out, and is now 12 (15 held out) behind
+  the curve in steps alone, from 46 (64). The log odds now fall evenly
+  with steps, from about +20 at 1 step to about −24 at 9.
+- **What is left is a crossover slightly early**: 0.42 at 5 steps
+  against 0.53, and 0.69 at 4 against 0.75. At 5 steps the log odds range
+  from −8.0 to +5.1 and 7 of the 10 pairs lean down.
+- **Group III is unchanged**: still mostly guessing (λ 0.50), and its rise
+  to 0.40 at 9 steps is still missed. The octave readings did not produce
+  it: every pair 9 steps apart is down by 17.7 or more. Group III's β is
+  at the grid's upper bound of 1, so it is not determined.
+- **Not checked:** other seeds; the importance estimates (the log odds
+  above use them where finite, as before, with effective sample sizes of
+  a few); whether the options should become defaults (decision P13); the
+  options' effect on the other experiments.
