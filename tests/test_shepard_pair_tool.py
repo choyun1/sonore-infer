@@ -32,3 +32,9 @@ def test_octave_moves_the_reading_and_respects_the_floor(pair):
     assert starts == pytest.approx([reading * 2] * len(upper), rel=0.01)
     # an octave down, the down step would start below the 30 Hz floor and is left out
     assert [label.split()[1] for label in lower] == ["up"]
+
+
+def test_seeds_need_an_output_per_seed(pair, monkeypatch):
+    monkeypatch.setattr("sys.argv", ["pair.py", "--seeds", "0", "1", "--output", "out.txt"])
+    with pytest.raises(SystemExit):
+        pair.main()

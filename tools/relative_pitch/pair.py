@@ -26,7 +26,15 @@ the hypotheses whose fitted direction is up, each weighted by its
 variational evidence plus structure prior (the ELBO where importance
 sampling fails).
 
+With ``--seeds`` (design relative-pitch-group3, P26) the mode is fitted
+once per hypothesis and the importance sampling and variational fit, the
+only steps that use the seed, are run once per seed from that mode; each
+seed's rows go to ``--output`` with ``{seed}`` replaced, in the format of a
+single run, and its ``seconds`` column is the time of that seed's sampling
+alone (the first seed's also includes the mode fit).
+
     python tools/relative_pitch/pair.py --first 1 --seconds 2 3 --sparse-spectrum --floor 30
+    python tools/relative_pitch/pair.py --first 1 --seconds 2 --seeds 0 1 2 --output out/1-2-s{seed}.txt
 """
 
 import argparse
@@ -39,6 +47,7 @@ import torch
 
 from sonore_infer.cochleagram import FFTCochleagram
 from sonore_infer.erb import freq_to_erb_float
+from sonore_infer.evidence import log_evidence, variational_evidence
 from sonore_infer.hearing import dominance_sigma
 from sonore_infer.priors import ABSENT_OFFSET_DB
 from sonore_infer.scene import GRID_STEP, Harmonic, Scene, SceneTiming, Whistle, evaluate
@@ -208,26 +217,44 @@ def main():
     parser.add_argument("--variational-steps", type=int, default=2000)
     parser.add_argument("--samples", type=int, default=128)
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument(
+        "--seeds", type=int, nargs="+", help="several sampling seeds from one mode fit (P26); needs --output"
+    )
+    parser.add_argument("--output", help="with --seeds, a path with {seed} for each seed's rows")
     args = parser.parse_args()
+    if args.seeds and (not args.output or "{seed}" not in args.output):
+        parser.error("--seeds needs --output with {seed} in it")
+    seeds = args.seeds or [args.seed]
+    outs = (
+        {seed: open(args.output.format(seed=seed), "w", encoding="utf-8") for seed in seeds}
+        if args.seeds
+        else {args.seed: sys.stdout}
+    )
     seconds = args.seconds or [s for s in range(1, sh.STEPS_PER_OCTAVE + 1) if s != args.first]
     cochleagram = FFTCochleagram(threshold_floor=args.threshold_floor)
     sigma = dominance_sigma(cochleagram.cfs, args.sigma) if args.dominance else args.sigma
-    print(
-        f"Shepard pairs from tone {args.first}; up to {args.max_steps} Adam steps, stop at a rise under "
-        f"{args.tolerance} over 1000; {args.variational_steps} variational steps, {args.samples} samples, "
-        f"seed {args.seed}; fft-bass-gain cochleagram, sigma {args.sigma:g} dB; "
-        f"threshold floor {args.threshold_floor}, dominance {args.dominance}; "
-        f"floor {args.floor or 87.5:g} Hz, {'sparse' if args.sparse_spectrum else 'GP'} spectrum"
-    )
-    print(
-        "first  second  steps_clockwise  hypothesis  n_params  structure  log_joint_at_mode  laplace"
-        "  elbo  vi_importance  vi_ess  shift_erb  seconds"
-    )
+    for seed, out in outs.items():
+        print(
+            f"Shepard pairs from tone {args.first}; up to {args.max_steps} Adam steps, stop at a rise under "
+            f"{args.tolerance} over 1000; {args.variational_steps} variational steps, "
+            f"{args.samples} samples, "
+            f"seed {seed}; fft-bass-gain cochleagram, sigma {args.sigma:g} dB; "
+            f"threshold floor {args.threshold_floor}, dominance {args.dominance}; "
+            f"floor {args.floor or 87.5:g} Hz, {'sparse' if args.sparse_spectrum else 'GP'} spectrum",
+            file=out,
+        )
+        print(
+            "first  second  steps_clockwise  hypothesis  n_params  structure  log_joint_at_mode  laplace"
+            "  elbo  vi_importance  vi_ess  shift_erb  seconds",
+            file=out,
+            flush=True,
+        )
     for second in seconds:
         sound = sh.pair(args.first, second)
         observed = cochleagram(torch.tensor(sound.data[:, 0], dtype=DTYPE))
         clockwise = sh.steps_clockwise(args.first, second)
-        posteriors, shifts = {}, {}
+        posteriors = {seed: {} for seed in seeds}
+        shifts = {}
         for label, scene, start, names in hypotheses(
             args.first,
             second,
@@ -240,40 +267,67 @@ def main():
         ):
             if args.only and not any(label.startswith(prefix) for prefix in args.only):
                 continue
-            begin = time.perf_counter()
-            result = evaluate(
-                scene,
-                [start],
-                observed,
-                cochleagram,
-                steps=args.max_steps,
-                tolerance=args.tolerance,
-                n_samples=args.samples,
-                generator=torch.Generator().manual_seed(args.seed),
-                variational_steps=args.variational_steps,
-                sigma=sigma,
-                report=status(f"{args.first}->{second} {label}"),
-            )
-            e, v = result.evidence, result.variational
-            evidence = v.importance if math.isfinite(v.importance) else v.elbo
-            posteriors[label] = evidence + result.structure_log_prior
-            shifts[label] = shift(result.fit.params, names)
             n_params = sum(value.numel() for value in start.values())
-            print(
-                f"{args.first:5d}  {second:6d}  {clockwise:15d}  {label:34s}  {n_params:5d}"
-                f"  {result.structure_log_prior:7.2f}  {e.log_joint_at_mode:9.1f}  {e.laplace:9.1f}"
-                f"  {v.elbo:9.1f}  {v.importance:9.1f}  {v.effective_sample_size:5.0f}"
-                f"  {shifts[label]:+8.3f}  {time.perf_counter() - begin:7.1f}",
-                flush=True,
-            )
-        if posteriors:
-            top = max(posteriors.values())
-            weights = {label: math.exp(value - top) for label, value in posteriors.items()}
-            total = sum(weights.values())
-            p_up = sum(w for label, w in weights.items() if shifts[label] > 0) / total
-            text = ", ".join(f"{label} {value - top:.1f}" for label, value in posteriors.items())
-            print(f"{args.first}->{second}: relative to the best: {text}", flush=True)
-            print(f"{args.first}->{second}: steps clockwise {clockwise}, P(up) {p_up:.3f}", flush=True)
+            for index, seed in enumerate(seeds):
+                begin = time.perf_counter()
+                report = status(f"{args.first}->{second} {label} seed {seed}")
+                generator = torch.Generator().manual_seed(seed)
+                if index == 0:
+                    result = evaluate(
+                        scene,
+                        [start],
+                        observed,
+                        cochleagram,
+                        steps=args.max_steps,
+                        tolerance=args.tolerance,
+                        n_samples=args.samples,
+                        generator=generator,
+                        variational_steps=args.variational_steps,
+                        sigma=sigma,
+                        report=report,
+                    )
+                    e, v = result.evidence, result.variational
+                    shifts[label] = shift(result.fit.params, names)
+                else:
+                    # the same mode; only the sampling uses the seed (scene.evaluate's order)
+                    log_joint = scene.log_joint(observed, cochleagram, sigma)
+                    report(f"Laplace and importance sampling ({args.samples} samples)")
+                    e = log_evidence(
+                        log_joint, result.fit.params, n_samples=args.samples, generator=generator
+                    )
+                    v = variational_evidence(
+                        log_joint,
+                        result.fit.params,
+                        steps=args.variational_steps,
+                        generator=generator,
+                        report=report,
+                    )
+                evidence = v.importance if math.isfinite(v.importance) else v.elbo
+                posteriors[seed][label] = evidence + result.structure_log_prior
+                print(
+                    f"{args.first:5d}  {second:6d}  {clockwise:15d}  {label:34s}  {n_params:5d}"
+                    f"  {result.structure_log_prior:7.2f}  {e.log_joint_at_mode:9.1f}  {e.laplace:9.1f}"
+                    f"  {v.elbo:9.1f}  {v.importance:9.1f}  {v.effective_sample_size:5.0f}"
+                    f"  {shifts[label]:+8.3f}  {time.perf_counter() - begin:7.1f}",
+                    file=outs[seed],
+                    flush=True,
+                )
+        for seed in seeds:
+            if posteriors[seed]:
+                top = max(posteriors[seed].values())
+                weights = {label: math.exp(value - top) for label, value in posteriors[seed].items()}
+                total = sum(weights.values())
+                p_up = sum(w for label, w in weights.items() if shifts[label] > 0) / total
+                text = ", ".join(f"{label} {value - top:.1f}" for label, value in posteriors[seed].items())
+                print(f"{args.first}->{second}: relative to the best: {text}", file=outs[seed], flush=True)
+                print(
+                    f"{args.first}->{second}: steps clockwise {clockwise}, P(up) {p_up:.3f}",
+                    file=outs[seed],
+                    flush=True,
+                )
+    if args.seeds:
+        for out in outs.values():
+            out.close()
 
 
 if __name__ == "__main__":
