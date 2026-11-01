@@ -67,7 +67,7 @@ for a in 0 0.01 0.02 0.04 0.08 0.12 0.16 0.24; do
       --interval octave --asynchronies $a > octave_$a.txt
 done
 python tools/bass/compare_two_notes.py --variational-steps 2000 --sigma 5 --controls > controls.txt
-python tools/bass/two_notes_summary.py data/B3/octave_*.txt data/B3/controls.txt
+python tools/bass/two_notes_summary.py results/data/B3/octave_*.txt results/data/B3/controls.txt
 ```
 
 The decomposition scripts (`decompose.py`, `channels.py`) are local, in the

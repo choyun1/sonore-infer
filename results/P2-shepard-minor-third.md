@@ -73,3 +73,16 @@ Its best is one harmonic tone fitted to 97 Hz alone, log posterior −95.4,
   the 87.5 Hz floor of the f0 prior is a separate question.
 - **Not checked:** other seeds and tones, and whether 17 whistles lose by
   as much when their importance estimate succeeds.
+
+## Reproduce
+
+Rebuilt on 2026-11-01 from the settings the outputs' headers and this page's
+setup record; the commands themselves were not recorded at the time and
+have not been rerun. Tone 1's readings and whistles ran as two jobs (see Setup):
+
+```
+python tools/relative_pitch/one_tone.py --minor-third --steps-of-circle 1 --only harmonic > step1_harmonics.txt
+python tools/relative_pitch/one_tone.py --minor-third --steps-of-circle 1 --only whistles > step1_whistles.txt
+python tools/relative_pitch/one_tone.py --minor-third --steps-of-circle 4 --highest 200 > step4.txt
+python tools/relative_pitch/search_tone.py shepard:1:minor_third > search_step1.txt
+```
