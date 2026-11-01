@@ -55,12 +55,14 @@ hypothesis, 5 to 16 min per two-note hypothesis.
 ### Mistuned harmonic
 
 Eqn 2 thresholds (%), variational importance estimate
-(`data/P10/thresholds.txt`; P7's from `data/P7/thresholds.txt`):
+(`data/P10/thresholds.txt`; dominance only, run after the rest at Cho's
+request, `data/P10/thresholds_dominance_only.txt` from
+`data/P10/dominance_only/`; P7's from `data/P7/thresholds.txt`):
 
-| Condition | P7 (sparse, 30 Hz floor) | With both options |
-| --- | --- | --- |
-| 100 Hz, harmonic 1 | 22.4 | 30.0 (two sources never preferred) |
-| 200 Hz, harmonic 2 | 12.5 | 12.5 |
+| Condition | P7 (sparse, 30 Hz floor) | With both options | Dominance only |
+| --- | --- | --- | --- |
+| 100 Hz, harmonic 1 | 22.4 | 30.0 (two sources never preferred) | 30.0 (two sources never preferred) |
+| 200 Hz, harmonic 2 | 12.5 | 12.5 | not run |
 
 The other three estimates agree (100/1: 29.7 to 30.0; 200/2: 12.5).
 Eqn 2's threshold is the area under p(one source) over the range, so 30.0
@@ -72,6 +74,7 @@ Log odds of two sources over one, variational importance estimate:
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 100/1, P7 | −20.5 | −12.5 | −17.2 | −9.8 | −4.3 | 5.8 | 17.5 |
 | 100/1, both options | −12.3 | −13.1 | −16.2 | −26.2 | −18.2 | −11.6 | −11.3 |
+| 100/1, dominance only | −14.0 | −15.1 | −17.2 | −12.4 | −14.2 | −10.0 | −8.2 |
 | 200/2, P7 | −17.0 | −21.7 | −5.5 | 16.6 | 43.1 | 77.3 | 105.5 |
 | 200/2, both options | −19.3 | −20.6 | −6.4 | 14.3 | 40.9 | 72.3 | 100.1 |
 
@@ -117,12 +120,14 @@ Log odds of two streams over one, variational importance estimate
   the index's "Against the paper"), so this moves the model further from
   listeners. It moves toward the paper's model (about 45%), which by the
   project's rule is not the reference.
-- **Why, inferred, not checked:** the threshold floor changes no channel at
-  67 Hz and above, and the mistuned component is at 100 to 130 Hz, so the
-  change is probably dominance. With a weight of about 0.5 there, the whistle
-  explains about half as much log likelihood as before. Running dominance
-  alone at 100/1 would check this (P23 (B), 7 fits, about 2 hours of cloud
-  CPU [estimate, from these runs]).
+- **Dominance alone does it.** With dominance and no threshold floor the
+  log odds at 100/1 stay between −8 and −17 and two sources are never
+  preferred, as with both options (P23 (B) for this condition; the
+  threshold floor alone was not run). The floor changes no channel at 67 Hz
+  and above, and the mistuned component is at 100 to 130 Hz, where dominance
+  is about 0.5. Why the halved weight costs the whistle its win is
+  inferred, not checked: its gain in fit is counted at about half, and no
+  longer pays for its parameters.
 - **For decision P13:** the two options help on Shepard pairs and change
   nothing measurable on two notes, streaming or 200/2, but they widen the
   existing gap with listeners at 100/1. Dominance as a fixed per-channel
@@ -130,7 +135,8 @@ Log odds of two streams over one, variational importance estimate
   Terhardt's weight was not built for (it scores the pitch salience of a
   component, design P20), so the 100/1 result is a reason not to make it a
   default as it stands.
-- **Not checked:** other seeds, each option alone, the fifth at other
+- **Not checked:** other seeds, the threshold floor alone, dominance alone
+  outside 100/1, the fifth at other
   asynchronies, the other mistuning conditions, and ABA at other intervals
   and 9 and 12 semitones.
 
@@ -143,6 +149,7 @@ python tools/bass/compare_two_notes.py --interval octave --asynchronies 0 --only
 python tools/grammar/compare_aba.py --semitones 3 --intervals 0.1 --hypotheses one --steps 15000 --tolerance 0.5 --infer-kernel $O
 python tools/grammar/compare_aba.py --semitones 3 --intervals 0.1 --hypotheses two --steps 300 --infer-kernel $O
 python tools/bass/variational_thresholds.py results/data/P10/mistuned/*.txt
+python tools/bass/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --percents 0 --steps 15000 --tolerance 0.5 --sparse-spectrum --floor 30 --dominance --variational-steps 2000
 python tools/bass/two_notes_summary.py results/data/P10/two_notes/*.txt
 ```
 
