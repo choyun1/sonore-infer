@@ -183,8 +183,10 @@ document with its decisions for Cho before any run.
   (from 46). Checked on earlier experiments as P10: no change on ABA,
   two notes or 200/2, but at 100 Hz harmonic 1 the mistuned fundamental
   is no longer heard as separate up to 30%. Next: the remaining early
-  crossover, Group III's rise at 9 steps, other seeds, and whether the
-  options become defaults (decision P13).
+  crossover, Group III's rise at 9 steps and other seeds (design draft
+  [relative-pitch-group-iii.md](../docs/design/relative-pitch-group-iii.md),
+  decisions P24 to P27), and whether the options become defaults
+  (decision P13).
 - **ABA margins against graded listener data.** C2's log odds are far
   larger than the paper's (up to +217); whether that matters is deferred
   until graded listener data are compared (the "Against the paper"
