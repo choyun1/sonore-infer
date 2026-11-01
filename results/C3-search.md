@@ -4,7 +4,7 @@
 > results. The work was done with AI assistance (Claude) and has not yet been
 > checked carefully. Numbers, methods and interpretations may change.
 
-**Status:** first pass on four (b) stimuli and three ABA stimuli. **Paper target:**
+**Status:** first pass on four (b) stimuli and three ABA stimuli; the (b) stimuli rerun with five f0 starts (2026-10-18). **Paper target:**
 App. B.2 (sequential inference); no figure. **Code:**
 `src/sonore_infer/detect.py`, `src/sonore_infer/search.py`,
 `tools/grammar/search_scene.py`, milestone (c) step 5. Design:
@@ -193,7 +193,7 @@ not touch.
 - **The tritone needed cleanup.** The rounds' best was two notes plus a
   whistle at 1715 Hz; cleanup removed the whistle, and that hypothesis came
   first (−124.3, against −145.7 with the whistle).
-- **The fifth at 0 ms does not match.** The search did fit two notes, but
+- **With one start, the fifth at 0 ms did not match.** The search did fit two notes, but
   its fit reached −125.8, about 10 below B2's −115.4 for the same
   structure. A note at 197 Hz plus a whistle at 304 Hz then scored higher
   (−117.5). The detector's f0s are the cause. Started from 200 and 300 Hz
