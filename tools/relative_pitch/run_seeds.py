@@ -1,13 +1,13 @@
-"""Rerun P9's last section on several seeds (design relative-pitch-seeds, P27).
+"""Rerun P09's last section on several seeds (design relative-pitch-seeds, P27).
 
-One ``pair.py --seeds`` job per file of ``results/data/P9/options/all/``
+One ``pair.py --seeds`` job per file of ``results/data/P09/options/all/``
 (first tone, second tone, reading's octave, direction), each seed's rows to
 ``<out>/s<seed>/<the same name>``. Jobs run ``--jobs`` at a time, each with
 one thread (several at once with more threads each run several times
 slower). A job whose files for every seed already end in a P(up) line is
 skipped, so the run can be stopped and restarted.
 
-    python tools/relative_pitch/run_seeds.py --seeds 0 1 2 --jobs 6 --out results/data/P9/seeds
+    python tools/relative_pitch/run_seeds.py --seeds 0 1 2 --jobs 6 --out results/data/P09/seeds
 """
 
 import argparse
@@ -20,7 +20,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 HERE = Path(__file__).parent
-SOURCE = HERE.parent.parent / "results" / "data" / "P9" / "options" / "all"
+SOURCE = HERE.parent.parent / "results" / "data" / "P09" / "options" / "all"
 NAME = re.compile(
     r"(?P<first>\d+)-(?P<second>\d+)-octave(?P<octave>-?\d+)-harmonic-(?P<direction>up|down)\.txt"
 )
