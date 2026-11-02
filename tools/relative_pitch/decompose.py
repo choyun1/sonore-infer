@@ -1,7 +1,7 @@
 """Where a Shepard pair's harmonic up and down hypotheses differ, term by term.
 
 For each pair, fits the two harmonic hypotheses of pair.py (from the 52 to
-104 Hz reading, as P3) to their modes with the same Adam settings, then
+104 Hz reading, as P03) to their modes with the same Adam settings, then
 splits each mode's log joint into the likelihood of the first tone, the
 likelihood of the second tone (windows before and after the middle of the
 gap) and the four prior terms (frequency, level, spectrum, timing). The
@@ -10,7 +10,7 @@ hypothesis's second f0, between it and the up hypothesis's, and above, the
 same channels for both hypotheses. With ``--channels``, also prints the
 second tone's log likelihood, observed level and predicted level [dB, mean
 over its windows] in every channel. Prints up minus down for each part, to show which part makes the
-model's log odds of up against down (P9) grow with the steps.
+model's log odds of up against down (P09) grow with the steps.
 
     python tools/relative_pitch/decompose.py --first 1 --seconds 5 6 7 --sparse-spectrum --floor 30
 """

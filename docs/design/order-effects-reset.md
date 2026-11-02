@@ -3,8 +3,8 @@
 Status: **E8–E11 accepted by Cho, 2026-11-02**, as recommended. E8's run
 then showed the rhythm prior is the model's only push towards a reset, so
 Cho dropped E9 the same day and asked for E10 to be designed: §6, decisions
-E12 and E13, **accepted by Cho as recommended, 2026-11-02**. Written 2026-11-01. Follows experiment O3
-(`results/O3-order-effects.md`) and continues the numbering of
+E12 and E13, **accepted by Cho as recommended, 2026-11-02**. Written 2026-11-01. Follows experiment O03
+(`results/O03-order-effects.md`) and continues the numbering of
 [order-effects.md](order-effects.md) (E8 onwards). AI-assisted (Claude);
 code as of `0bd1aa3`.
 
@@ -36,7 +36,7 @@ same day (§6).
 
 ## 1. What O3 found
 
-With one run per stimulus [measured: `results/data/O3/`]:
+With one run per stimulus [measured: `results/data/O03/`]:
 
 - **Baseline.** Beauvois & Meddis's test alone (1.44 s of ABAB at 90 ms,
   6 semitones) gives two streams by 122. Listeners always heard it as one
@@ -161,7 +161,7 @@ E12 (C) and E13 (A) accepted as recommended, 2026-11-02.
 
 ## 6. After E8: resetting after silence (E12, E13)
 
-E8 [measured: `results/O3-order-effects.md`, "Checked: the long rest left
+E8 [measured: `results/O03-order-effects.md`, "Checked: the long rest left
 out"] showed that without the long rest in the rhythm prior the model
 gives *more* two-stream evidence after a gap than for a fresh sequence. A
 reset therefore has to come from somewhere else. E10 had one candidate,
@@ -169,7 +169,7 @@ a gate on the decision; E12 sets it out with a stronger form.
 
 Every option below can be computed from O3's outputs with no new
 inference, because the window terms are logged per hypothesis
-[measured: `tools/online/reset_summary.py results/data/O3/cu*.txt`, rows
+[measured: `tools/online/reset_summary.py results/data/O03/cu*.txt`, rows
 "gated" and "restart"]. Leaky decision (τ 2.5 s) at times after the
 second sequence's first tone, against the first sequence at the same
 times:

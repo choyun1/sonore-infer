@@ -20,7 +20,7 @@ Each tone starts its event; where tones fill their slots (Cusack et al.),
 the event starts half a ramp shorter, since one source's events need a
 positive rest between them.
 
-The compute per window is design E7's fixed budget, the one O2 chose and
+The compute per window is design E7's fixed budget, the one O02 chose and
 the O1/O2 runs used (``--window 0.1 --steps 2000 --window-patience 50``):
 each window stops once it gains less than 1 over 50 Adam steps.
 

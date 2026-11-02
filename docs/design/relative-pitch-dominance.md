@@ -1,7 +1,7 @@
 # Relative pitch: hearing threshold and spectral dominance — design
 
 Status: **accepted by Cho on 2026-10-28** (P19 to P21 as recommended; see §4).
-Follows [P9](../../results/P9-shepard-listener-noise.md), which traced
+Follows [P09](../../results/P09-shepard-listener-noise.md), which traced
 the model's too-sharp crossover on Shepard pairs to the lowest
 cochleagram channels. Decisions continue the numbering of
 [relative-pitch-listeners.md](relative-pitch-listeners.md) (P15 to P18).
@@ -37,7 +37,7 @@ AI-assisted (Claude); code as of `13f3638`.
 P9 found that, from tone 1, the log odds of up against down fall from
 +22.8 at 2 steps to −53.6 at 8, and that most of the fall is the
 likelihood of the second tone's channels at 20 to 51 Hz [measured,
-`results/data/P9/decompose/`]. The up hypothesis's f0 rises away from the
+`results/data/P09/decompose/`]. The up hypothesis's f0 rises away from the
 component an octave below it and predicts those channels at the 20 dB
 floor; the down hypothesis covers them. From tone 6 the effect is small.
 
@@ -161,8 +161,8 @@ w(f), so channels far from 700 Hz count less.
 - **(A) P7's set plus 3 ABA stimuli.** The mistuned harmonic at 100 Hz
   harmonic 1 and 200 Hz harmonic 2, 0 to 30% in steps of 5, and two
   simultaneous notes (octave and just fifth at 0 ms), as
-  [P7](../../results/P7-earlier-experiments-sparse.md); and ABA streaming
-  ([C2](../../results/C2-aba-streaming.md)) at 1, 3 and 6 semitones, 100
+  [P07](../../results/P07-earlier-experiments-sparse.md); and ABA streaming
+  ([C02](../../results/C02-aba-streaming.md)) at 1, 3 and 6 semitones, 100
   ms, where the model goes from one stream to two. About 2.5 hours for
   P7's set [estimate, P7's 28 to 37 min per mistuning level and 5 to 17
   min per two-note hypothesis, 4 at a time] and about 3 hours for ABA

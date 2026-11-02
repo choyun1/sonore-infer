@@ -16,7 +16,7 @@ There are two models. They share only the ERB scale:
 
 1. **Harmonic sources and whistles heard through a cochleagram**
    (experiments A, B, C, O and P): §1 to §3.
-2. **A random spectrogram heard through a room** (experiments R1 and R2):
+2. **A random spectrogram heard through a room** (experiments R01 and R02):
    §4.
 
 ## Notation
@@ -151,20 +151,20 @@ $\sigma$ and $\ell$ are the medians of Table A.2; $\beta$ and $\epsilon$
 are as in BASS's configuration.
 
 - **Departure.** The paper infers $\sigma$ and $\ell$ for every sound; by
-  default we fix them at the medians. With `infer_kernel` (experiments C1
-  and C2), each is a latent under Table A.2's prior: $\psi =
+  default we fix them at the medians. With `infer_kernel` (experiments C01
+  and C02), each is a latent under Table A.2's prior: $\psi =
   \operatorname{softplus}(u)$ with $u$ normal and truncated so that $\psi$
   stays in the table's bounds, parameterized by $v$ with $u = u_{\min} +
   (u_{\max} - u_{\min})\,\operatorname{sigmoid}(v)$ so that every real $v$
   is allowed (`priors.KernelParameterPrior`). The f0 lengthscale's lower
   bound is 0.01 s, not the 0.1 s printed, because the table's own quartiles
-  need 0.01 ([C1](../results/C1-kernel-inferred.md)).
+  need 0.01 ([C01](../results/C01-kernel-inferred.md)).
 - **Departure.** With several events the within-event term uses the gates
   $\gamma_j$, which lie between 0 and 1, instead of a hard 0 or 1, so the
   prior moves smoothly with the timing (design C4).
 - **Option, off by default.** `frequency_floor_hz` lowers the floor of
   $\bar\phi$ from 3 Cams (87.5 Hz) to $E(f_{\text{floor}})$; experiments
-  P3 and P5 to P7 use 30 Hz (design P12).
+  P03 and P05 to P07 use 30 Hz (design P12).
 
 ### 1.4 Harmonic spectrum
 
@@ -185,7 +185,7 @@ the f0 at the source's mean ERB number.
 - **Departure.** The paper's harmonic sources have every harmonic below
   the Nyquist frequency; ours have $K$, set by the experiment.
 - **Option, off by default: sparse spectra** (design P10 (B), P11 (B),
-  used by P3 and P5 to P7). Each harmonic's level gets an offset $o_k$
+  used by P03 and P05 to P07). Each harmonic's level gets an offset $o_k$
   whose prior says the harmonic is present (near 0 dB) or absent (far
   below), with the probability of present a latent too. The three numbers
   (1, −40 and 10 dB) are assumptions, not fits:
@@ -242,10 +242,10 @@ $$
 All the randomness in the observation is this noise: the renderer and the
 cochleagram are deterministic and differentiable, so gradients of the log
 likelihood with respect to $\boldsymbol\theta$ come from automatic
-differentiation. Experiment B3 uses $\sigma_y = 5$ dB.
+differentiation. Experiment B03 uses $\sigma_y = 5$ dB.
 
 - **Options, off by default** (design relative-pitch-dominance, P19 and
-  P20; tried on 8 Shepard pairs in [P9](../results/P9-shepard-listener-noise.md)).
+  P20; tried on 8 Shepard pairs in [P09](../results/P09-shepard-listener-noise.md)).
   `Cochleagram.threshold_floor` floors channel $c$ of both $\mathbf{y}$ and
   $\mathbf{c}(\boldsymbol\theta)$ at the larger of 20 dB and the threshold
   of hearing at $f_c$ (Terhardt et al., 1982, Eq. 8), converted to the
@@ -257,7 +257,7 @@ differentiation. Experiment B3 uses $\sigma_y = 5$ dB.
 
 ### 1.7 The cochleagram
 
-**FFT cochleagram** (the default from experiment A2 on;
+**FFT cochleagram** (the default from experiment A02 on;
 `cochleagram.FFTCochleagram`). BASS computes its cochleagram with Ellis's
 (2009) approximation: a short-time spectrum pooled into channels shaped
 like gammatone filters [App. A.5]. With a symmetric Hann window $w$ of
@@ -286,11 +286,11 @@ $$
 
 The factor $1/N$ is BASS's: the channels are not calibrated, so a
 sinusoid reads below its level, by about 12.8 dB in the channel at 104 Hz
-and 3.3 dB in the one at 2974 Hz (default from experiment A4 on, "BASS's
+and 3.3 dB in the one at 2974 Hz (default from experiment A04 on, "BASS's
 gain"). With `bass_gain=False` each channel is divided instead by its
 response to a sinusoid of RMS 1 at $f_c$, so that sinusoid reads its level.
 
-**Gammatone cochleagram** (experiment A1; `cochleagram.Cochleagram`). The
+**Gammatone cochleagram** (experiment A01; `cochleagram.Cochleagram`). The
 same 64 gammatones applied as filters: $e_c(t)$ is the magnitude of the
 analytic signal of channel $c$ (its Hilbert envelope), and with
 $\tilde w$ the Hann window normalized to sum to 1,
@@ -304,8 +304,8 @@ so a sinusoid at $f_c$ and level $L$ reads $L$.
 - **Departure, deliberate.** BASS's FFT cochleagram has channels 2 to 3.6
   times wider than true half-ERB filters below 600 Hz, and uncalibrated
   gains. Each moved our thresholds toward the paper's, so both are used to
-  reproduce the paper ([A2](../results/A2-fft-cochleagram.md),
-  [A4](../results/A4-bass-gain.md)). Neither is a claim about the ear.
+  reproduce the paper ([A02](../results/A02-fft-cochleagram.md),
+  [A04](../results/A04-bass-gain.md)). Neither is a claim about the ear.
 - **What it leaves out.** The cochleagram keeps no phase, and smooths
   envelope modulation above a few tens of Hz. See "Timing in the
   likelihood" under [Planned](../results/README.md#planned).
@@ -375,7 +375,7 @@ posterior.
 
 ### 2.4 Variational estimate
 
-From experiment A7 on, as the paper does [App. B.3], a Gaussian is fitted
+From experiment A07 on, as the paper does [App. B.3], a Gaussian is fitted
 to the posterior by maximizing the evidence lower bound, then used as the
 importance-sampling proposal (`evidence.variational_evidence`). The
 coordinates are whitened by the Hessian at the mode: with
@@ -400,7 +400,7 @@ steps; the importance estimate uses $q$ with $S = 256$ draws.
 - **Departure.** The paper ran 250 steps of variational inference for each
   hypothesis in its search and longer fits for the best ones [App. B.2–B.3],
   starting from its proposals. We start from the posterior mode and whiten
-  by its Hessian. A7 found the same thresholds by Laplace and by this.
+  by its Hessian. A07 found the same thresholds by Laplace and by this.
 
 ## 3. From evidence to what the model hears
 
@@ -437,9 +437,9 @@ $$
 When $H_0$ wins everywhere, $\tau = v_{\max}$, which the paper reports as
 not measurable. Some pages also give the rule in BASS's analysis code,
 computed outside this repository because BASS has no license
-([A6](../results/A6-bass-own-code.md)).
+([A06](../results/A06-bass-own-code.md)).
 
-For Shepard pairs ([P3](../results/P3-shepard-pairs.md)), P(up) is the
+For Shepard pairs ([P03](../results/P03-shepard-pairs.md)), P(up) is the
 posterior mass of the hypotheses whose fitted f0 (or whistle frequency)
 rises from the first tone to the second.
 
@@ -447,7 +447,7 @@ rises from the first tone to the second.
 
 Enumeration needs the hypotheses written by hand. The search
 (`search.search`, design C9 and C10, experiment
-[C3](../results/C3-search.md)) builds them from the sound instead, after
+[C03](../results/C03-search.md)) builds them from the sound instead, after
 the paper's sequential inference [App. B.2]:
 
 1. A detector (`detect.detect`) finds onset groups in the cochleagram and,
@@ -469,7 +469,7 @@ the paper's sequential inference [App. B.2]:
 - **Option, off by default: several f0 starts** (`f0_scales`,
   `--f0-scales` in `search_scene.py`). Each hypothesis with a harmonic
   source is fitted once per scale $s$, from the detector's f0 start
-  multiplied by $s$, and the fit with the highest log joint is kept. C3
+  multiplied by $s$, and the fit with the highest log joint is kept. C03
   uses the scales 0.98, 0.99, 1, 1.01 and 1.02: the just fifth's two-note
   fit reaches the notes' f0s only from about 1% above the detector's.
 
@@ -480,8 +480,8 @@ the paper's sequential inference [App. B.2]:
 
 ### 3.4 Online inference
 
-For streaming and buildup ([O1](../results/O1-online-buildup.md),
-[O2](../results/O2-online-speed.md); design O1 to O10), the sound arrives in
+For streaming and buildup ([O01](../results/O01-online-buildup.md),
+[O02](../results/O02-online-speed.md); design O1 to O10), the sound arrives in
 windows $\mathbf{y}_1, \mathbf{y}_2, \dots$ ending at times $t_1, t_2,
 \dots$ (`online.run_online`). The evidence of the sound so far is the
 product of predictive likelihoods,
@@ -510,7 +510,7 @@ latents.
   $D_k = \sum_{j \le k} e^{-(t_k - t_j)/\tau_D} \left(\Delta_j^{(a)} - \Delta_j^{(b)}\right)$;
   $\tau_D = \infty$ is the full log odds without the structure prior.
 - **Reset after silence** (order-effects-reset E12, a readout and
-  structure rule, not inferred; applied in the O3 analysis, not in
+  structure rule, not inferred; applied in the O03 analysis, not in
   `run_online`). After a silence of at least 0.5 s, $D$ is set to 0 and
   only hypotheses whose sources end at the silence and start anew after
   it are compared, so what follows is scored as a fresh sequence.
@@ -521,8 +521,8 @@ latents.
 
 ## 4. The source-and-room model
 
-Experiments [R1](../results/R1-source-and-room.md) and
-[R2](../results/R2-atypical-rooms.md) ask whether a room's reverberation
+Experiments [R01](../results/R01-source-and-room.md) and
+[R02](../results/R02-atypical-rooms.md) ask whether a room's reverberation
 time can be told apart from the source from one sound (design R1 to R8).
 The model is separate from §1 to §3.
 

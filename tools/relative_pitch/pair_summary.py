@@ -17,7 +17,7 @@ higher, pooled over all 90 pairs, for his most accurate (Group I) and least
 accurate (Group III) listeners. With ``--by-steps``, P(up) is also averaged
 over the starting tones at each number of steps.
 
-    python tools/relative_pitch/pair_summary.py results/data/P3/*.txt
+    python tools/relative_pitch/pair_summary.py results/data/P03/*.txt
 """
 
 import argparse

@@ -1,4 +1,4 @@
-"""How the model hears one Shepard tone: experiments P1 and P2 (docs/design/relative-pitch.md).
+"""How the model hears one Shepard tone: experiments P01 and P02 (docs/design/relative-pitch.md).
 
 For each tone, these hypotheses (decision P4), each fitted from a start built
 from the stimulus and scored by its variational evidence:
@@ -12,7 +12,7 @@ from the stimulus and scored by its variational evidence:
   and inside the frequency prior.
 - ``harmonic@F+whistle@G`` (with ``--mixed``): the harmonic reading at F plus
   a whistle at the component an octave below it, G = F/2, the structure the
-  scene search found best on the octave tone 1 (``results/P1-shepard-one-tone.md``).
+  scene search found best on the octave tone 1 (``results/P01-shepard-one-tone.md``).
 - ``chord×K`` (with ``--chord``): K harmonic sources, one at each of the K
   lowest readings, K being the components per octave, so each source takes
   one octave-spaced series of components. With minor-third spacing, four
@@ -172,7 +172,7 @@ def main():
     parser.add_argument(
         "--minor-third",
         action="store_true",
-        help="components a minor third apart (experiment P2) instead of an octave",
+        help="components a minor third apart (experiment P02) instead of an octave",
     )
     parser.add_argument(
         "--floor",
