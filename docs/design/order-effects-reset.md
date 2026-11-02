@@ -1,6 +1,7 @@
 # Order effects: why the model resets wrongly after silence — design
 
-Status: **draft for Cho**, written 2026-11-01. Follows experiment O3
+Status: **E8–E11 accepted by Cho, 2026-11-02**, as recommended. Written
+2026-11-01. Follows experiment O3
 (`results/O3-order-effects.md`) and continues the numbering of
 [order-effects.md](order-effects.md) (E8 onwards). AI-assisted (Claude);
 code as of `0bd1aa3`.
@@ -16,9 +17,9 @@ code as of `0bd1aa3`.
 
 ## Decisions at a glance
 
-Proposed; none accepted yet. The options and reasons are in §3.
+All accepted by Cho on 2026-11-02. The options and reasons are in §3.
 
-| Decision | Recommended |
+| Decision | Accepted |
 |---|---|
 | E8. Check the cause first | (B) One diagnostic run with the long rest left out of the rhythm prior, before any model change |
 | E9. Rhythm across a silence | (C) A heavy-tailed rest prior: each rest is a regular one or, rarely, a break that the source's rhythm does not explain; off by default |
@@ -147,4 +148,4 @@ conditions.
 
 ## 5. Questions for Cho
 
-Accept E8–E11 as recommended, or say which to change.
+Answered 2026-11-02: E8–E11 accepted as recommended.
