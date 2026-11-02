@@ -3,7 +3,7 @@
 Status: **E8–E11 accepted by Cho, 2026-11-02**, as recommended. E8's run
 then showed the rhythm prior is the model's only push towards a reset, so
 Cho dropped E9 the same day and asked for E10 to be designed: §6, decisions
-E12 and E13, **proposed**. Written 2026-11-01. Follows experiment O3
+E12 and E13, **accepted by Cho as recommended, 2026-11-02**. Written 2026-11-01. Follows experiment O3
 (`results/O3-order-effects.md`) and continues the numbering of
 [order-effects.md](order-effects.md) (E8 onwards). AI-assisted (Claude);
 code as of `0bd1aa3`.
@@ -20,7 +20,8 @@ code as of `0bd1aa3`.
 ## Decisions at a glance
 
 E8–E11 accepted by Cho on 2026-11-02 (reasons in §3); E9 dropped and E10
-replaced by E12 the same day. E12 and E13 are proposed (§6).
+replaced by E12 the same day. E12 and E13 accepted as recommended the
+same day (§6).
 
 | Decision | Status |
 |---|---|
@@ -28,8 +29,8 @@ replaced by E12 the same day. E12 and E13 are proposed (§6).
 | E9. Rhythm across a silence | ~~(C) A heavy-tailed rest prior~~ dropped after E8: it would remove the model's only push towards a reset |
 | E10. The decision across a silence | Replaced by E12 |
 | E11. The two-stream baseline on Beauvois & Meddis's test | (A) Set aside with the ABA margins against graded listener data |
-| E12. Reset after silence | Proposed: (C) after a silence of 0.5 s or more, the decision is emptied and the sources end, so what follows is heard afresh; a readout and structure rule, reported as a departure, with (B) beside it |
-| E13. Beauvois & Meddis's inducer effect | Proposed: (A) out of reach of E12; recorded as a gap, its likely cause (adaptation) left for later |
+| E12. Reset after silence | Accepted: (C) after a silence of 0.5 s or more, the decision is emptied and the sources end, so what follows is heard afresh; a readout and structure rule, reported as a departure, with (B) beside it |
+| E13. Beauvois & Meddis's inducer effect | Accepted: (A) out of reach of E12; recorded as a gap, its likely cause (adaptation) left for later |
 
 ---
 
@@ -156,7 +157,7 @@ conditions.
 Answered 2026-11-02: E8–E11 accepted as recommended; E9 dropped and E10
 replaced after E8 (§6).
 
-Open: accept E12 (C) and E13 (A), or say which to change.
+E12 (C) and E13 (A) accepted as recommended, 2026-11-02.
 
 ## 6. After E8: resetting after silence (E12, E13)
 

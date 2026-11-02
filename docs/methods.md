@@ -502,6 +502,11 @@ latents.
   $\Delta_j^{(b)}$ two hypotheses' window terms,
   $D_k = \sum_{j \le k} e^{-(t_k - t_j)/\tau_D} \left(\Delta_j^{(a)} - \Delta_j^{(b)}\right)$;
   $\tau_D = \infty$ is the full log odds without the structure prior.
+- **Reset after silence** (order-effects-reset E12, a readout and
+  structure rule, not inferred; applied in the O3 analysis, not in
+  `run_online`). After a silence of at least 0.5 s, $D$ is set to 0 and
+  only hypotheses whose sources end at the silence and start anew after
+  it are compared, so what follows is scored as a fresh sequence.
 - **Summarizing the past** (S4, default on). The likelihood of time
   windows that only frozen and whole-sound latents reach is replaced by
   its second-order Taylor expansion in the whole-sound latents

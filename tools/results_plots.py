@@ -1133,7 +1133,8 @@ def reset_beauvois_meddis():
     return figure([model, listeners], "O3: Beauvois & Meddis (1997), inducer then test", legend)
 
 
-def reset_cusack():
+def reset_cusack(key="second", label="O3: Cusack et al. (2004), second sequence against the first"):
+    """The leaky decision through the second sequence (``key`` of reset_summary.summary) against the first."""
     panels = []
     for semitones, y_range, y_ticks in (
         (4, (-30, 80), [-25, 0, 25, 50, 75]),
@@ -1151,9 +1152,7 @@ def reset_cusack():
         runs = {g: reset_summary.summary(data("O3", f"cu{semitones}_s{g}.txt")) for g in (1, 2, 5)}
         panel.line(runs[1]["first"], "s5", tip=lambda x, y: f"first sequence, {x:g} s: {y:+.1f}")
         for g, color in ((1, "s1"), (2, "s3"), (5, "s2")):
-            panel.line(
-                runs[g]["second"], color, tip=lambda x, y, g=g: f"after {g} s silence, {x:g} s: {y:+.1f}"
-            )
+            panel.line(runs[g][key], color, tip=lambda x, y, g=g: f"after {g} s silence, {x:g} s: {y:+.1f}")
         panels.append(panel)
     legend = [
         ("s5", "first sequence", "line"),
@@ -1161,7 +1160,7 @@ def reset_cusack():
         ("s3", "after 2 s", "line"),
         ("s2", "after 5 s", "line"),
     ]
-    return figure(panels, "O3: Cusack et al. (2004), second sequence against the first", legend)
+    return figure(panels, label, legend)
 
 
 PLOTS = {
@@ -1185,6 +1184,9 @@ PLOTS = {
     "O2-speed-agreement": speed_agreement,
     "O3-beauvois-meddis": reset_beauvois_meddis,
     "O3-cusack": reset_cusack,
+    "O3-cusack-reset-rule": lambda: reset_cusack(
+        "restart_gated", "O3: Cusack et al. (2004), second sequence heard afresh after the silence (E12)"
+    ),
     "P3-shepard-pairs": shepard_pairs,
     "R1-likelihood-slice": likelihood_slice,
     "R1-interval-coverage": interval_coverage,

@@ -201,6 +201,39 @@ it, the second sequence gives *more* two-stream evidence than a fresh one
 model then shows no reset at all. The rhythm prior is the only thing in
 the model that pushes towards a reset, and it is too weak and too slow.
 
+## With the reset rule (design E12, accepted 2026-11-02)
+
+[order-effects-reset.md](../docs/design/order-effects-reset.md) E12 (C):
+after a silence of 0.5 s or more, the leaky decision is emptied and the
+sources end, so only the restart hypotheses go on and what follows is
+heard afresh. It is a rule built in, a departure from the paper's model
+and from the model's own evidence, which prefers to continue after gaps
+under 5 s. No new runs: the restart hypotheses' window terms are already
+in the outputs (`reset_summary.py`, row "restart"; row "gated" is E12 (B),
+the decision emptied but the sources kept).
+
+![Cusack et al. with the reset rule](plots/O3-cusack-reset-rule.svg)
+
+| | s after first tone | 0.5 | 1 | 2 | 3 | 4 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 4 st | first sequence | 3.6 | 7.7 | 17.9 | 25.7 | 30.6 |
+| | reset rule, after 1 s | −1.1 | 9.8 | 4.1 | 45.2 | 44.2 |
+| | after 2 s | −0.4 | 8.8 | 11.4 | 50.1 | 47.5 |
+| | after 5 s | −0.7 | 8.5 | 18.3 | 26.8 | 30.2 |
+| 6 st | first sequence | 7.0 | 22.7 | 46.5 | 58.8 | 77.0 |
+| | reset rule, after 1 s | 8.8 | 21.1 | 44.8 | 57.8 | 78.7 |
+| | after 2 s | 8.6 | 20.5 | 44.1 | 57.7 | 78.2 |
+| | after 5 s | 7.5 | 21.2 | 44.1 | 59.8 | 70.1 |
+
+At 6 st every gap now tracks the first sequence within 7, with no
+Gap × Time interaction, as Cusack et al.'s listeners. At 4 st the 5 s gap
+tracks it within 5, but after 1 and 2 s the curve runs 7 to 14 below at
+2 s and 14 to 24 above at 3 and 4 s; the cause is not checked (one run
+each; the restart sources' fits may differ from the first sequence's).
+The rule does nothing for Beauvois & Meddis (design E13): the inducer adds
+nothing to the decision, so the test is heard as the test alone, and
+their inducer effect stays out of reach.
+
 ## Against design §3
 
 | §3 expected | Measured |
