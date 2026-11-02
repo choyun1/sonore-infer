@@ -27,7 +27,10 @@ def read(path):
     each row is {"t", "post": {hypothesis: log posterior}, "structure", "full", "tau": [...]}."""
     with open(path, encoding="utf-8") as file:
         lines = file.read().splitlines()
-    gap = tuple(float(x) for x in re.search(r"gap ([\d.]+)-([\d.]+)", lines[0]).groups())
+    gap = tuple(
+        float(x)
+        for x in re.search(r"gap ([\d.]+)-([\d.]+)", next(line for line in lines if " gap " in line)).groups()
+    )
     names, rows = [], []
     for line in lines:
         if line.startswith("odds: end"):

@@ -151,7 +151,7 @@ silence, two for Cusack et al.'s 1 and 2 s gaps, and two restart after
 5 s. The model itself prefers to start its sources afresh after a 5 s gap,
 but not after 1 s, where listeners already reset.
 
-## Why: the rhythm prior [inference, partly checked]
+## Why: the rhythm prior
 
 Each source's log rests between events share one mean and precision,
 integrated out (App. A.2; `priors.NormalGammaMarginal`). A source that has
@@ -173,6 +173,33 @@ Cusack effects the frequency and level priors' fading memory adds.
 
 So, as far as checked, the model's reset comes from rhythm, and it grows
 with the gap's length, where listeners reset fully after 1 s.
+
+### Checked: the long rest left out (design E8, 2026-11-02)
+
+[order-effects-reset.md](../docs/design/order-effects-reset.md) E8: one
+Cusack et al. stimulus (4 st, first sequence cut to 2 s, 5 s gap, all four
+hypotheses) run twice on the cloud, unchanged and with rests longer than
+0.75 s left out of the rhythm prior (`tools/online/reset_rest_check.py`),
+nothing else changed [measured: `data/O3/e8/`]:
+
+| | unchanged | long rest left out |
+| --- | --- | --- |
+| Window term, first 0.5 s after the gap | −3.9 | +21.6 |
+| Mean term, the 7 windows after that | +5.7 | +6.3 |
+| Evidence over the 4 s second sequence | 35.7 | 65.5 |
+| Leaky decision at its end | 23.1 | 36.2 |
+| Two restart's gain over two | +3.7 | −32.7 |
+| Best hypothesis | two restart | two |
+
+(With a 2 s first sequence the rhythm is less settled than after 10 s, so
+the unchanged drop is smaller than O3's −31.) Leaving the long rest out
+moves the first window after the gap by +25.5 towards two streams and the
+restart gain by −36, and turns the best hypothesis from restart to
+continue. So the rhythm prior is the cause of both, as inferred. Without
+it, the second sequence gives *more* two-stream evidence than a fresh one
+(65.5 against 52.0 over the first 4 s of O3's 4 st first sequence): the
+model then shows no reset at all. The rhythm prior is the only thing in
+the model that pushes towards a reset, and it is too weak and too slow.
 
 ## Against design §3
 
@@ -212,5 +239,7 @@ would take about a day or more [estimate].
     python tools/online/online_reset.py bm --silence 2 --restart
     python tools/online/online_reset.py bm --silence none
     python tools/online/online_reset.py cusack --semitones 6 --silence 1 --restart
-    python tools/online/reset_summary.py results/data/O3/*.txt
+    python tools/online/reset_rest_check.py --cutoff 0.75 cusack --semitones 4 --silence 5 \
+        --first-duration 2 --restart
+    python tools/online/reset_summary.py results/data/O3/*.txt results/data/O3/e8/*.txt
     python tools/results_plots.py
