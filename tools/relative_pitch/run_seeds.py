@@ -1,4 +1,4 @@
-"""Rerun P9's last section on several seeds (design relative-pitch-group3, P26).
+"""Rerun P9's last section on several seeds (design relative-pitch-seeds, P27).
 
 One ``pair.py --seeds`` job per file of ``results/data/P9/options/all/``
 (first tone, second tone, reading's octave, direction), each seed's rows to

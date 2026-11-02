@@ -26,7 +26,7 @@ the hypotheses whose fitted direction is up, each weighted by its
 variational evidence plus structure prior (the ELBO where importance
 sampling fails).
 
-With ``--seeds`` (design relative-pitch-group3, P26) the mode is fitted
+With ``--seeds`` (design relative-pitch-seeds, P27) the mode is fitted
 once per hypothesis and the importance sampling and variational fit, the
 only steps that use the seed, are run once per seed from that mode; each
 seed's rows go to ``--output`` with ``{seed}`` replaced, in the format of a
@@ -218,7 +218,7 @@ def main():
     parser.add_argument("--samples", type=int, default=128)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument(
-        "--seeds", type=int, nargs="+", help="several sampling seeds from one mode fit (P26); needs --output"
+        "--seeds", type=int, nargs="+", help="several sampling seeds from one mode fit (P27); needs --output"
     )
     parser.add_argument("--output", help="with --seeds, a path with {seed} for each seed's rows")
     args = parser.parse_args()
