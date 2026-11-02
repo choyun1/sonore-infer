@@ -1,6 +1,8 @@
-# Relative pitch: Group III's errors at small steps, and other seeds — design
+# Relative pitch: Group III's errors at small steps — design
 
-Status: **draft, waiting on Cho's answers** (P24 to P27).
+Status: **draft, waiting on Cho's answers** (P24 to P26). Other seeds
+for the Shepard pairs are a separate design (decision P27, Cho's split of
+2026-11-02).
 Follows [P9](../../results/P9-shepard-listener-noise.md) and
 [P10](../../results/P10-earlier-experiments-hearing.md). Decisions continue
 the numbering of [relative-pitch-dominance.md](relative-pitch-dominance.md)
@@ -21,7 +23,6 @@ the numbering of [relative-pitch-dominance.md](relative-pitch-dominance.md)
 | P24. What to explain | (A) Group III's lower accuracy at the smallest steps in both directions, with the 9-step rise as one end of it |
 | P25. Mechanism | (A) Noise on the interval between the two pitches, after the scene model, fitted per group; no new fits |
 | P26. What to report | (A) As P9, plus a curve of interval noise on the nominal steps as a second baseline and a rough size of the effect |
-| P27. Other seeds | (A) Seeds 1 and 2 on the 50 pairs at 3 to 7 steps, all three readings, both options, on Cho's PC, plus a machine check of 30 seed-0 fits |
 
 ---
 
@@ -169,43 +170,16 @@ unless the answer to (A) makes it matter.
 beats the model-based fit, which says that for Group III the scene model
 adds nothing beyond the number of steps. The page should say so.
 
-### P27. Other seeds
-
-Every Shepard pair result so far is one seed (seed 0, as P3, P8 and P9).
-Earlier seed checks (A8, B4) moved values by 0.5 to 4 per point and
-changed no conclusion, but running the same seed on a different machine
-also moved some values by up to 10 (A8).
-
-- **(A) Seeds 1 and 2 where the answer can turn**: the 50 pairs at 3 to
-  7 steps, where the smallest |L| is 3.7 to 5.1 and many are under 10
-  (P9's table above), all three readings, harmonic only, both options: 300
-  fits per seed, 600 in all, on Cho's PC. Plus 30 seed-0 fits on the PC
-  to separate machine from seed (below). Then refit P9's Group I and III
-  fits and P25 on the mean L over seeds, with the spread per pair. About
-  125 CPU hours at the cloud's speed, or about 10 to 16 hours of wall time
-  on the PC with 6 fits at a time [estimate: 711 s median per fit on P9's
-  run, PC CPU 1.3 to 2 times faster per process (O2), scaling to 6
-  processes not measured].
-- **(B) All 90 pairs, seeds 1 and 2**: 1020 fits, about twice (A). At 1, 2,
-  8 and 9 steps |L| is 9.9 to 27.6, so a seed spread of a few cannot turn
-  them.
-- **(C) One more seed on all 90 pairs.**
-
-**Recommendation: A.** It covers every pair whose answer a seed could turn
-and keeps the run within a day on the PC. The machine check is 15 pairs ×
-2 hypotheses (up and down, 52 to 104 Hz reading), chosen so each starting
-tone appears at least once.
-
 ## 3. Code (if accepted)
 
 - `tools/relative_pitch/listener_noise.py`: add the two interval-noise
   fits of §1 (on nominal steps and on L), with leave one step out and the
-  adjacent-pair check, and a `--seeds` way of averaging L over seed
-  directories. The probes `circ.py` and `combo.py` are the starting point.
-- No change to the scene model or to `pair.py`, which already takes
-  `--seed`.
-- Results: a new page P11 for the Group III fits and the seeds, with data
-  under `results/data/P11/`.
+  adjacent-pair check. The probes `circ.py` and `combo.py` are the
+  starting point. If the seeds design (P27) lands first, the fits also run
+  on its seed-averaged L.
+- No change to the scene model or to `pair.py`.
+- Results: a new page for the Group III fits (next free P number), with
+  data under `results/data/` beside it.
 
 ## 4. Cho's answers
 
