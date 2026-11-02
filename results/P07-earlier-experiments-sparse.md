@@ -1,4 +1,4 @@
-# P7. Mistuned harmonic and two notes, sparse spectra and a 30 Hz floor
+# P07. Mistuned harmonic and two notes, sparse spectra and a 30 Hz floor
 
 > **Under review.** This is a working record, not reviewed
 > results. The work was done with AI assistance (Claude) and has not yet been
@@ -19,24 +19,24 @@ decision P14, second check.
 Shared background: [how the experiments work](README.md#how-the-experiments-work).
 
 With sparse spectra and a 30 Hz floor the model hears an octave Shepard tone
-as one tone ([P5](P05-shepard-one-tone-sparse.md)). Before either option
+as one tone ([P05](P05-shepard-one-tone-sparse.md)). Before either option
 could become a default (decision P13), decision P14 asked what they do to
 earlier results:
 
 - **The mistuned harmonic**, at the two conditions that differ from the
   paper: 100 Hz harmonic 1 and 200 Hz harmonic 2
-  ([A7](A07-variational-evidence.md); "Against the paper" in the
+  ([A07](A07-variational-evidence.md); "Against the paper" in the
   [index](README.md#against-the-paper)). A sparse spectrum makes "a tone with
   that harmonic missing, plus a whistle" cheaper, which should lower the
   thresholds (design, P14).
 - **Two simultaneous notes**, the octave and the just fifth with no
-  asynchrony ([B2](B02-two-notes-variational.md)).
+  asynchrony ([B02](B02-two-notes-variational.md)).
 
 ## Setup
 
-As [A7](A07-variational-evidence.md)'s converged runs (0 to 30% in steps of
-5) and [B2](B02-two-notes-variational.md)'s converged runs at 0 ms, with
-every source given the options of P5:
+As [A07](A07-variational-evidence.md)'s converged runs (0 to 30% in steps of
+5) and [B02](B02-two-notes-variational.md)'s converged runs at 0 ms, with
+every source given the options of P05:
 
 - Each start with a harmonic 30 dB down also gets a twin with that harmonic
   marked absent. For the mistuned harmonic, the one-source hypothesis also
@@ -49,8 +49,8 @@ every source given the options of P5:
   outputs list each mode). Where a mode's importance estimate fails, its
   ELBO stands in.
 
-Model as B2: FFT cochleagram with BASS's gain, fixed kernels, likelihood SD
-10 dB. sonore 0.8.0 (A7 and B2 used 0.6.0). The same 23 fits without the
+Model as B02: FFT cochleagram with BASS's gain, fixed kernels, likelihood SD
+10 dB. sonore 0.8.0 (A07 and B02 used 0.6.0). The same 23 fits without the
 options were rerun on sonore 0.8.0 as a baseline (`data/P07/baseline-0.8.0/`,
 same commands without `--sparse-spectrum --floor 30`). One seed. Cloud CPU, 4 jobs at a
 time: 28 to 37 min per mistuning level, 5 to 17 min per two-note hypothesis.
@@ -59,15 +59,15 @@ time: 28 to 37 min per mistuning level, 5 to 17 min per two-note hypothesis.
 
 ### Mistuned harmonic
 
-![Log odds against mistuning at 100 Hz harmonic 1 and 200 Hz harmonic 2, P7 and P10](plots/P10-earlier-experiments-hearing.svg)
+![Log odds against mistuning at 100 Hz harmonic 1 and 200 Hz harmonic 2, P07 and P10](plots/P10-earlier-experiments-hearing.svg)
 
-*Log odds of two sources over one by variational importance, with and without P7's options, and with P10's. Drawn by `tools/results_plots.py`.*
+*Log odds of two sources over one by variational importance, with and without P07's options, and with P10's. Drawn by `tools/results_plots.py`.*
 
 Eqn 2 thresholds (%), 0 to 30% in steps of 5, by the four estimates
-(`data/P07/thresholds.txt`; the baseline's, `thresholds_baseline.txt`; A7's
+(`data/P07/thresholds.txt`; the baseline's, `thresholds_baseline.txt`; A07's
 from the same tool on its converged outputs, `thresholds_A7.txt`):
 
-| Condition | A7 (sonore 0.6.0): Laplace / variational | Baseline (0.8.0) | Options (0.8.0) |
+| Condition | A07 (sonore 0.6.0): Laplace / variational | Baseline (0.8.0) | Options (0.8.0) |
 | --- | --- | --- | --- |
 | 100 Hz, harmonic 1 | 27.4 / 25.2 | 27.4 / 25.4 | 22.1 / 22.4 |
 | 200 Hz, harmonic 2 | 17.5 / 12.5 | 17.5 / 12.5 | 12.5 / 12.5 |
@@ -77,26 +77,26 @@ variational fit):
 
 | Mistuning (%) | 0 | 5 | 10 | 15 | 20 | 25 | 30 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 100/1, A7 | −23.5 | −12.7 | −28.9 | −14.2 | −15.1 | −inf | 3.1 |
+| 100/1, A07 | −23.5 | −12.7 | −28.9 | −14.2 | −15.1 | −inf | 3.1 |
 | 100/1, baseline | −20.3 | −12.1 | −27.6 | −14.1 | −14.2 | −inf | 2.5 |
 | 100/1, options | −20.5 | −12.5 | −17.2 | −9.8 | −4.3 | 5.8 | 17.5 |
-| 200/2, A7 | −18.2 | −14.2 | −17.7 | 5.9 | 28.6 | 56.6 | 79.6 |
+| 200/2, A07 | −18.2 | −14.2 | −17.7 | 5.9 | 28.6 | 56.6 | 79.6 |
 | 200/2, baseline | −18.9 | −14.3 | −19.2 | 5.1 | 29.6 | 56.1 | 79.5 |
 | 200/2, options | −17.0 | −21.7 | −5.5 | 16.6 | 43.1 | 77.3 | 105.5 |
 
 ### Two notes, 0 ms
 
 Log odds against the best one-source reading, variational
-(`data/P07/two_notes_summary.txt`, `two_notes_summary_baseline.txt`; B2 from
+(`data/P07/two_notes_summary.txt`, `two_notes_summary_baseline.txt`; B02 from
 `data/B02/converged/`). The best one-source reading is `one@200` at the octave
 and `one@100` at the fifth in every run.
 
-| Interval | B2 (0.6.0): two / whistles | Baseline (0.8.0): two / whistles | Options (0.8.0): two / whistles |
+| Interval | B02 (0.6.0): two / whistles | Baseline (0.8.0): two / whistles | Options (0.8.0): two / whistles |
 | --- | --- | --- | --- |
 | Octave | −33.1 / | −34.9 / | −38.9 / |
 | Just fifth | **+54.5** / +7.8 | **+54.1** / +2.4 | **−12.7** / −57.0 |
 
-The baseline matches A7 and B2 within 2 (thresholds within 0.2%), so the
+The baseline matches A07 and B02 within 2 (thresholds within 0.2%), so the
 sonore version does not account for any of the changes; the options do.
 
 At the fifth, `one@100` has two modes. With its missing harmonics present
@@ -130,7 +130,7 @@ it scores −9999.8, 54 higher, and wins
   octave and 50% for the fifth. So listeners fuse the octave most, then the
   fifth, then the rest, but mostly hear both as two tones. With the options
   the model gets the order right (octave and fifth one source, tritones two
-  in B2) but is certain where listeners are not: log odds of 13 to 39 for
+  in B02) but is certain where listeners are not: log odds of 13 to 39 for
   one source, against "one tone" on a third of trials at most. The octave
   was already like this without the options. Their tones were square
   waves of 262 to 988 Hz from a Commodore 64, heard until the listener

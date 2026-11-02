@@ -1,4 +1,4 @@
-# R1. Source and room (RT60) from one reverberant sound
+# R01. Source and room (RT60) from one reverberant sound
 
 > **Under review.** This is a working record, not reviewed
 > results. The work was done with AI assistance (Claude) and has not yet been
@@ -6,7 +6,7 @@
 
 **Status:** done (2026-10-11). The building blocks, the inference
 (step 5) and experiment (a) are merged. Experiment (b), atypical rooms,
-is [R2](R02-atypical-rooms.md).
+is [R02](R02-atypical-rooms.md).
 
 **Paper target:** none in Cusimano et al. (2024), which has no room model;
 its §4.3 names reverberation as one of the aspects of sound generation a
@@ -27,7 +27,7 @@ This page is
 experiment (a), recovery, from the design (decision R7): sounds the model could have
 made, 10 seeds × RT60 in {0.2, 0.4, 0.8} s × three source settings. Success
 is the truth falling in the 90% posterior interval in about 90% of runs,
-per parameter. Experiment (b) is [R2](R02-atypical-rooms.md).
+per parameter. Experiment (b) is [R02](R02-atypical-rooms.md).
 
 ## Steps
 
@@ -47,7 +47,7 @@ downloaded, so its raw output is not here.
 
 ## Likelihood slice
 
-![R1-likelihood-slice](plots/R01-likelihood-slice.svg)
+![R01-likelihood-slice](plots/R01-likelihood-slice.svg)
 
 *Likelihood of one rendered sound (RT60 0.4 s, DRR 10 dB) as the model's RT60 varies, everything else at the truth; σ = 3.6 dB. From [`data/R01/likelihood_slices.txt`](data/R01/likelihood_slices.txt). Values below −60 are drawn at the bottom edge.*
 
@@ -74,7 +74,7 @@ over truth for RT60 is 0.98 to 1.03, and the 90% interval's width (95% over
 
 ## Plots
 
-![R1-interval-coverage](plots/R01-interval-coverage.svg)
+![R01-interval-coverage](plots/R01-interval-coverage.svg)
 
 *Share of runs whose 90% posterior interval contains the truth, per source setting and true RT60 (s), 9 or 10 runs each, from [`data/R01/recovery_summary.txt`](data/R01/recovery_summary.txt). The dotted line is the nominal 90%.*
 
@@ -112,5 +112,5 @@ committed file gives the same text).
   models correlated residuals, or a larger sigma, would be needed for
   calibrated intervals.
 - At BASS's 20 dB floor one sound barely constrains RT60 (see
-  [R2](R02-atypical-rooms.md)), which matters for combining this with
+  [R02](R02-atypical-rooms.md)), which matters for combining this with
   milestone (b)'s model.

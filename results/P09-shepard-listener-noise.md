@@ -1,4 +1,4 @@
-# P9. Shepard pairs: listener noise against Shepard's groups
+# P09. Shepard pairs: listener noise against Shepard's groups
 
 > **Under review.** This is a working record, not reviewed
 > results. The work was done with AI assistance (Claude) and has not yet been
@@ -14,7 +14,7 @@ decisions P15 to P18 and the guards against overfitting under P16.
 
 ## Question
 
-On [P3](P03-shepard-pairs.md) and [P8](P08-shepard-pairs-octave-check.md)
+On [P03](P03-shepard-pairs.md) and [P08](P08-shepard-pairs-octave-check.md)
 the model answers up or down with near certainty, while Shepard's listeners
 are graded. If each group's answers are the model's log odds passed through
 some noise, how much noise does each group need, does the model then
@@ -25,7 +25,7 @@ limen, §V)?
 ## Setup
 
 As the design. For each pair, L is the model's log odds of up against down
-over all its hypotheses (P8's three readings at 3 to 5 steps, P3's four
+over all its hypotheses (P08's three readings at 3 to 5 steps, P03's four
 hypotheses elsewhere). A group judges up with probability
 λ/2 + (1 − λ) · logistic(β · L); the predicted fraction at each number of
 steps is the mean over its 10 pairs. β and λ are fitted per group by
@@ -116,15 +116,15 @@ log odds would match β times the 10 dB log odds:
 ## Why the crossover is too sharp
 
 Measured with `tools/relative_pitch/decompose.py` (outputs in
-`results/data/P09/decompose/`; one seed, the harmonic hypotheses of P3
-from the 52 to 104 Hz reading, refitted to their modes with P3's settings,
-which give the same log joint at the mode as P3, for example −9758.2 for
+`results/data/P09/decompose/`; one seed, the harmonic hypotheses of P03
+from the 52 to 104 Hz reading, refitted to their modes with P03's settings,
+which give the same log joint at the mode as P03, for example −9758.2 for
 1 → 3 up). Each mode's log joint is split into the likelihood of each
-tone and the four prior terms. "Everything else" is P3's ELBO difference
+tone and the four prior terms. "Everything else" is P03's ELBO difference
 minus the likelihood difference at the mode: the priors and the Occam
 factor together. Up minus down:
 
-| Pair | Steps | P3 log odds (ELBO) | Likelihood, tone 1 | Likelihood, tone 2 | of which channels below 60 Hz | Everything else |
+| Pair | Steps | P03 log odds (ELBO) | Likelihood, tone 1 | Likelihood, tone 2 | of which channels below 60 Hz | Everything else |
 |---|---|---|---|---|---|---|
 | 1 → 3 | 2 | +22.8 | +7.5 | +3.9 | −0.7 | +11.4 |
 | 1 → 5 | 4 | +3.3 | +1.7 | −9.3 | −10.9 | +10.9 |
@@ -147,7 +147,7 @@ factor together. Up minus down:
   steps.
 - **From tone 6 the effect is much smaller** (−0.3 to −4.1 below 60 Hz),
   because the up f0 is only 73 to 83 Hz and still spills into those
-  channels. This is the starting-tone dependence P3 and P8 found.
+  channels. This is the starting-tone dependence P03 and P08 found.
 
 So, inferred from these 8 pairs: the model's up or down answer is
 largely decided by which hypothesis accounts for faint energy in the
@@ -156,7 +156,7 @@ the other way round. That energy rises steeply in cost as the up f0 moves
 away from it, which makes the crossover sharp. Whether listeners hear that
 energy at all is not checked: the cochleagram's levels are not calibrated
 to dB SPL here and it has no absolute-threshold or middle-ear weighting.
-Not checked either: other seeds, the octave readings of P8, and pairs
+Not checked either: other seeds, the octave readings of P08, and pairs
 from other starting tones.
 
 ## With a hearing threshold and spectral dominance (design P19 to P21)
@@ -175,7 +175,7 @@ odds of the harmonic hypotheses by the ELBO with both options [measured,
 `pair.py --only harmonic --threshold-floor --dominance`, outputs in
 `results/data/P09/options/evidence/`]:
 
-| Pair | Steps | Likelihood, neither | threshold | dominance | both | Log odds, neither (P3) | Log odds, both |
+| Pair | Steps | Likelihood, neither | threshold | dominance | both | Log odds, neither (P03) | Log odds, both |
 |---|---|---|---|---|---|---|---|
 | 1 → 3 | 2 | +11.4 | +11.4 | +8.3 | +7.9 | +22.8 | +19.9 |
 | 1 → 5 | 4 | −7.6 | +1.9 | +0.8 | +2.1 | +3.3 | +10.3 |
@@ -205,17 +205,17 @@ odds of the harmonic hypotheses by the ELBO with both options [measured,
   size of 1 to 7 they differ from the ELBO by up to 5.9 in one
   hypothesis, and their log odds from tone 1 are +24.0, +4.7, +3.4, +1.6
   and −13.2 at 2, 4, 5, 6 and 8 steps, so by them the crossover from tone
-  1 is between 6 and 8 steps. P9's fit used the importance estimate where
+  1 is between 6 and 8 steps. P09's fit used the importance estimate where
   it was finite; the rerun should report both.
 - **Not checked:** the listener fit itself, which needs all 90 pairs
-  (P3 and P8) rerun with the options; other seeds.
+  (P03 and P08) rerun with the options; other seeds.
 
 ## All 90 pairs with both options, and the listener fit again
 
 Every pair rerun with `--threshold-floor --dominance`, harmonic hypotheses
-only (the whistles were 91 to 147 behind on P3), from all three readings
+only (the whistles were 91 to 147 behind on P03), from all three readings
 of the first tone (the 52 to 104 Hz reading and an octave either side, as
-P8 did for 3 to 5 steps): 510 fits, one seed [measured, `pair.py`,
+P08 did for 3 to 5 steps): 510 fits, one seed [measured, `pair.py`,
 outputs in `results/data/P09/options/all/`; fit by `listener_noise.py`,
 output in `results/data/P09/options/fit_all.txt`]. A first fit with the
 extra readings at 3 to 5 steps only, as decision P17 had it, made the
@@ -257,8 +257,8 @@ Fitted fractions at 1 to 9 steps, Group I: 0.99 0.97 0.89 0.69 0.42 0.21
 
 Rebuilt on 2026-11-01 from the settings the outputs' headers and this page's
 setup record; the commands themselves were not recorded at the time and
-have not been rerun. Pair fits one per file, as on [P3](P03-shepard-pairs.md) and
-[P8](P08-shepard-pairs-octave-check.md); the 8 pairs are 1 to 3, 5, 6, 7
+have not been rerun. Pair fits one per file, as on [P03](P03-shepard-pairs.md) and
+[P08](P08-shepard-pairs-octave-check.md); the 8 pairs are 1 to 3, 5, 6, 7
 and 9, and 6 to 1, 2 and 10.
 
 ```

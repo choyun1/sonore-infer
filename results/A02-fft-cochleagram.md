@@ -1,4 +1,4 @@
-# A2. BASS's FFT cochleagram
+# A02. BASS's FFT cochleagram
 
 > **Under review.** This is a working record, not reviewed
 > results. The work was done with AI assistance (Claude) and has not yet been
@@ -12,15 +12,15 @@
 Shared background: [how the experiments work](README.md#how-the-experiments-work).
 
 
-A1's thresholds were far below the paper's model. Does the cochleagram
+A01's thresholds were far below the paper's model. Does the cochleagram
 explain it? BASS computes its cochleagram with an FFT approximation (Ellis,
 2009): a 25 ms spectrogram pooled into gammatone-shaped channels, rather
 than a gammatone filterbank.
 
 ## Setup
 
-As A1, with one change: the FFT cochleagram, calibrated per channel (the
-calibration is removed in A4). Mistuning on a 22-level grid (0–10% in 1%
+As A01, with one change: the FFT cochleagram, calibrated per channel (the
+calibration is removed in A04). Mistuning on a 22-level grid (0–10% in 1%
 steps, then 12–20 in 2s, then 25–50 in 5s).
 
 Measured effect on channel width (`data/A02/bandwidths.txt`, from
@@ -32,7 +32,7 @@ at 104 Hz; 72.1 Hz against 34.0 Hz at 401 Hz).
 
 Thresholds, % of f0 (`data/A02/thresholds.txt`). 1 row left out.
 
-| f0 (Hz) | Harmonic | Paper's model (by eye) | A1 | A2, Laplace | A2, importance sampling |
+| f0 (Hz) | Harmonic | Paper's model (by eye) | A01 | A02, Laplace | A02, importance sampling |
 | --- | --- | --- | --- | --- | --- |
 | 100 | 1 | about 45 | 6.7 | 12.2 | 12.0 |
 | 100 | 2 | n.m. | 10.1 | 39.5 | 39.6 |
@@ -46,7 +46,7 @@ Thresholds, % of f0 (`data/A02/thresholds.txt`). 1 row left out.
 
 ## Plots
 
-![A2-fft-cochleagram](plots/A02-fft-cochleagram.svg)
+![A02-fft-cochleagram](plots/A02-fft-cochleagram.svg)
 
 *Posterior probability of two sources against mistuning, per condition, from the kept rows in [`data/A02/`](data/A02/) (Laplace estimate). The solid green line is our threshold (Eqn 2); the dashed line is the paper's model, read by eye. Left-out rows are not plotted.*
 
@@ -62,7 +62,7 @@ Those two checks are recorded in the PR, not in committed outputs here.
 ## Reproduce
 
 On today's main, `--cochleagram fft-calibrated` selects this cochleagram
-(`fft` now means A4's uncalibrated version). Not re-run on today's main.
+(`fft` now means A04's uncalibrated version). Not re-run on today's main.
 
 ```
 python tools/bass/compare_mistuned_harmonic.py --f0 100 --harmonic 1 --cochleagram fft-calibrated \

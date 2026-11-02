@@ -1,10 +1,10 @@
-# B1. Two simultaneous notes, Laplace evidence (first pass)
+# B01. Two simultaneous notes, Laplace evidence (first pass)
 
 > **Under review.** This is a working record, not reviewed
 > results. The work was done with AI assistance (Claude) and has not yet been
 > checked carefully. Numbers, methods and interpretations may change.
 
-**Status:** done (2026-10-07), **superseded by [B2](B02-two-notes-variational.md)**:
+**Status:** done (2026-10-07), **superseded by [B02](B02-two-notes-variational.md)**:
 the octave's margins here are within Laplace's own run-to-run noise.
 **Paper target:** none. The paper has no two-note experiment; the closest
 are its simultaneous-grouping illusions (§3.1.2, Fig. 7) and onset
@@ -33,7 +33,7 @@ how does that depend on the interval and on onset asynchrony?
   and at 100 Hz; the best is kept), two harmonic sources, and one harmonic
   source plus a whistle for each upper component that is not a harmonic of
   200 Hz (8 at the tritones, 4 at the fifth, none at the octave).
-- A5's full model (FFT cochleagram with BASS's gain, trajectories, all timing
+- A05's full model (FFT cochleagram with BASS's gain, trajectories, all timing
   inferred). 3000 Adam steps per fit; Laplace and importance-sampling evidence.
 
 ## Results
@@ -59,7 +59,7 @@ at the fifth, all but one resting on fits with no true peak.
 
 ## Plots
 
-![B1-two-notes-laplace](plots/B01-two-notes-laplace.svg)
+![B01-two-notes-laplace](plots/B01-two-notes-laplace.svg)
 
 *Log odds of two sources over the best one-source fit (Laplace estimate), from [`data/B01/summary.txt`](data/B01/summary.txt). Above zero favors two notes.*
 
@@ -70,7 +70,7 @@ synchronous included. The octave comes out as one source up to 80 ms, but
 by margins (5 to 16) no larger than the Laplace estimate's own movement
 between 300 and 3000 steps (up to about 15 for the same start). Many fits
 had no true peak even after 3000 steps; the cause found was a rugged
-likelihood in the f0 trajectory. This is why B2 switched to variational
+likelihood in the f0 trajectory. This is why B02 switched to variational
 evidence (Cho's choice, 2026-10-10).
 
 ## Reproduce
@@ -86,4 +86,4 @@ files, not here.
 
 ## Open
 
-- Superseded by B2.
+- Superseded by B02.

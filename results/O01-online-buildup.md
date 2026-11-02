@@ -1,4 +1,4 @@
-# O1. Buildup of streaming, batch and online
+# O01. Buildup of streaming, batch and online
 
 > **Under review.** This is a working record, not reviewed
 > results. The work was done with AI assistance (Claude) and has not yet been
@@ -62,7 +62,7 @@ Log odds of two streams over one at the end of each triplet (`data/O01/`):
 | 8 st, online, 30 steps, no lag | 1107.5 | 1534.0 | 1569.8 | 1521.5 | 1578.0 | 1471.9 |
 | 8 st, online, 30 steps, lag 1 s | 1107.5 | 1544.5 | 1729.5 | 1832.0 | 1950.9 | 2064.5 |
 
-![O1-online-buildup](plots/O01-online-buildup.svg)
+![O01-online-buildup](plots/O01-online-buildup.svg)
 
 *Log odds of two streams over one after each triplet: batch with 3000
 Adam steps (the diamond: the one-stream fit run to 10,000 steps), online
@@ -118,7 +118,7 @@ end of each triplet, and the leaky odds (τ 2.5 s) at 6 triplets
 
 Windows are 50 ms unless named.
 
-![O1-lag-window](plots/O01-lag-window.svg)
+![O01-lag-window](plots/O01-lag-window.svg)
 
 *Online log odds after each triplet by lag (50 ms windows) and, at 8 st
 with a 1 s lag, by window length.*
@@ -213,7 +213,7 @@ Checks, from the same outputs:
 - Online is not yet cheaper than batch: 680 to 990 s of computing per
   second of sound per hypothesis with a 1 s lag, most of it in each
   window's Hessian. These are the costs before the speed-ups of
-  [O2](O02-online-speed.md), which are now the tool's defaults.
+  [O02](O02-online-speed.md), which are now the tool's defaults.
 - With the leaky decision (τ 2.5 s), the odds still rise over 6 triplets
   but more slowly each triplet, at 4 st from −3.3 to 11.1 and at 8 st
   from 8.0 to 77.6; with τ 1 s, 8 st levels off near 40.
@@ -226,14 +226,14 @@ Checks, from the same outputs:
   adds little error on this stimulus, although a toy model shows a lag
   shorter than the kernel's lengthscale can fail badly when the past is
   weakly observed (`tests/test_online.py`).
-- Milestone (c)'s ABA map (C2) uses 300 steps; its two-stream odds may be
+- Milestone (c)'s ABA map (C02) uses 300 steps; its two-stream odds may be
   inflated the same way.
 
 ## Reproduce
 
 These runs predate three changes of the tool's defaults: evidence every
 0.5 s (since 2026-10-16), and 100 ms windows and the past summarized (both
-since 2026-10-18), all from [O2](O02-online-speed.md). To reproduce them,
+since 2026-10-18), all from [O02](O02-online-speed.md). To reproduce them,
 add `--evidence-every 0 --no-summarize-past`, and `--window 0.05` where no
 window is given.
 

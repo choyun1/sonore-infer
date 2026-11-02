@@ -1,4 +1,4 @@
-# O2. Faster online inference
+# O02. Faster online inference
 
 > **Under review.** This is a working record, not reviewed
 > results. The work was done with AI assistance (Claude) and has not yet been
@@ -6,24 +6,24 @@
 
 **Status:** S1 and S2 checked (2026-10-15), S2 the online tool's default since 2026-10-16 (Cho); S3 tried in two forms, both failed its check, dropped; stopping-rule and window sweep run 2026-10-17; 100 ms windows the online tool's default since 2026-10-18 (Cho); S4 checked 2026-10-18 and the online tool's default since (Cho); S5 measured 2026-10-18.
 **Paper target:** none; this is about cost, checked against
-[O1](O01-online-buildup.md). **Code:** `src/sonore_infer/sources.py`
+[O01](O01-online-buildup.md). **Code:** `src/sonore_infer/sources.py`
 (`trajectory_event`), `src/sonore_infer/online.py` (`run_online`),
 `tools/online/online_buildup.py`, `tools/online/online_cost.py`. Design:
 [faster online inference](../docs/design/online-speed.md), decisions S1 to S6.
 
 ## Question
 
-O1's online runs took about 1,000 s of computing per second of sound per
+O01's online runs took about 1,000 s of computing per second of sound per
 hypothesis. Do the speed-ups of the design make them faster without
 changing the answer? Decision S6's rule: the online log odds stay within 3
-of O1's at every triplet, at 8 and then 4 semitones.
+of O01's at every triplet, at 8 and then 4 semitones.
 
 ## Setup
 
-O1's reference case: App. C.11's ABA sequence of 6 triplets, 8 or 4
+O01's reference case: App. C.11's ABA sequence of 6 triplets, 8 or 4
 semitones, lag 1 s, 50 ms windows, each window fitted until it gains less
 than 1 over 50 Adam steps (at most 2000), events entering after 20 ms of
-their tone. One seed, the cloud CPU (4 threads), as O1.
+their tone. One seed, the cloud CPU (4 threads), as O01.
 
 - **S1**: each event rendered over its own span instead of the whole sound
   so far. The waveform and gradients equal the old ones to rounding, which
@@ -52,10 +52,10 @@ in ms (Hessian in s) [`data/O02/online_cost_st8_before_s1.txt`,
 | 3.05 s | one | 52.9 → 6.8 | 184 → 36 | 49 → 12 |
 | 3.05 s | two | 54.0 → 9.5 | 197 → 48 | 98 → 26 |
 
-The O1 case rerun with S1 gives the same window terms as O1 to 0.01, and
+The O01 case rerun with S1 gives the same window terms as O01 to 0.01, and
 log odds within 0.09 at every triplet (131.85 against 131.94 at 6
 triplets) [`data/O02/st8_w50_p50_lag1.txt`]. Its windows took 2,592 s in all
-against O1's 5,598 s; a test run shared the machine for part of it, so the
+against O01's 5,598 s; a test run shared the machine for part of it, so the
 gain is if anything larger.
 
 One cheap case of each earlier milestone, old and new code side by side on
@@ -75,27 +75,27 @@ infinite event duration, and the new span's end overflowed. Fixed in PR
 
 ### S2 passes S6 and takes a seventh of the time
 
-![O2 speed agreement](plots/O02-speed-agreement.svg)
+![O02 speed agreement](plots/O02-speed-agreement.svg)
 
 | Triplets | 1 | 2 | 3 | 4 | 5 | 6 |
 |---|---|---|---|---|---|---|
-| 8 st, O1 | 9.97 | 37.06 | 60.53 | 84.92 | 108.11 | 131.94 |
+| 8 st, O01 | 9.97 | 37.06 | 60.53 | 84.92 | 108.11 | 131.94 |
 | 8 st, S1 and S2 | 9.97 | 37.03 | 60.91 | 85.63 | 108.97 | 132.98 |
-| 4 st, O1 | −3.27 | −1.58 | 2.56 | 7.09 | 11.36 | 16.31 |
+| 4 st, O01 | −3.27 | −1.58 | 2.56 | 7.09 | 11.36 | 16.31 |
 | 4 st, S1 and S2 | −3.27 | −1.60 | 2.91 | 7.84 | 12.45 | 17.52 |
 
 [`data/O02/st8_w50_p50_lag1_e0.5.txt`, `data/O02/st4_w50_p50_lag1_e0.5.txt`]
 
 The difference is at most 1.04 at 8 semitones and 1.21 at 4, inside S6's
 3. It grows by about 0.2 to 0.4 per triplet, so longer sequences need the
-check again. The windows took 835 s in all at 8 semitones (O1: 5,598) and
-559 s at 4 (O1: 4,611), six to eight times less; the whole run took
+check again. The windows took 835 s in all at 8 semitones (O01: 5,598) and
+559 s at 4 (O01: 4,611), six to eight times less; the whole run took
 1,108 and 833 s.
 
 ### S3 fails S6, in both forms
 
 **Plain L-BFGS.** The online log odds at 6 triplets were −1.4 million
-against O1's 132 [`data/O02/st8_w50_lbfgs_p5_lag1.txt`]. Tracing the first
+against O01's 132 [`data/O02/st8_w50_lbfgs_p5_lag1.txt`]. Tracing the first
 windows of the one-stream run shows why. Each window's fit moves far along
 directions that the sound heard so far hardly constrains: in the first
 window, the event's log duration rose by 2.0 (its duration seven times) for
@@ -110,7 +110,7 @@ real mode. With S2 at 8 semitones [`data/O02/st8_w50_lbfgs_p50_lag1_e0.5.txt`]:
 
 | Triplets | 1 | 2 | 3 | 4 | 5 | 6 |
 |---|---|---|---|---|---|---|
-| O1 | 9.97 | 37.06 | 60.53 | 84.92 | 108.11 | 131.94 |
+| O01 | 9.97 | 37.06 | 60.53 | 84.92 | 108.11 | 131.94 |
 | S1, S2 and S3 | 12.74 | 34.73 | 89.60 | 117.34 | 139.07 | 167.49 |
 
 Off by up to 36. The two-stream fit is the same as with Adam alone (log
@@ -138,7 +138,7 @@ floor of the stopping rule in nearly every window (3,696 steps over 60
 windows), and the one-stream fit spends hundreds of steps at each B tone's
 arrival (22,677 steps). The 12 Hessians per hypothesis take about 150 to
 250 s of the 835 s. So the next levers are a stopping rule that can stop
-below 50 steps (design S3 (D)), 100 ms windows (O1 found the window barely
+below 50 steps (design S3 (D)), 100 ms windows (O01 found the window barely
 matters, and it halves the floor), and S4.
 
 ### Shorter look-backs barely save time; 100 ms windows save a sixth
@@ -154,9 +154,9 @@ Each is `online_buildup.py --semitones S --triplets 6 --lag 1 --steps 2000
 --window W --window-patience P --window-tolerance P/50`, plus
 `--no-summarize-past` since S4 became the default.
 
-Largest difference from O1's log odds over the 6 triplets, the log odds at
+Largest difference from O01's log odds over the 6 triplets, the log odds at
 6 triplets minus the 10,000-step batch fit's (11.9 at 4 st, 118.5 at
-8 st, from O1), and wall time:
+8 st, from O01), and wall time:
 
 | Window | Look-back | 4 st: max diff | 4 st: minus batch | 4 st: wall | 8 st: max diff | 8 st: minus batch | 8 st: wall |
 |---|---|---|---|---|---|---|---|
@@ -172,11 +172,11 @@ Largest difference from O1's log odds over the 6 triplets, the log odds at
 Bold: outside S6's 3.
 
 - **The 7 at 1 triplet, 8 st, is a second basin, not the change.** Those
-  runs give log odds of 17.0 to 17.1 at 1 triplet, where O1 gives 10.0;
-  O1's own 100 ms run gives 17.0 there too
+  runs give log odds of 17.0 to 17.1 at 1 triplet, where O01 gives 10.0;
+  O01's own 100 ms run gives 17.0 there too
   [`data/O01/st8_w100_p50_lag1.txt`]. Against that run, 100 ms with
   look-back 50 is within 1.12 at every triplet, and with look-back 20
-  within 1.53. It is the window-length effect O1 reported, up to 7.
+  within 1.53. It is the window-length effect O01 reported, up to 7.
 - **Look-backs of 10 and 5 fail**, at 8 st with both windows and at 4 st
   with 100 ms windows (and look-back 5 with 50 ms).
 - **The error, where it is large, mostly favours two streams**: the
@@ -186,7 +186,7 @@ Bold: outside S6's 3.
   look-back 10 and 5 at 4 st, whose first triplet is 6 to 8 lower.
 - **The 4 st crossing does not move**: the log odds turn positive at the
   third triplet in every run but 100 ms with look-back 5 (the second).
-- **Every run sits above the 10,000-step batch fit**, as O1 did; the
+- **Every run sits above the 10,000-step batch fit**, as O01 did; the
   passing runs by 4 to 6 at 4 st and 12 to 15 at 8 st.
 
 The look-back saves little because it is not where the time goes. With
@@ -196,7 +196,7 @@ Laplace estimates. The one-stream fit's steps hardly fall (10,755 to
 9,001 at 4 st, 22,677 to 20,474 at 8 st): it stops because it has
 stopped gaining, not at the floor. 100 ms windows save 14 to 18% of the
 wall time, from fewer windows. So the cheapest runs that pass S6 (against
-O1's own 100 ms run at 8 st) are 100 ms windows with look-back 50 or 20,
+O01's own 100 ms run at 8 st) are 100 ms windows with look-back 50 or 20,
 about a sixth faster than now.
 
 ### S4 changes no answer and saves a sixth more, growing with the sound
@@ -205,7 +205,7 @@ With S4 (`--summarize-past`), the likelihood of the cochleagram's time
 windows that only frozen latents and the trajectory means reach is
 replaced by its second-order expansion in the means, taken when each
 window joins that past; each step renders and compares only the rest, from
-about the lag on (`run_online(summarize_past=True)`). The O1 case, 100 ms
+about the lag on (`run_online(summarize_past=True)`). The O01 case, 100 ms
 windows, look-back 50, against the same runs without it from the sweep
 above [`data/O02/st{8,4}_w100_p50_lag1_e0.5{,_s4}.txt`]:
 

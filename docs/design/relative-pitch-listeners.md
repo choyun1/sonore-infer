@@ -28,8 +28,8 @@ P14). AI-assisted (Claude); code as of `197d15c`.
 
 ## 1. Why
 
-On [P3](../../results/P03-shepard-pairs.md) and
-[P8](../../results/P08-shepard-pairs-octave-check.md) the model gives P(up)
+On [P03](../../results/P03-shepard-pairs.md) and
+[P08](../../results/P08-shepard-pairs-octave-check.md) the model gives P(up)
 of 0 or 1 for almost every pair, with log odds of up against down between
 about 10 and 100 for most pairs [measured, `results/data/P08/summary.txt`].
 Shepard's listeners are graded: Group I, his 26 most accurate on pure

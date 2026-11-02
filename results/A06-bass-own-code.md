@@ -1,4 +1,4 @@
-# A6. BASS's own code on two conditions
+# A06. BASS's own code on two conditions
 
 > **Under review.** This is a working record, not reviewed
 > results. The work was done with AI assistance (Claude) and has not yet been
@@ -14,7 +14,7 @@ in this repository; only its printed results are.
 Shared background: [how the experiments work](README.md#how-the-experiments-work).
 
 
-A5 leaves two gaps: 100 Hz harmonic 1 and 200 Hz harmonic 2. Which come from
+A05 leaves two gaps: 100 Hz harmonic 1 and 200 Hz harmonic 2. Which come from
 our model, and which from how the paper turned evidence into a threshold?
 
 ## Setup
@@ -33,7 +33,7 @@ our model, and which from how the paper turned evidence into a threshold?
 ## Results
 
 Thresholds, % of f0 (`data/A06/thresholds.txt`, which also lists every
-ELBO). Ours is A5's full model on the same 7 levels.
+ELBO). Ours is A05's full model on the same 7 levels.
 
 | Condition | Paper's model (by eye) | BASS run, BASS's rule | BASS run, Eqn 2 | Ours, BASS's rule | Ours, Eqn 2 |
 | --- | --- | --- | --- | --- | --- |
@@ -45,7 +45,7 @@ Ours by BASS's rule on all 9 conditions, 7 levels:
 
 ## Plots
 
-![A6-bass-own-code](plots/A06-bass-own-code.svg)
+![A06-bass-own-code](plots/A06-bass-own-code.svg)
 
 *Log odds of two sources over one at the paper's 7 levels, from [`data/A06/thresholds.txt`](data/A06/thresholds.txt). Above zero favors two sources.*
 

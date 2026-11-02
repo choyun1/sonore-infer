@@ -1,16 +1,16 @@
-# R2. Atypical rooms heard by an exponential room model
+# R02. Atypical rooms heard by an exponential room model
 
 > **Under review.** This is a working record, not reviewed
 > results. The work was done with AI assistance (Claude) and has not yet been
 > checked carefully. Numbers, methods and interpretations may change.
 
 **Status:** done (2026-10-12). **Paper target:** none in Cusimano et al.
-(2024); see [R1](R01-source-and-room.md). The design's experiment (b) (decision R7),
+(2024); see [R01](R01-source-and-room.md). The design's experiment (b) (decision R7),
 after Traer & McDermott (2016), who found listeners' judgments of
 reverberation biased by atypical rooms. Listeners are not compared here.
 **Code:** `tools/source_room/atypical_rooms.py`, PR
 [#37](https://github.com/choyun1/sonore-infer/pull/37) (`d03e2ef`), using
-R1's inference. Design: [source and room](../docs/design/source-reverb.md).
+R01's inference. Design: [source and room](../docs/design/source-reverb.md).
 
 ## Question
 
@@ -67,7 +67,7 @@ at floors 60 and 40: time-reversed −2,141 to −34,458 nats; the other rooms
 
 ## Plots
 
-![R2-atypical-rooms](plots/R02-atypical-rooms.svg)
+![R02-atypical-rooms](plots/R02-atypical-rooms.svg)
 
 *Posterior median RT60 over the true RT60, median over 5 seeds, against T20 × 3 measured from the same impulse responses. From [`data/R02/atypical_rooms_summary.txt`](data/R02/atypical_rooms_summary.txt).*
 

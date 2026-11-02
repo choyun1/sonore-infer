@@ -1,4 +1,4 @@
-# A5. Full model: trajectories and harmonic timing
+# A05. Full model: trajectories and harmonic timing
 
 > **Under review.** This is a working record, not reviewed
 > results. The work was done with AI assistance (Claude) and has not yet been
@@ -18,7 +18,7 @@ What is left after adding the rest of BASS's harmonic and whistle sources?
 
 ## Setup
 
-As A4, plus:
+As A04, plus:
 - f0, whistle frequency and both levels as trajectories on a 10 ms grid,
   with the paper's Gaussian-process priors (hyperparameters fixed at the
   medians of Table A.2);
@@ -30,7 +30,7 @@ Thresholds, % of f0 (`data/A05/thresholds.txt`). 48 of 225 rows left out
 (a fit stopped at a point that was not a peak, so the Laplace estimate is
 not valid there).
 
-| f0 (Hz) | Harmonic | Paper's model (by eye) | A4 | A5, Laplace | A5, importance sampling | Levels used |
+| f0 (Hz) | Harmonic | Paper's model (by eye) | A04 | A05, Laplace | A05, importance sampling | Levels used |
 | --- | --- | --- | --- | --- | --- | --- |
 | 100 | 1 | about 45 | 23.5 | 26.6 | 26.2 | 25 |
 | 100 | 2 | n.m. | n.m. | n.m. | n.m. | 24 |
@@ -47,7 +47,7 @@ The scene module of PR #15 reproduces all 225 rows identically as printed
 
 ## Plots
 
-![A5-full-model](plots/A05-full-model.svg)
+![A05-full-model](plots/A05-full-model.svg)
 
 *Posterior probability of two sources against mistuning, per condition, from the kept rows in [`data/A05/`](data/A05/) (Laplace estimate). The solid green line is our threshold (Eqn 2); the dashed line is the paper's model, read by eye. Left-out rows are not plotted.*
 
@@ -56,7 +56,7 @@ The scene module of PR #15 reproduces all 225 rows identically as printed
 The two gaps narrow but do not close: 100 Hz harmonic 1 is 26.6% against
 about 45, and 200 Hz harmonic 2 is 15.7% against about 20. 200 Hz harmonic 3
 moves past the paper's (24.8 against about 21). The 400 Hz harmonic 2 value
-rests on 9 of 25 levels. A6 shows that the 200 Hz harmonic 2 gap comes from
+rests on 9 of 25 levels. A06 shows that the 200 Hz harmonic 2 gap comes from
 the threshold rule, and 100 Hz harmonic 1 from the model.
 
 ## Reproduce
@@ -79,5 +79,5 @@ Raw outputs: [`data/A05/`](data/A05/).
 
 - 100 Hz harmonic 1. Untested candidates: BASS infers each source's GP
   variance and lengthscale per sound (we fix them at the medians), and its
-  evidence estimate differs from ours (see A6, A7).
+  evidence estimate differs from ours (see A06, A07).
 - Many fits are left out (48 of 225), most at 400 Hz harmonic 2.

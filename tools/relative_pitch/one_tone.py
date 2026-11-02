@@ -1,4 +1,4 @@
-"""How the model hears one Shepard tone: experiments P1 and P2 (docs/design/relative-pitch.md).
+"""How the model hears one Shepard tone: experiments P01 and P02 (docs/design/relative-pitch.md).
 
 For each tone, these hypotheses (decision P4), each fitted from a start built
 from the stimulus and scored by its variational evidence:
@@ -172,7 +172,7 @@ def main():
     parser.add_argument(
         "--minor-third",
         action="store_true",
-        help="components a minor third apart (experiment P2) instead of an octave",
+        help="components a minor third apart (experiment P02) instead of an octave",
     )
     parser.add_argument(
         "--floor",

@@ -11,7 +11,7 @@ estimate plus the structure prior, or the ELBO plus the structure prior
 where importance sampling failed (marked ELBO).
 
 Log posteriors are shifted by the likelihood's normalizing term, 4329.7 for
-a 0.225 s tone (64 channels x 21 windows x 3.222), as on the P1 page.
+a 0.225 s tone (64 channels x 21 windows x 3.222), as on the P01 page.
 
     python tools/relative_pitch/combine_starts.py results/data/P05/*.txt
 """

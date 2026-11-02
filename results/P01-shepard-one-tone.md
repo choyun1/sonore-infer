@@ -1,10 +1,10 @@
-# P1. One Shepard tone alone
+# P01. One Shepard tone alone
 
 > **Under review.** This is a working record, not reviewed
 > results. The work was done with AI assistance (Claude) and has not yet been
 > checked carefully. Numbers, methods and interpretations may change.
 
-**Rerun** with sparse spectra and a 30 Hz floor: [P5](P05-shepard-one-tone-sparse.md).
+**Rerun** with sparse spectra and a 30 Hz floor: [P05](P05-shepard-one-tone-sparse.md).
 **Status:** first pass, one seed, all 10 tones; search on tone 1.
 **Paper target:** none in Cusimano et al.; listeners in Shepard (1964) §I.
 **Code:** `src/sonore_infer/stimuli/shepard.py`,
@@ -19,7 +19,7 @@ Shared background: [how the experiments work](README.md#how-the-experiments-work
 How does the unchanged model hear one Shepard tone: as one harmonic tone
 (and at which octave), as a set of whistles, or as a mix? Shepard's
 listeners hear one tone, not a chord [Shepard §I]. This decides what the
-pair experiments (P3, P4) compare, and whether the spectrum prior has to
+pair experiments (P03, P04) compare, and whether the spectrum prior has to
 change first (decision P3).
 
 ## Setup
@@ -49,25 +49,25 @@ change first (decision P3).
   joint rises by less than 0.5 over 1000 steps), then 2000 variational
   steps and 128 importance samples; ranked by the variational importance
   estimate plus the structure prior, as in
-  [B2](B02-two-notes-variational.md). Where importance sampling failed
+  [B02](B02-two-notes-variational.md). Where importance sampling failed
   (−inf), the ELBO is used and marked.
-- **Search.** The C3 search (`tools/grammar/search_scene.py`, unchanged,
+- **Search.** The C03 search (`tools/grammar/search_scene.py`, unchanged,
   wrapped to build Shepard tones) on tone 1, as a check that the
   enumerated set is not missing a better structure.
 
-Model as B2: FFT cochleagram with BASS's gain, fixed kernels, likelihood SD
+Model as B02: FFT cochleagram with BASS's gain, fixed kernels, likelihood SD
 10 dB. One seed. Cloud CPU (4-core Xeon, 2.1 GHz); several runs shared it,
 so the times are rough.
 
 ## Results
 
-![One tone against whistles, and the reading heard, by tone; P1 and P5](plots/P05-shepard-one-tone.svg)
+![One tone against whistles, and the reading heard, by tone; P01 and P05](plots/P05-shepard-one-tone.svg)
 
-*Left: the best one-harmonic reading's log posterior minus the whistles' (variational importance plus structure prior; the ELBO where importance failed). Right: that reading's f0. P5's line is the same with sparse spectra and a 30 Hz floor. Drawn by `tools/results_plots.py`.*
+*Left: the best one-harmonic reading's log posterior minus the whistles' (variational importance plus structure prior; the ELBO where importance failed). Right: that reading's f0. P05's line is the same with sparse spectra and a 30 Hz floor. Drawn by `tools/results_plots.py`.*
 
 Log posteriors are shifted by the likelihood's normalising term, 4329.7
 for a 0.225 s tone (64 channels × 21 windows × 3.222), as on
-[C3](C03-search.md); raw outputs in `data/P01/` are not shifted.
+[C03](C03-search.md); raw outputs in `data/P01/` are not shifted.
 
 | Tone | Best harmonic reading (start) | Its log posterior | Next octave up, relative | Whistles | Whistles, relative to the best harmonic |
 | --- | --- | --- | --- | --- | --- |
@@ -116,7 +116,7 @@ reading (one tone at 155.6 Hz) and 28 above the four whistles.
 - **Energy below 87.5 Hz is unexplained by construction.** It costs every
   hypothesis about equally on a tone, so it does not change the rankings
   within a tone, but it changes which octave is read and makes tones
-  differ from each other. A pair experiment (P3) would inherit this.
+  differ from each other. A pair experiment (P03) would inherit this.
 - **Not checked:** other seeds, other tones in the search, and whether a
   lower prior floor or a sparse-spectrum prior (decision P3 (B)) changes
   the picture.

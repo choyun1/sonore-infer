@@ -1,4 +1,4 @@
-# C2. ABA sequences: one stream or two
+# C02. ABA sequences: one stream or two
 
 > **Under review.** This is a working record, not reviewed
 > results. The work was done with AI assistance (Claude) and has not yet been
@@ -35,7 +35,7 @@ onsets and durations, as the paper did:
 - **two streams:** one whistle with the 8 A tones, one with the 4 B tones
   (1280 parameters).
 
-Full model as in [C1](C01-kernel-inferred.md): trajectories, all timing
+Full model as in [C01](C01-kernel-inferred.md): trajectories, all timing
 inferred, each GP's sigma and lengthscale inferred. Variational evidence
 with 2000 steps, seed 0. The one-stream fits run until the best log joint
 rises by less than 0.5 over 1000 Adam steps (1162 to 9532 steps). The
@@ -85,7 +85,7 @@ gives 6.0 and 5.4. Every seed prefers two streams, by 8 to 10.5, so the
 
 ## Plots
 
-![C2-aba-streaming](plots/C02-aba-streaming.svg)
+![C02-aba-streaming](plots/C02-aba-streaming.svg)
 
 *Log odds of two streams over one, variational importance estimate, seed 0, from [`data/C02/`](data/C02/). Top: the map with its color scale stopping at ±20, as in the paper's Fig. 8D, for comparison by eye. Bottom: the same values on their full scale.*
 

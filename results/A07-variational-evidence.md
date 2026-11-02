@@ -1,4 +1,4 @@
-# A7. Variational evidence on the full model
+# A07. Variational evidence on the full model
 
 > **Under review.** This is a working record, not reviewed
 > results. The work was done with AI assistance (Claude) and has not yet been
@@ -13,13 +13,13 @@ first on main at `73da5f7`.
 Shared background: [how the experiments work](README.md#how-the-experiments-work).
 
 
-Milestone (b) needed a more robust evidence estimate than Laplace (see B1).
+Milestone (b) needed a more robust evidence estimate than Laplace (see B01).
 Before using it there: does variational evidence, as the paper estimates
 it, change milestone (a)'s thresholds?
 
 ## Setup
 
-A5's full model through the scene module, plus a variational fit: a
+A05's full model through the scene module, plus a variational fit: a
 diagonal Gaussian in Laplace-whitened coordinates, fitted by the ELBO
 (Adam, learning rate 0.01, 10 draws per step, 2000 steps), then importance
 sampling from it. Four conditions at the paper's 7 levels.
@@ -48,7 +48,7 @@ floored rows, so it is not used here.
 
 ## Plots
 
-![A7-variational-evidence](plots/A07-variational-evidence.svg)
+![A07-variational-evidence](plots/A07-variational-evidence.svg)
 
 *p(two) by four evidence estimates at the paper's 7 levels, from [`data/A07/`](data/A07/). The four lines mostly lie on top of each other.*
 
@@ -61,7 +61,7 @@ sampling from Laplace +22578, from the variational fit +59).
 
 ## Fits run to convergence (2026-10-15)
 
-The fits above stop after 300 Adam steps. In [C2](C02-aba-streaming.md) that
+The fits above stop after 300 Adam steps. In [C02](C02-aba-streaming.md) that
 left an ABA one-stream fit far from its mode, so the same conditions were
 rerun with each fit continuing until its log joint rose by less than 0.5 over
 1000 steps (at most 15000), seed 0, on the same cloud machine, on a 0-30%
@@ -96,4 +96,4 @@ python tools/bass/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --variational
 
 - Importance sampling's effective sample size stays low (mostly 1–8 of 128).
 - GP variance and lengthscale are still fixed, not inferred as in the paper.
-- Ten seeds of the same run: [A8](A08-ten-seeds.md). Kernel hyperparameters inferred: [C1](C01-kernel-inferred.md).
+- Ten seeds of the same run: [A08](A08-ten-seeds.md). Kernel hyperparameters inferred: [C01](C01-kernel-inferred.md).

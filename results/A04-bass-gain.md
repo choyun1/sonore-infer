@@ -1,4 +1,4 @@
-# A4. BASS's uncalibrated channel gain
+# A04. BASS's uncalibrated channel gain
 
 > **Under review.** This is a working record, not reviewed
 > results. The work was done with AI assistance (Claude) and has not yet been
@@ -19,14 +19,14 @@ low frequencies. Does matching that change the thresholds?
 
 ## Setup
 
-As A3, with the FFT cochleagram's gain left uncalibrated, as in BASS. This
+As A03, with the FFT cochleagram's gain left uncalibrated, as in BASS. This
 became the default on 2026-10-06 (Cho's choice).
 
 ## Results
 
 Thresholds, % of f0 (`data/A04/thresholds.txt`). 7 rows left out.
 
-| f0 (Hz) | Harmonic | Paper's model (by eye) | A3 | A4, Laplace | A4, importance sampling |
+| f0 (Hz) | Harmonic | Paper's model (by eye) | A03 | A04, Laplace | A04, importance sampling |
 | --- | --- | --- | --- | --- | --- |
 | 100 | 1 | about 45 | 15.0 | 23.5 | 22.9 |
 | 100 | 2 | n.m. | n.m. | n.m. | n.m. |
@@ -40,7 +40,7 @@ Thresholds, % of f0 (`data/A04/thresholds.txt`). 7 rows left out.
 
 ## Plots
 
-![A4-bass-gain](plots/A04-bass-gain.svg)
+![A04-bass-gain](plots/A04-bass-gain.svg)
 
 *Posterior probability of two sources against mistuning, per condition, from the kept rows in [`data/A04/`](data/A04/) (Laplace estimate). The solid green line is our threshold (Eqn 2); the dashed line is the paper's model, read by eye. Left-out rows are not plotted.*
 

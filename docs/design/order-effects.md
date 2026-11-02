@@ -329,7 +329,7 @@ already resets its evidence across a gap.
 
 No change to the library is expected: `run_online` takes any tones and any
 window ends. A new tool in `tools/online/` builds the inducer–gap–test
-sequences and the third hypothesis, and a results page (experiment O3) with
+sequences and the third hypothesis, and a results page (experiment O03) with
 a plot, as for O1.
 
 ## 7. Order of work
@@ -339,7 +339,7 @@ a plot, as for O1.
 2. The stimuli and the tool, with tests; one run timed on the cloud CPU.
 3. Reset after silence on Cho's PC: Beauvois & Meddis, then Cusack et al.;
    page O3, PR. Done 2026-10-30, Cusack et al.'s 10 s gaps not run
-   (cost): [O3](../../results/O03-order-effects.md).
+   (cost): [O03](../../results/O03-order-effects.md).
 4. The previous trial's context, once a paper with its stimuli is in hand:
    runs, page O4, PR.
 

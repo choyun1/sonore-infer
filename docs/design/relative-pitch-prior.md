@@ -1,7 +1,7 @@
 # Relative pitch: sparse harmonic spectra and the f0 floor — design
 
 Status: **accepted by Cho on 2026-10-18** (P10 to P14 as recommended; see §4).
-Written 2026-10-18. Follows experiments P1 and P2
+Written 2026-10-18. Follows experiments P01 and P02
 (`results/P01-shepard-one-tone.md`, `results/P02-shepard-minor-third.md`)
 and reopens decision P3 of [relative-pitch.md](relative-pitch.md), as P3
 planned. Decisions continue that document's numbering (P10 to P14).
@@ -164,7 +164,7 @@ P1 measures that.
    thresholds [estimate, reasoning from P10, not run]; listeners' are
    about 1–5% where the model's are 25% at 100 Hz harmonic 1
    ([results README, "Against the paper"](../../results/README.md#against-the-paper)).
-3. **Then** the pair experiments P3 and P4 as relative-pitch.md planned.
+3. **Then** the pair experiments P03 and P04 as relative-pitch.md planned.
 
 **Recommendation: as above.**
 
@@ -185,7 +185,7 @@ broadband harmonic tones and whenever there is energy below 800 Hz, rising
 to about 270 Hz when the energy is only above 3.2 kHz; Krumbholz et al.
 (2000) is its companion. A fixed 30 Hz floor fits Shepard tones and the
 other stimuli here, all with energy below 800 Hz; it would be too low for
-high-passed sounds. Results of P14: [P5](../../results/P05-shepard-one-tone-sparse.md),
-[P6](../../results/P06-shepard-minor-third-sparse.md),
-[P7](../../results/P07-earlier-experiments-sparse.md); the options stay off
+high-passed sounds. Results of P14: [P05](../../results/P05-shepard-one-tone-sparse.md),
+[P06](../../results/P06-shepard-minor-third-sparse.md),
+[P07](../../results/P07-earlier-experiments-sparse.md); the options stay off
 by default.

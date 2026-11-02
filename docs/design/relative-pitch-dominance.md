@@ -1,7 +1,7 @@
 # Relative pitch: hearing threshold and spectral dominance — design
 
 Status: **accepted by Cho on 2026-10-28** (P19 to P21 as recommended; see §4).
-Follows [P9](../../results/P09-shepard-listener-noise.md), which traced
+Follows [P09](../../results/P09-shepard-listener-noise.md), which traced
 the model's too-sharp crossover on Shepard pairs to the lowest
 cochleagram channels. Decisions continue the numbering of
 [relative-pitch-listeners.md](relative-pitch-listeners.md) (P15 to P18).
@@ -161,8 +161,8 @@ w(f), so channels far from 700 Hz count less.
 - **(A) P7's set plus 3 ABA stimuli.** The mistuned harmonic at 100 Hz
   harmonic 1 and 200 Hz harmonic 2, 0 to 30% in steps of 5, and two
   simultaneous notes (octave and just fifth at 0 ms), as
-  [P7](../../results/P07-earlier-experiments-sparse.md); and ABA streaming
-  ([C2](../../results/C02-aba-streaming.md)) at 1, 3 and 6 semitones, 100
+  [P07](../../results/P07-earlier-experiments-sparse.md); and ABA streaming
+  ([C02](../../results/C02-aba-streaming.md)) at 1, 3 and 6 semitones, 100
   ms, where the model goes from one stream to two. About 2.5 hours for
   P7's set [estimate, P7's 28 to 37 min per mistuning level and 5 to 17
   min per two-note hypothesis, 4 at a time] and about 3 hours for ABA

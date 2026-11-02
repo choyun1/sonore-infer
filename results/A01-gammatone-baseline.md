@@ -1,4 +1,4 @@
-# A1. Mistuned harmonic with a gammatone cochleagram
+# A01. Mistuned harmonic with a gammatone cochleagram
 
 > **Under review.** This is a working record, not reviewed
 > results. The work was done with AI assistance (Claude) and has not yet been
@@ -47,7 +47,7 @@ evidence estimate).
 
 ## Plots
 
-![A1-gammatone-baseline](plots/A01-gammatone-baseline.svg)
+![A01-gammatone-baseline](plots/A01-gammatone-baseline.svg)
 
 *Posterior probability of two sources against mistuning, per condition, from the kept rows in [`data/A01/`](data/A01/) (Laplace estimate). The solid green line is our threshold (Eqn 2); the dashed line is the paper's model, read by eye. Left-out rows are not plotted.*
 
@@ -57,7 +57,7 @@ There is a mistuned-harmonic effect, with thresholds that rise with harmonic
 number and fall with f0, but they are well below the paper's model
 everywhere, and still above listeners (about 1–5%, Fig. 7D left, by eye).
 Where the paper's model cannot measure a threshold (100 Hz, harmonics 2 and
-3), ours can. A2 to A5 trace the gap.
+3), ours can. A02 to A05 trace the gap.
 
 ## Reproduce
 

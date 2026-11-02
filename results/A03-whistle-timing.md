@@ -1,4 +1,4 @@
-# A3. Whistle onset and duration inferred
+# A03. Whistle onset and duration inferred
 
 > **Under review.** This is a working record, not reviewed
 > results. The work was done with AI assistance (Claude) and has not yet been
@@ -13,12 +13,12 @@ Shared background: [how the experiments work](README.md#how-the-experiments-work
 
 
 In the paper every event's onset and duration are unknowns with a prior. In
-A1 and A2 the whistle was given the stimulus's timing for free. How much
+A01 and A02 the whistle was given the stimulus's timing for free. How much
 does paying for it change the thresholds?
 
 ## Setup
 
-As A2 (calibrated FFT cochleagram), plus: the whistle's onset (uniform over
+As A02 (calibrated FFT cochleagram), plus: the whistle's onset (uniform over
 the scene) and log duration (Student-t from the normal-gamma prior of
 Table A.1) are inferred. Cosine component phases. Mistuning on a 25-level
 grid (0 1 2 3 4 5 6 7 8 9 10 12 14 16 18 20 22 24 26 28 30 35 40 45 50).
@@ -27,7 +27,7 @@ grid (0 1 2 3 4 5 6 7 8 9 10 12 14 16 18 20 22 24 26 28 30 35 40 45 50).
 
 Thresholds, % of f0 (`data/A03/thresholds.txt`). 5 rows left out.
 
-| f0 (Hz) | Harmonic | Paper's model (by eye) | A2 | A3, Laplace | A3, importance sampling |
+| f0 (Hz) | Harmonic | Paper's model (by eye) | A02 | A03, Laplace | A03, importance sampling |
 | --- | --- | --- | --- | --- | --- |
 | 100 | 1 | about 45 | 12.2 | 15.0 | 14.9 |
 | 100 | 2 | n.m. | 39.5 | n.m. | n.m. |
@@ -41,14 +41,14 @@ Thresholds, % of f0 (`data/A03/thresholds.txt`). 5 rows left out.
 
 ## Plots
 
-![A3-whistle-timing](plots/A03-whistle-timing.svg)
+![A03-whistle-timing](plots/A03-whistle-timing.svg)
 
 *Posterior probability of two sources against mistuning, per condition, from the kept rows in [`data/A03/`](data/A03/) (Laplace estimate). The solid green line is our threshold (Eqn 2); the dashed line is the paper's model, read by eye. Left-out rows are not plotted.*
 
 ## What it says
 
 Inferring the whistle's timing lowers the two-source evidence by about 10
-log units (median over the 189 rows A2 and A3 share: −10.7 in H2's Laplace
+log units (median over the 189 rows A02 and A03 share: −10.7 in H2's Laplace
 estimate; a direct comparison of the two data folders). Every threshold
 rises. 7 of 9 conditions are now within about 3 points of the paper's
 model, counting 100 Hz harmonics 2 and 3, which become not measurable as in
@@ -69,4 +69,4 @@ Raw outputs: [`data/A03/`](data/A03/).
 
 ## Open
 
-- 100 Hz harmonic 1 and 200 Hz harmonic 2 (taken up in A4 to A6).
+- 100 Hz harmonic 1 and 200 Hz harmonic 2 (taken up in A04 to A06).

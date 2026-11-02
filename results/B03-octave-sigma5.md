@@ -1,11 +1,11 @@
-# B3. Octave with the likelihood SD at 5 dB
+# B03. Octave with the likelihood SD at 5 dB
 
 > **Under review.** This is a working record, not reviewed
 > results. The work was done with AI assistance (Claude) and has not yet been
 > checked carefully. Numbers, methods and interpretations may change.
 
 **Status:** done (2026-10-10). **Paper target:** none (see
-[B1](B01-two-notes-laplace.md)). **Code:** `tools/bass/compare_two_notes.py --sigma`,
+[B01](B01-two-notes-laplace.md)). **Code:** `tools/bass/compare_two_notes.py --sigma`,
 PR [#24](https://github.com/choyun1/sonore-infer/pull/24) (`2ee4996`).
 Design: [milestone (b)](../docs/design/milestone-b.md).
 
@@ -13,14 +13,14 @@ Design: [milestone (b)](../docs/design/milestone-b.md).
 
 Shared background: [how the experiments work](README.md#how-the-experiments-work).
 
-In [B2](B02-two-notes-variational.md) the octave stays one source up to
+In [B02](B02-two-notes-variational.md) the octave stays one source up to
 240 ms. Is that because the likelihood's 10 dB SD (BASS's value) makes the
 upper note's late +6 dB on the shared harmonics cheap to explain with one
 source?
 
 ## Setup
 
-As B2 (300 Adam steps, variational evidence with 2000 steps, one seed),
+As B02 (300 Adam steps, variational evidence with 2000 steps, one seed),
 with the likelihood SD at 5 dB instead of 10 dB, for the octave at all 8
 asynchronies and the 4 one-note controls.
 
@@ -31,7 +31,7 @@ ELBO in brackets (`data/B03/`, by `tools/bass/two_notes_summary.py`):
 
 | Asynchrony (ms) | 0 | 10 | 20 | 40 | 80 | 120 | 160 | 240 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| SD 10 dB (B2) | −33.6 | −33.1 | −28.3 | −27.0 | −26.3 | −23.4 | −25.4 | −21.9 |
+| SD 10 dB (B02) | −33.6 | −33.1 | −28.3 | −27.0 | −26.3 | −23.4 | −25.4 | −21.9 |
 | SD 5 dB | −65.0 (−80.0) | −57.5 (−73.5) | −54.7 (−70.7) | −45.2 (−72.4) | −20.2 (−44.2) | −12.6 (−36.7) | −12.3 (−26.5) | −8.2 (−17.2) |
 
 Controls at 5 dB: 200 Hz −25.6, 282.8 Hz −19.0, 300 Hz −21.7, 400 Hz
@@ -39,7 +39,7 @@ Controls at 5 dB: 200 Hz −25.6, 282.8 Hz −19.0, 300 Hz −21.7, 400 Hz
 
 ## Plots
 
-![B3-octave-sigma5](plots/B03-octave-sigma5.svg)
+![B03-octave-sigma5](plots/B03-octave-sigma5.svg)
 
 *Octave: log odds of two sources over the best one source, recomputed from [`data/B02/`](data/B02/) and [`data/B03/`](data/B03/) by `tools/bass/two_notes_summary.py`. Below zero is one source.*
 

@@ -1,4 +1,4 @@
-# C3. Search over scene structures
+# C03. Search over scene structures
 
 > **Under review.** This is a working record, not reviewed
 > results. The work was done with AI assistance (Claude) and has not yet been
@@ -47,9 +47,9 @@ used.
   1000 steps) and screened by its Laplace log posterior. A Laplace that
   fails (covariance not positive definite) leaves the hypothesis out. The
   5 best get 2000 variational steps and are ranked by the variational
-  importance estimate, as in [B2](B02-two-notes-variational.md).
+  importance estimate, as in [B02](B02-two-notes-variational.md).
 
-Model as B2: FFT cochleagram, fixed kernels, likelihood SD 10 dB. One
+Model as B02: FFT cochleagram, fixed kernels, likelihood SD 10 dB. One
 seed. The (b) stimuli ran with one thread each on the cloud CPU; the ABA
 stimuli ran on Cho's PC (CPU), three at once with two threads each.
 
@@ -64,8 +64,8 @@ back here. It is the same for every hypothesis of a stimulus, so it cancels in
 every comparison; the raw outputs in `data/` are not shifted.
 
 Log posterior of the best structure, variational importance estimate
-(`data/C03/`), against B2's enumerative values (`data/B02/`: `vi_importance` plus
-`structure`). B2 predates the n! labelling count (decision C6), which adds
+(`data/C03/`), against B02's enumerative values (`data/B02/`: `vi_importance` plus
+`structure`). B02 predates the n! labelling count (decision C6), which adds
 0.69 to the search's two-source values:
 
 | Stimulus | Search's best | Its log posterior | Enumerative winner | Its log posterior | Same structure? | Fitted | Time (min) |
@@ -81,9 +81,9 @@ variational fits. Time is wall clock for the whole search.
 ### ABA sequences
 
 1, 6 and 12 semitones at 100 ms onset to onset, 12 tones (`data/C03/aba_pc/`),
-against [C2](C02-aba-streaming.md)'s enumerative values (`data/C02/`: the
+against [C02](C02-aba-streaming.md)'s enumerative values (`data/C02/`: the
 one-stream fit from `one_converged/`, two streams from `run_300steps/`,
-`vi_importance` plus `structure`). C2 inferred each Gaussian process's sigma
+`vi_importance` plus `structure`). C02 inferred each Gaussian process's sigma
 and lengthscale; this search kept them fixed, so the two are not exactly the
 same model.
 
@@ -94,7 +94,7 @@ same model.
 | 12 st | two streams, A×8 and B×4 | −165.2 | two streams | −165.0 | yes | 100 | 9.2 |
 
 At 1 semitone the best two-source hypothesis the search kept (−156.0, the
-last tone split off) is 10.8 below one stream; C2's two streams are 18.4
+last tone split off) is 10.8 below one stream; C02's two streams are 18.4
 below. At 6 and 12 semitones no one-stream hypothesis reached the finalists.
 The fitted streams sit at 1000 and 1414 Hz, and 1000 and 2000 Hz, with every
 tone in the right stream (`fitted:` lines).
@@ -102,8 +102,8 @@ tone in the right stream (`fitted:` lines).
 ### The just fifth's two-note fit (2026-10-17)
 
 Why did the search's two-note fit to the just fifth (0 ms) end about 10
-below B2's? The same two-note hypothesis was fitted from five starts,
-on current main, as the C3 search was (fits to convergence, 2000 variational
+below B02's? The same two-note hypothesis was fitted from five starts,
+on current main, as the C03 search was (fits to convergence, 2000 variational
 steps; `data/C03/fifth_starts/`). The detector's candidates sit at 197
 and 304 Hz. Their spectra come from the peaks. The lower note's harmonics 4, 7
 and 10 (800, 1400 and 2000 Hz) start at the −30 dB floor, because no peak was resolved there
@@ -114,7 +114,7 @@ next to the upper note's 900, 1500 and 2100 Hz:
 | Search's (197 and 304 Hz, spectra from the peaks) | −124.7 | – |
 | Search's, floored harmonics started at 0 dB | −119.5 | – |
 | Search's, f0s set to 200 and 300 Hz | −116.0 | −116.0 (1.5) |
-| B2's (200 and 300 Hz, flat spectra) | −115.5 | −114.7 (3.0) |
+| B02's (200 and 300 Hz, flat spectra) | −115.5 | −114.7 (3.0) |
 | Note + whistle, the search's best | −111.5 | −115.3 (2.3) |
 
 The seed changes only the variational fit and its samples. Every seed starts the
@@ -138,7 +138,7 @@ not help either: from exactly 200 and 300 Hz it gives −123.2
 
 So the two-note posterior has several modes within about 1% of the notes'
 f0s, and the evidence, estimated around one mode, depends on which mode the
-fit reaches, by up to 15. B2's −115 comes from a fit started at the true
+fit reaches, by up to 15. B02's −115 comes from a fit started at the true
 f0s, which the model would not have.
 
 Several starts do find it. Both hypotheses were fitted from 16 starts, with
@@ -183,7 +183,7 @@ not touch.
 - **Seven of seven match with five f0 starts.** With one start, six of seven
   matched: the control, the octave, the tritone and all three ABA sequences
   ended with the enumerative winner's structure, and the fifth did not. On ABA
-  the search's log posteriors are within 1.2 of C2's, despite the kernel
+  the search's log posteriors are within 1.2 of C02's, despite the kernel
   difference.
 - **The octave matches for the wrong reason.** The detector does not find
   the upper note's onset (its harmonics coincide with the lower note's even
@@ -194,7 +194,7 @@ not touch.
   whistle at 1715 Hz; cleanup removed the whistle, and that hypothesis came
   first (−124.3, against −145.7 with the whistle).
 - **With one start, the fifth at 0 ms did not match.** The search did fit two notes, but
-  its fit reached −125.8, about 10 below B2's −115.4 for the same
+  its fit reached −125.8, about 10 below B02's −115.4 for the same
   structure. A note at 197 Hz plus a whistle at 304 Hz then scored higher
   (−117.5). The detector's f0s are the cause. Started from 200 and 300 Hz
   with the detector's spectra, the same fit recovers 9 of the 10. Lifting
@@ -234,8 +234,8 @@ Defaults: `--steps 15000 --tolerance 0.5 --variational-steps 2000 --keep 5
 
 ## Open
 
-- ABA at 3 semitones, where C2's preference for two streams (+8 to +13)
-  disagrees with the paper; and the search with the kernel inferred, as C2.
+- ABA at 3 semitones, where C02's preference for two streams (+8 to +13)
+  disagrees with the paper; and the search with the kernel inferred, as C02.
 - Warm starts between rounds, to bring the ABA cost down.
 - The octave's upper onset: the detector would need a cue other than a rise
   in level at new frequencies, or the residual pass would need to find it.

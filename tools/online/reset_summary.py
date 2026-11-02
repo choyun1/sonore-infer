@@ -61,7 +61,7 @@ def at(rows, t):
 
 
 def summary(path):
-    """The numbers the O3 page reports for one output."""
+    """The numbers the O03 page reports for one output."""
     gap, rows = read(path)
     end = rows[-1]
     out = {

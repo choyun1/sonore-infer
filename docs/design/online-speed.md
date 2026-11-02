@@ -109,7 +109,7 @@ Adam stays the default until L-BFGS reproduces the O1 fits (S6), because
 the learning rates per latent were tuned for Adam in milestones (a) to (c).
 
 **Outcome (2026-10-15).** Tried twice on the O1 case and dropped
-([O2](../../results/O02-online-speed.md)): plain L-BFGS drifts along
+([O02](../../results/O02-online-speed.md)): plain L-BFGS drifts along
 directions the sound so far does not constrain and the next window never
 recovers (odds −1.4 million against 132); held near the window's start and
 finished by Adam, it lands the one-stream fit in a worse basin (odds 167
@@ -182,7 +182,7 @@ Then 4 st as well before the change becomes the default.
    outputs change by rounding only; the PR says so (no silent output
    changes).
 2. S2 and S3 behind options of `run_online` and `online_buildup.py`, each
-   run against O1: one PR with a results page (experiment O2) of cost and
+   run against O1: one PR with a results page (experiment O02) of cost and
    agreement.
 3. S5's measurement on the PC, if Cho can run it.
 4. S4, its own design detail and check, once 1 to 3 are measured.

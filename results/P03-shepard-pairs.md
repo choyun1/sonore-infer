@@ -1,4 +1,4 @@
-# P3. Shepard pairs: up or down, all 90 pairs
+# P03. Shepard pairs: up or down, all 90 pairs
 
 > **Under review.** This is a working record, not reviewed
 > results. The work was done with AI assistance (Claude) and has not yet been
@@ -10,8 +10,8 @@ Fig. 3.
 **Code:** `src/sonore_infer/stimuli/shepard.py`,
 `tools/relative_pitch/pair.py` (with `--sparse-spectrum --floor 30`),
 `tools/relative_pitch/pair_summary.py`, `tools/results_plots.py`.
-Design: [relative pitch](../docs/design/relative-pitch.md), experiments P3
-and P4 and decisions P1 (B), P4, P5 and P8; [relative pitch
+Design: [relative pitch](../docs/design/relative-pitch.md), experiments P03
+and P04 and decisions P1 (B), P4, P5 and P8; [relative pitch
 prior](../docs/design/relative-pitch-prior.md) for the options.
 
 ## Question
@@ -23,7 +23,7 @@ asked whether the second was higher or lower. Listeners heard the shorter
 way round the circle of 10 steps: up when the second tone was 1 to 4 steps
 clockwise, down at 6 to 9, and about even at 5 (Fig. 3). Does the model
 hear the same direction, how sure is it, and does its answer depend on the
-starting tone (experiment P4, the half octave by starting tone, which
+starting tone (experiment P04, the half octave by starting tone, which
 Shepard does not report)?
 
 ## Setup
@@ -36,7 +36,7 @@ Shepard does not report)?
   scene whose sources have two events, one per tone:
   - `harmonic up` and `harmonic down`: one harmonic source starting at the
     first tone's component between 52 and 104 Hz (the reading
-    [P5](P05-shepard-one-tone-sparse.md) found for every tone), whose second
+    [P05](P05-shepard-one-tone-sparse.md) found for every tone), whose second
     event starts at the nearest component of the second tone above (up) or
     below (down) it.
   - `whistles up` and `whistles down`: one whistle per component of the
@@ -44,8 +44,8 @@ Shepard does not report)?
     component of the second tone above or below it (those whose target is
     above 30 Hz).
 - **Options.** Sparse harmonic spectra and a 30 Hz floor for f0 and whistle
-  frequency, as on P5. The harmonic source starts with the harmonics the
-  first tone lacks marked absent, the start that won at every tone on P5;
+  frequency, as on P05. The harmonic source starts with the harmonics the
+  first tone lacks marked absent, the start that won at every tone on P05;
   it gets no dense start.
 - **Readout** (decisions P1 (B) and P5). Each hypothesis's direction is read
   at its fitted mode, from the mean f0 (for whistles, the mean whistle
@@ -55,7 +55,7 @@ Shepard does not report)?
   where importance sampling fails (40 of 360 fits). No fit's shift changed
   sign from its start.
 
-Model as P5: FFT cochleagram with BASS's gain, fixed kernels, likelihood SD
+Model as P05: FFT cochleagram with BASS's gain, fixed kernels, likelihood SD
 10 dB; sonore 0.8.0. One seed. Cloud CPU (4-core Xeon, 2.1 GHz), 4 fits at
 a time; 360 fits took 398 to 1463 s each, about 17 hours in all, in
 2-hour chunks. Tone 1's pairs were run with all four hypotheses per file
@@ -86,7 +86,7 @@ least accurate):
 
 **By starting tone**: the largest number of steps clockwise at which the
 model still says up (P(up) above 0.5), and P(up) at the half octave (5
-steps, experiment P4's question):
+steps, experiment P04's question):
 
 | First tone | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -99,7 +99,7 @@ Tone 1 ties at 4 steps (0.48) and tone 5 at 3 steps (0.50).
 Across all 90 pairs the better whistle hypothesis is 67 to 147 behind the
 best. P(up) is between 0.01 and 0.99 in 9 pairs, all at 3 to 5 steps, where
 up and down are within 3.5 of each other. Effective sample sizes are 1 to 4
-of 128, as on P5, so the importance estimates are rough.
+of 128, as on P05, so the importance estimates are rough.
 
 ## What it says
 
@@ -114,26 +114,26 @@ of 128, as on P5, so the importance estimates are rough.
 - **The crossover moves with the starting tone, by up to 3 steps.**
   *(Not confirmed: with the first tone also allowed an octave lower or
   higher, every starting tone says up at 3 and 4 steps;
-  see [P8](P08-shepard-pairs-octave-check.md).)* Tones
+  see [P08](P08-shepard-pairs-octave-check.md).)* Tones
   3 to 5, whose f0 sits near the top of the 52 to 104 Hz band, turn down
   after 2 steps; tones 6 and 7, near the bottom, still go up at 5. In
   every pair exactly one of the two harmonic hypotheses keeps the second
-  tone's f0 inside that band, the band P5 found each tone alone is heard
+  tone's f0 inside that band, the band P05 found each tone alone is heard
   in. The model picks that one in 71 of the 89 decided pairs, so leaving
   the band looks costly and pulls the answer toward the in-band reading;
   this is inferred from the pattern, not tested.
-- **So the half octave depends on the starting tone** (experiment P4): up
+- **So the half octave depends on the starting tone** (experiment P04): up
   from tones 6 and 7, down from tones 1 to 5, 8 and 10, graded (0.38) from
   tone 9. The design records this as a prediction; Shepard reports no
   data by starting tone.
 - **It is far too sure.** P(up) is 0 or 1 in 81 of 90 pairs, where even
   Group I is graded from 3 to 6 steps and Group III never goes beyond 0.83
   or below 0.24. This is the same overconfidence as for one tone against
-  two on [P7](P07-earlier-experiments-sparse.md). Decision P9 plans to model
+  two on [P07](P07-earlier-experiments-sparse.md). Decision P9 plans to model
   listener differences as fitted noise per group; nothing here does that
   yet.
 - **Not like for like.** Only one reading of the first tone is tried (the
-  component in 52 to 104 Hz), though P5 found the reading an octave down
+  component in 52 to 104 Hz), though P05 found the reading an octave down
   only 11 and 15 behind at tones 1 and 2; a hypothesis starting there would compete
   at the band's edges. The interval latent of decision P1 (D) is not built
   yet.

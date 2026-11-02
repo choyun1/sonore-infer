@@ -2,7 +2,7 @@
 outputs run with ``--variational-steps``.
 
 Rows for the same f0 and harmonic are merged across files and sorted by
-mistuning. Every row is used, floored Hessians included (as on the A7 page);
+mistuning. Every row is used, floored Hessians included (as on the A07 page);
 the four log-odds columns (Laplace, importance sampling from Laplace, ELBO,
 importance sampling from the variational fit) are turned into p(two
 sources) and Eqn 2's threshold (``sonore_infer.thresholds``). A row whose

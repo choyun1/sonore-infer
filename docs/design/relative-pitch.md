@@ -25,7 +25,7 @@ What Cho accepted on 2026-10-18. The options and reasons are in §4.
 |---|---|
 | P1. What is inferred | The interval between the tones, in log frequency, as the latent (D); the paper's f0 per tone (B) run beside it |
 | P2. Observation | The cochleagram as it is for now; Shepard tones become a test case for the planned timing likelihood |
-| P3. Spectrum prior | Unchanged for the first experiments; decide whether to change it only from what experiment P1 shows |
+| P3. Spectrum prior | Unchanged for the first experiments; decide whether to change it only from what experiment P01 shows |
 | P4. Hypotheses | Enumerated: one harmonic source per octave reading, and a set of whistles; the search (C3) on a few stimuli only, as a check |
 | P5. Response | The model's output is P(up); no lapse or noise model until it is compared with listeners |
 | P6. Stimuli | Shepard's Eqs. 1–3 and his parameters, without the noise bursts |
@@ -183,8 +183,8 @@ the spectrum prior, which a new likelihood would not remove.
 ### P3. Spectrum prior (handoff D3)
 
 - **(A) Unchanged, as a prediction.** Report how the model hears one
-  Shepard tone (experiment P1) and whether it tells the octave complex from
-  the minor-third complex (experiment P2).
+  Shepard tone (experiment P01) and whether it tells the octave complex from
+  the minor-third complex (experiment P02).
 - **(B) Allow sparse harmonic spectra.** For example a presence latent per
   harmonic (spike and slab), or a mixture over harmonic subsets. A
   departure from the paper and BASS, and Shepard's tones are the only
@@ -193,7 +193,7 @@ the spectrum prior, which a new likelihood would not remove.
   harmonics differ more; it changes every earlier result.
 
 **Recommendation: A first.** Decide between B and C, if at all, as a new
-decision after experiments P1 and P2, with their numbers in hand.
+decision after experiments P01 and P02, with their numbers in hand.
 
 ### P4. Hypotheses
 
@@ -203,8 +203,8 @@ Per pair, enumerated:
    the nearer reading above and, separately, the nearer reading below the
    first (two fits). The first tone's f0 starts at its lowest component
    above the cochleagram floor; other readings of it are offered when
-   experiment P1 shows they compete.
-2. One whistle source per component that experiment P1 finds, each with two
+   experiment P01 shows they compete.
+2. One whistle source per component that experiment P01 finds, each with two
    events, so each component is matched to its neighbor in the next tone.
 
 The search (C3) took 20–74 min per (b) stimulus and 6–9 h per ABA sequence
@@ -223,7 +223,7 @@ that the enumerated set is not missing a better structure.
   to reproduce Group III's errors. It has free parameters that only listener
   data can set.
 
-**Recommendation: A.** Add B only when comparing with Fig. 3 (experiment P3).
+**Recommendation: A.** Add B only when comparing with Fig. 3 (experiment P03).
 
 ### P6. Stimuli
 
@@ -240,7 +240,7 @@ A generator in `src/sonore_infer/stimuli/shepard.py`, built with sonore
   silence before and after.
 - **No noise bursts.** They marked trials for listeners; modeling them
   needs a noise source in each hypothesis. A labeled departure.
-- The minor-third version for experiment P2: 40 components, 4 per octave,
+- The minor-third version for experiment P02: 40 components, 4 per octave,
   the same envelope [Shepard §V].
 
 **Recommendation: as above.**
@@ -262,7 +262,7 @@ since P3 (the spectrum prior) may change.**
 
 ### P8. Scale and seeds
 
-One seed throughout at first. Experiment P3 starts with one starting tone
+One seed throughout at first. Experiment P03 starts with one starting tone
 (9 pairs), then all 90, then 10 seeds as in A8 and B4. Cost before S1: about
 4 min per hypothesis for a 0.5 s stimulus on one thread [estimate, from C3's
 control: 5 hypotheses in 20 min], so about 7 min for a 0.875 s pair
@@ -272,7 +272,7 @@ control: 5 hypotheses in 20 min], so about 7 min for a 0.875 s pair
 one hypothesis, 8 semitones]. Applied to the pairs, that is about 2.5 to
 3 min per hypothesis, and 90 pairs × about 4 hypotheses about 15 to 18
 thread-hours [estimate, the O2 ratios applied to the C3 figure]. Experiment
-P1 times its first fits, which replaces this estimate with a measurement.
+P01 times its first fits, which replaces this estimate with a measurement.
 
 **Recommendation: as above.**
 

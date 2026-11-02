@@ -1,11 +1,11 @@
-# B2. Two simultaneous notes, variational evidence
+# B02. Two simultaneous notes, variational evidence
 
 > **Under review.** This is a working record, not reviewed
 > results. The work was done with AI assistance (Claude) and has not yet been
 > checked carefully. Numbers, methods and interpretations may change.
 
 **Status:** done (2026-10-10). **Paper target:** none (see
-[B1](B01-two-notes-laplace.md)); no paper values are compared.
+[B01](B01-two-notes-laplace.md)); no paper values are compared.
 **Code:** `tools/bass/compare_two_notes.py --variational-steps`, PR
 [#23](https://github.com/choyun1/sonore-infer/pull/23) (`121aab4`), using the variational evidence of
 PR [#20](https://github.com/choyun1/sonore-infer/pull/20). Design: [milestone (b)](../docs/design/milestone-b.md).
@@ -15,12 +15,12 @@ PR [#20](https://github.com/choyun1/sonore-infer/pull/20). Design: [milestone (b
 Shared background: [how the experiments work](README.md#how-the-experiments-work).
 
 
-B1's question, with an evidence estimate that does not depend on reaching
+B01's question, with an evidence estimate that does not depend on reaching
 a true peak, and with longer octave asynchronies (120, 160, 240 ms).
 
 ## Setup
 
-As B1, but 300 Adam steps then a variational fit (2000 steps), as in A7.
+As B01, but 300 Adam steps then a variational fit (2000 steps), as in A07.
 The main estimate is importance sampling from the variational fit; the ELBO
 is reported as a check.
 
@@ -50,7 +50,7 @@ within 240 ms for the octave (Eqn 2 returns the largest asynchrony).
 
 ## Plots
 
-![B2-two-notes-variational](plots/B02-two-notes-variational.svg)
+![B02-two-notes-variational](plots/B02-two-notes-variational.svg)
 
 *Log odds of two sources over the best one-source fit (variational estimate), from [`data/B02/summary.txt`](data/B02/summary.txt). Above zero favors two notes.*
 
@@ -60,7 +60,7 @@ within 240 ms for the octave (Eqn 2 returns the largest asynchrony).
   included.
 - Octave: one source at every asynchrony up to 240 ms, by 22 to 34. The odds
   rise slowly with asynchrony.
-- Controls: one source, including 200 and 400 Hz, where B1's Laplace
+- Controls: one source, including 200 and 400 Hz, where B01's Laplace
   estimate had favoured two.
 - At the fifth, whistles are about as good as one source; two notes are far
   ahead of both.
@@ -75,7 +75,7 @@ asynchrony (milestone (b), B5). Up to 240 ms it did not.
 
 ## Fits run to convergence (2026-10-15)
 
-The fits above stop after 300 Adam steps. In [C2](C02-aba-streaming.md) that
+The fits above stop after 300 Adam steps. In [C02](C02-aba-streaming.md) that
 left an ABA one-stream fit far from its mode, so all 27 stimuli were rerun
 with each fit continuing until its log joint rose by less than 0.5 over 1000
 steps (at most 15000), seed 0, on the same cloud machine
@@ -84,7 +84,7 @@ steps (at most 15000), seed 0, on the same cloud machine
 
 Every sign is unchanged, and so is every Eqn 2 threshold: 0 ms for the
 tritones and the fifth, none within 240 ms for the octave. Most variational
-log odds move by less than 4, within seed noise ([B4](B04-two-notes-seeds.md)).
+log odds move by less than 4, within seed noise ([B04](B04-two-notes-seeds.md)).
 The larger moves:
 
 - 400 Hz control: −26.2 to −12.1, still one source.
@@ -117,4 +117,4 @@ Raw outputs: [`data/B02/`](data/B02/).
 - Importance sampling's effective sample size is 1 to 6 of 256 for most fits.
 - Not compared with listeners, and BASS was not run on these stimuli
   (decision B6 of [milestone (b)](../docs/design/milestone-b.md)).
-- Followed up by [B3](B03-octave-sigma5.md) (likelihood SD 5 dB), [B4](B04-two-notes-seeds.md) (seeds) and [C1](C01-kernel-inferred.md) (kernel inferred).
+- Followed up by [B03](B03-octave-sigma5.md) (likelihood SD 5 dB), [B04](B04-two-notes-seeds.md) (seeds) and [C01](C01-kernel-inferred.md) (kernel inferred).

@@ -1,4 +1,4 @@
-# P5. One Shepard tone, sparse spectra and a 30 Hz floor
+# P05. One Shepard tone, sparse spectra and a 30 Hz floor
 
 > **Under review.** This is a working record, not reviewed
 > results. The work was done with AI assistance (Claude) and has not yet been
@@ -15,7 +15,7 @@ decisions P10 to P14.
 
 Shared background: [how the experiments work](README.md#how-the-experiments-work).
 
-[P1](P01-shepard-one-tone.md) again, with the two options of the relative
+[P01](P01-shepard-one-tone.md) again, with the two options of the relative
 pitch prior design: each harmonic of a harmonic source may be absent
 (decisions P10 and P11), and the f0 and whistle-frequency floor is 30 Hz
 instead of 87.5 Hz (decision P12). Does the model now hear one Shepard tone
@@ -24,7 +24,7 @@ octave it reads?
 
 ## Setup
 
-As [P1](P01-shepard-one-tone.md), except:
+As [P01](P01-shepard-one-tone.md), except:
 
 - **Model options.** `Harmonic(sparse_spectrum=True, frequency_floor_hz=30)`
   and `Whistle(frequency_floor_hz=30)`. Each harmonic's level is the
@@ -32,29 +32,29 @@ As [P1](P01-shepard-one-tone.md), except:
   N(0, 1 dB), or absent, N(−40, 10 dB), with the label summed out; the
   probability of present is inferred per source, with a Beta(1, 1) prior.
 - **Hypotheses.** `harmonic@F` for every component from 30 Hz up to
-  350 Hz; `harmonic@F+whistle@F/2`, the search's best structure on P1's
+  350 Hz; `harmonic@F+whistle@F/2`, the search's best structure on P01's
   tone 1, for the same readings; and one whistle per component at or above
   30 dB and 30 Hz (5 or 6 whistles).
 - **Two starts per harmonic source.** One puts the spectrum GP through the
   stimulus's levels with the harmonics the stimulus lacks marked absent;
-  the other has every harmonic present, as on P1. They reach different
+  the other has every harmonic present, as on P01. They reach different
   modes, so each mode gets its own evidence estimate, and a hypothesis's
   log posterior is the log-sum-exp of its distinct modes
   (`combine_starts.py`; modes whose log joints agree within 1 count once).
   Keeping only the mode with the higher log joint, as a first pass did,
   lost up to 60 (tone 1, `harmonic@38.9`).
 
-Model as B2: FFT cochleagram with BASS's gain, fixed kernels, likelihood SD
+Model as B02: FFT cochleagram with BASS's gain, fixed kernels, likelihood SD
 10 dB; sonore 0.6.0. One seed. Cloud CPU (4-core Xeon, 2.1 GHz), 4 fits at
 a time; 130 fits took 189 to 922 s each.
 
 ## Results
 
-![One tone against whistles, and the reading heard, by tone; P1 and P5](plots/P05-shepard-one-tone.svg)
+![One tone against whistles, and the reading heard, by tone; P01 and P05](plots/P05-shepard-one-tone.svg)
 
-*Left: the best one-harmonic reading's log posterior minus the whistles' (P5's from `combined.txt`, both starts combined). Right: that reading's f0. Drawn by `tools/results_plots.py`.*
+*Left: the best one-harmonic reading's log posterior minus the whistles' (P05's from `combined.txt`, both starts combined). Right: that reading's f0. Drawn by `tools/results_plots.py`.*
 
-Log posteriors are shifted by 4329.7, as on P1. All per-tone values are in
+Log posteriors are shifted by 4329.7, as on P01. All per-tone values are in
 `data/P05/combined.txt`, made by
 `python tools/relative_pitch/combine_starts.py results/data/P05/*.txt`.
 
@@ -77,7 +77,7 @@ start with missing harmonics marked absent); the mode with every harmonic
 present is 26 to 42 lower.
 
 The effective sample size of the importance estimates is 1 to 4 for most
-fits, as on P1, so margins under about 10 are not resolved.
+fits, as on P01, so margins under about 10 are not resolved.
 
 **The four combinations on tone 1** (`data/P05/tone1-combinations/`, run
 before the second start was added: the sparse runs there have the sparse
@@ -85,18 +85,18 @@ start only, which is the better mode for every reading on this tone).
 
 | Spectrum prior, floor | Best enumerated | Its log posterior | Best one harmonic source | Whistles |
 | --- | --- | --- | --- | --- |
-| GP, 87.5 Hz ([P1](P01-shepard-one-tone.md)) | 4 whistles | −116.7 | 155.6 Hz, −126.0 | −116.7 |
+| GP, 87.5 Hz ([P01](P01-shepard-one-tone.md)) | 4 whistles | −116.7 | 155.6 Hz, −126.0 | −116.7 |
 | GP, 30 Hz | tone at 311.2 Hz + whistle at 155.6 Hz | −91.4 | 77.8 Hz, −93.6 | −116.0 |
 | Sparse, 87.5 Hz | tone at 311.2 Hz + whistle at 155.6 Hz | −94.7 | 155.6 Hz, −108.1 | −116.7 |
 | Sparse, 30 Hz | one tone at 77.8 Hz | −65.4 | 77.8 Hz, −65.4 | −116.0 |
 
-P1 had no tone-plus-whistle hypotheses; its search found one at −88.9.
+P01 had no tone-plus-whistle hypotheses; its search found one at −88.9.
 
 ## What it says
 
 - **With both options the model hears one tone at every step**, as
   Shepard's listeners do [Shepard §I]. One harmonic source beats the
-  whistles by 26 to 55 at all 10 tones (P1: whistles won at 7). A tone plus
+  whistles by 26 to 55 at all 10 tones (P01: whistles won at 7). A tone plus
   a whistle comes 2 to 8 behind, within the estimates' noise.
 - **Both options are needed, at least on tone 1.** Either alone leaves a
   tone plus a whistle best, about 26 to 29 below the one tone that both
@@ -111,11 +111,11 @@ P1 had no tone-plus-whistle hypotheses; its search found one at −88.9.
   established (not tested).
 - **The two starts matter.** For the octave complex the mode with missing
   harmonics marked absent wins by 26 to 42; for the minor-third complex
-  ([P6](P06-shepard-minor-third-sparse.md)) the mode with every harmonic
+  ([P06](P06-shepard-minor-third-sparse.md)) the mode with every harmonic
   present wins. Scoring only the mode with the higher log joint would have
   picked the wrong one for some readings.
 - **Not checked:** other seeds; the search with the options; whether a
-  pair of tones (P3) is heard to move in Shepard's direction, given the
+  pair of tones (P03) is heard to move in Shepard's direction, given the
   jump between tones 5 and 6.
 
 ## Reproduce

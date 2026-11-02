@@ -1,23 +1,23 @@
-# B4. Two notes over seeds
+# B04. Two notes over seeds
 
 > **Under review.** This is a working record, not reviewed
 > results. The work was done with AI assistance (Claude) and has not yet been
 > checked carefully. Numbers, methods and interpretations may change.
 
 **Status:** done (2026-10-12). **Paper target:** none (see
-[B1](B01-two-notes-laplace.md)); the paper averaged its model over 10 seeds.
+[B01](B01-two-notes-laplace.md)); the paper averaged its model over 10 seeds.
 **Code:** `--seed` in `tools/bass/compare_two_notes.py`, PR
 [#28](https://github.com/choyun1/sonore-infer/pull/28) (`5e840c2`);
 `tools/run_seeds.py`, PRs [#30](https://github.com/choyun1/sonore-infer/pull/30)
 and [#33](https://github.com/choyun1/sonore-infer/pull/33); the n!
 structure prior, PR [#31](https://github.com/choyun1/sonore-infer/pull/31).
-The same ten-seed run covers milestone (a) in [A8](A08-ten-seeds.md).
+The same ten-seed run covers milestone (a) in [A08](A08-ten-seeds.md).
 
 ## Question
 
 Shared background: [how the experiments work](README.md#how-the-experiments-work).
 
-B2 used one seed. How much do its log odds move with the seed, and does
+B02 used one seed. How much do its log odds move with the seed, and does
 any conclusion change?
 
 ## Setup
@@ -28,11 +28,11 @@ estimates' own noise for the same mode.
 
 1. **Close cases, 5 seeds (2026-10-11).** The octave at 0 and 240 ms (two
    vs one@200), and the just fifth's harmonic plus whistles at 10 and 80 ms,
-   seeds 1 to 4 in the container; seed 0 is B2.
-2. **All stimuli, 10 seeds (2026-10-12).** Every B2 stimulus and control,
+   seeds 1 to 4 in the container; seed 0 is B02.
+2. **All stimuli, 10 seeds (2026-10-12).** Every B02 stimulus and control,
    seeds 0 to 9, all on Cho's PC with `tools/run_seeds.py`, with the n!
    structure prior of milestone (c) (which adds 0.69 to two notes' log
-   odds and 3.2 to 10.6 to the whistles' against B2).
+   odds and 3.2 to 10.6 to the whistles' against B02).
 
 ## Results
 
@@ -56,7 +56,7 @@ Five seeds on the close cases (`data/B04/`, seed 0 from `data/B02/`): octave
 
 ## Plots
 
-![B4-two-notes-seeds](plots/B04-two-notes-seeds.svg)
+![B04-two-notes-seeds](plots/B04-two-notes-seeds.svg)
 
 *Mean log odds over 10 seeds (Cho's PC, variational estimate) ± 1 SD, from [`data/A08/summary.txt`](data/A08/summary.txt): two notes against the best one source, and for the fifth also harmonic plus whistles.*
 

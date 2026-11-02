@@ -3,7 +3,7 @@
 Status: **accepted by Cho on 2026-11-02** (P24 to P26 as recommended; see §4). Other seeds
 for the Shepard pairs are a separate design (decision P27, Cho's split of
 2026-11-02).
-Follows [P9](../../results/P09-shepard-listener-noise.md) and
+Follows [P09](../../results/P09-shepard-listener-noise.md) and
 [P10](../../results/P10-earlier-experiments-hearing.md). Decisions continue
 the numbering of [relative-pitch-dominance.md](relative-pitch-dominance.md)
 (P19 to P23). AI-assisted (Claude); code as of `752f48b`.

@@ -322,7 +322,7 @@ def main():
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    parser.add_argument("paths", nargs="+", help="pair.py outputs (P3, and P8 for the extra readings)")
+    parser.add_argument("paths", nargs="+", help="pair.py outputs (P03, and P08 for the extra readings)")
     parser.add_argument(
         "--refits",
         nargs="+",

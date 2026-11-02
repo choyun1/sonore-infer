@@ -4,7 +4,7 @@ The search's best for the just fifth at 0 ms was a note plus a whistle,
 and its own two-note fit came out about 10 below milestone (b)'s
 (results/C03-search.md). This fits one hypothesis to that stimulus from one
 start and prints its log posteriors, shifted by the likelihood's
-normalising constant as on the C3 page. Starts:
+normalising constant as on the C03 page. Starts:
 
 - ``search``: two notes from the detector's candidates (197 and 304 Hz,
   spectra from the peaks), as the search fitted them;

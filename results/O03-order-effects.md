@@ -1,4 +1,4 @@
-# O3. Reset of streaming after silence, online
+# O03. Reset of streaming after silence, online
 
 > **Under review.** This is a working record, not reviewed
 > results. The work was done with AI assistance (Claude) and has not yet been
@@ -17,7 +17,7 @@ of §7.
 Shared background: [how the experiments work](README.md#how-the-experiments-work).
 
 A batch model gives the same answer whatever order the sound arrives in;
-the online model of [O1](O01-online-buildup.md) need not. Two studies
+the online model of [O01](O01-online-buildup.md) need not. Two studies
 interrupt a sequence with silence and disagree on what follows:
 
 - **Beauvois & Meddis (1997).** 10 s of A tones alone, a silence, then a
@@ -45,7 +45,7 @@ assumptions), after 50 ms of silence:
 Four hypotheses (design E3): one whistle with every tone (**one**), one
 with the A tones and one with the B tones (**two**), and the same two with
 their sources ending at the silence and new ones starting after it
-(**one restart**, **two restart**). Each runs online as in O1 and O2: 100 ms
+(**one restart**, **two restart**). Each runs online as in O01 and O02: 100 ms
 windows, lag 1 s, each window fitted until it gains less than 1 over 50
 Adam steps (at most 2000; design E7), the evidence every 0.5 s, the past
 summarized (S4). One window spans each silence (E5). Readout (E4): the
@@ -83,7 +83,7 @@ explain A tones alone the same way. Listeners are their fit,
 
 - **The baseline is already wrong.** The test alone gives two streams by
   122, where listeners always heard one. This is the model's ABA streaming
-  at about 6 semitones and a 90 ms rate (C2 gives two streams from
+  at about 6 semitones and a 90 ms rate (C02 gives two streams from
   3 semitones up).
 - **The inducer acts in the wrong direction at 0 s.** Straight after it,
   the test favours two streams *less* (65 against 122). Listeners hear the
@@ -192,12 +192,12 @@ nothing else changed [measured: `data/O03/e8/`]:
 | Best hypothesis | two restart | two |
 
 (With a 2 s first sequence the rhythm is less settled than after 10 s, so
-the unchanged drop is smaller than O3's −31.) Leaving the long rest out
+the unchanged drop is smaller than O03's −31.) Leaving the long rest out
 moves the first window after the gap by +25.5 towards two streams and the
 restart gain by −36, and turns the best hypothesis from restart to
 continue. So the rhythm prior is the cause of both, as inferred. Without
 it, the second sequence gives *more* two-stream evidence than a fresh one
-(65.5 against 52.0 over the first 4 s of O3's 4 st first sequence): the
+(65.5 against 52.0 over the first 4 s of O03's 4 st first sequence): the
 model then shows no reset at all. The rhythm prior is the only thing in
 the model that pushes towards a reset, and it is too weak and too slow.
 

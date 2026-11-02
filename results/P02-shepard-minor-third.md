@@ -1,13 +1,13 @@
-# P2. Octave against minor-third spacing
+# P02. Octave against minor-third spacing
 
 > **Under review.** This is a working record, not reviewed
 > results. The work was done with AI assistance (Claude) and has not yet been
 > checked carefully. Numbers, methods and interpretations may change.
 
-**Rerun** with sparse spectra and a 30 Hz floor: [P6](P06-shepard-minor-third-sparse.md).
+**Rerun** with sparse spectra and a 30 Hz floor: [P06](P06-shepard-minor-third-sparse.md).
 **Status:** first pass, one seed, tones 1 and 4; search on tone 1.
 **Paper target:** none in Cusimano et al.; listeners in Shepard (1964) §V.
-**Code:** as [P1](P01-shepard-one-tone.md), with `--minor-third`.
+**Code:** as [P01](P01-shepard-one-tone.md), with `--minor-third`.
 Design: [relative pitch](../docs/design/relative-pitch.md), decisions P3,
 P4 and P7.
 
@@ -22,7 +22,7 @@ same way?
 
 ## Setup
 
-As [P1](P01-shepard-one-tone.md), with 4 components per octave (40, of which
+As [P01](P01-shepard-one-tone.md), with 4 components per octave (40, of which
 those up to 5 kHz are kept) under the same envelope. Hypotheses: one
 harmonic source per component reading from the lowest above 87.5 Hz (up to
 1300 Hz at tone 1, 200 Hz at tone 4), and one whistle per component at or
@@ -31,7 +31,7 @@ and its whistles ran separately, because a container restart stopped the
 first run (`data/P02/step1_harmonics.txt`, `step1_whistles.txt`). The
 search ran on tone 1.
 
-Log posteriors are shifted by 4329.7, as on P1. Importance sampling failed
+Log posteriors are shifted by 4329.7, as on P01. Importance sampling failed
 (−inf) for every 17-whistle fit, so the whistles are compared by the ELBO,
 a lower bound.
 
@@ -57,7 +57,7 @@ Its best is one harmonic tone fitted to 97 Hz alone, log posterior −95.4,
 
 - **The model gets Shepard's contrast backwards.** It hears the
   minor-third complex as one low tone, by about 270, and the octave
-  complex ([P1](P01-shepard-one-tone.md)) as whistles or a tone plus a
+  complex ([P01](P01-shepard-one-tone.md)) as whistles or a tone plus a
   whistle. Listeners hear the octave complex as one tone and the
   minor-third complex as a chord.
 - **Why, in the model's terms (inferred).** A harmonic tone at about
