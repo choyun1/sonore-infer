@@ -92,14 +92,22 @@ def title(path: Path) -> str:
     return path.stem
 
 
+def natural_key(path: str) -> list:
+    """Sort key that orders numbers by value, so P2 comes before P10."""
+    return [int(part) if part.isdigit() else part for part in re.split(r"(\d+)", path)]
+
+
 def nav(on_site: set[str]) -> list:
     """The navigation: home, methods, results, design, code."""
 
     def entries(folder: str) -> list[dict[str, str]]:
         pages = sorted(
-            p
-            for p in on_site
-            if posixpath.dirname(p) == folder and p.endswith(".md") and not p.endswith("README.md")
+            (
+                p
+                for p in on_site
+                if posixpath.dirname(p) == folder and p.endswith(".md") and not p.endswith("README.md")
+            ),
+            key=natural_key,
         )
         return [{title(REPO / p): site_path(p)} for p in pages]
 

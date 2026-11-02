@@ -54,6 +54,10 @@ hypothesis, 5 to 16 min per two-note hypothesis.
 
 ### Mistuned harmonic
 
+![Log odds against mistuning at 100 Hz harmonic 1 and 200 Hz harmonic 2, P7 and P10](plots/P10-earlier-experiments-hearing.svg)
+
+*Log odds of two sources over one by variational importance: P7's baseline and P7, then with the threshold of hearing and dominance (both), and dominance alone (100/1 only). Drawn by `tools/results_plots.py`.*
+
 Eqn 2 thresholds (%), variational importance estimate
 (`data/P10/thresholds.txt`; dominance only, run after the rest at Cho's
 request, `data/P10/thresholds_dominance_only.txt` from

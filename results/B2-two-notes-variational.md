@@ -104,7 +104,7 @@ python tools/bass/compare_two_notes.py --interval octave --variational-steps 200
 python tools/bass/compare_two_notes.py --interval octave --asynchronies 0.12 0.16 0.24 \
     --variational-steps 2000 --only one@400 one@200 one@100 two > octave_long.txt
 python tools/bass/compare_two_notes.py --interval just_fifth --variational-steps 2000 --only whistles > just_fifth_whistles.txt
-python tools/bass/two_notes_summary.py data/B2/*.txt
+python tools/bass/two_notes_summary.py results/data/B2/*.txt
 ```
 
 Raw outputs: [`data/B2/`](data/B2/).

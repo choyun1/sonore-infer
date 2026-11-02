@@ -22,6 +22,23 @@ to 1, λ from 0 to 0.99, the baseline's slope b on a log grid and its
 intercept a on a linear grid. β · L reads as a likelihood SD of 10/√β dB
 (P15 (A)); that SD is printed for P18's check.
 
+With ``--interval-noise`` (design relative-pitch-group-iii, P24 to P26) it
+also fits noise on the interval between the two tones, after the scene
+model. The listener hears a pair k steps clockwise as k + ε steps, with ε
+Gaussian of SD s steps, wrapped on the circle of 10 steps. Two versions:
+
+- **On nominal steps** (a second baseline): judged up when the heard
+  interval is under 5 steps clockwise. One parameter, s.
+- **On the model's log odds**: the heard interval moves the pair along the
+  model's own L against steps from the same starting tone (linear between
+  whole steps, L = 0 at 0 and 10 steps, where the two tones are the same),
+  then λ/2 + (1 − λ) · logistic(β · L). Three parameters; s = 0 is (A).
+
+Both are fitted on grids (s from 0 to 4 steps), with leave one step out and
+the adjacent-pair check. It also prints the size of the dip at small steps:
+accuracy folded over both directions and its standard error if every
+presentation were an independent trial.
+
     python tools/relative_pitch/listener_noise.py results/data/P3/[0-9]*.txt results/data/P8/[0-9]*.txt
 """
 
@@ -45,6 +62,13 @@ LAPSES = np.linspace(0.0, 0.99, 199)
 SLOPES = np.exp(np.linspace(math.log(0.05), math.log(20.0), 241))
 INTERCEPTS = np.linspace(-10.0, 30.0, 401)
 LIKELIHOOD_SD = 10.0
+CIRCLE = 10  # steps per octave
+INTERVAL_SDS = np.linspace(0.0, 4.0, 81)
+COARSE_BETAS = np.exp(np.linspace(math.log(1e-3), math.log(10.0), 161))
+COARSE_LAPSES = np.linspace(0.0, 0.99, 100)
+# Gauss–Hermite nodes and weights for averaging over ε ~ N(0, 1)
+NODES, WEIGHTS = np.polynomial.hermite_e.hermegauss(41)
+WEIGHTS = WEIGHTS / WEIGHTS.sum()
 
 
 def logistic(x):
@@ -154,6 +178,146 @@ def held_out(odds, observed, trials):
     return model_total, baseline_total
 
 
+def normal_cdf(x):
+    return 0.5 * (1.0 + np.vectorize(math.erf)(np.asarray(x, dtype=float) / math.sqrt(2.0)))
+
+
+def circle_fractions(steps, sd):
+    """P(judged up) at each of ``steps`` when the heard interval is steps + N(0, sd), wrapped."""
+    steps = np.array(list(steps), dtype=float)
+    if sd == 0:
+        return np.where((steps % CIRCLE > 0) & (steps % CIRCLE < CIRCLE / 2), 1.0, 0.0)
+    total = np.zeros_like(steps)
+    for turn in range(-5, 6):
+        low = (turn * CIRCLE - steps) / sd
+        high = (turn * CIRCLE + CIRCLE / 2 - steps) / sd
+        total += normal_cdf(high) - normal_cdf(low)
+    return total
+
+
+def odds_curves(paths):
+    """Array [starting tone, steps 0..10] of the model's L, 0 at 0 and 10 steps."""
+    curves = np.zeros((CIRCLE, CIRCLE + 1))
+    for (first, _second), (steps, value) in pair_log_odds(paths).items():
+        curves[first - 1, steps] = value
+    return curves
+
+
+def blurred_odds(curves, steps, sd):
+    """L at heard intervals step + sd · node: array [steps, starting tone, node]."""
+    grid = np.arange(CIRCLE + 1)
+    out = []
+    for step in steps:
+        heard = (step + sd * NODES) % CIRCLE
+        out.append(np.array([np.interp(heard, grid, curve) for curve in curves]))
+    return np.array(out)
+
+
+def blurred_fractions(curves, steps, beta, lapse, sd):
+    """Predicted fraction judged up at each of ``steps`` with interval noise on the model's L."""
+    values = blurred_odds(curves, list(steps), sd)
+    p = (logistic(beta * values) * WEIGHTS).sum(axis=-1).mean(axis=-1)
+    return lapse / 2 + (1 - lapse) * p
+
+
+def fit_circle(observed, trials, steps=STEPS):
+    """(s, log likelihood) for interval noise on nominal steps."""
+    steps = list(steps)
+    observed = np.array([observed[step - 1] for step in steps])
+    ll = [float(log_likelihood(circle_fractions(steps, sd), observed, trials)) for sd in INTERVAL_SDS]
+    i = int(np.argmax(ll))
+    return float(INTERVAL_SDS[i]), ll[i]
+
+
+def fit_blurred(curves, observed, trials, steps=STEPS):
+    """(β, λ, s, log likelihood) for interval noise on the model's L."""
+    steps = list(steps)
+    observed = np.array([observed[step - 1] for step in steps])
+    best = (0.0, 0.0, 0.0, -math.inf)
+    for sd in INTERVAL_SDS:
+        values = blurred_odds(curves, steps, sd)
+        # [β, steps]
+        p = (logistic(np.multiply.outer(COARSE_BETAS, values)) * WEIGHTS).sum(axis=-1).mean(axis=-1)
+        fractions = COARSE_LAPSES[None, :, None] / 2 + (1 - COARSE_LAPSES[None, :, None]) * p[:, None, :]
+        ll = log_likelihood(fractions, observed, trials)
+        i, j = np.unravel_index(np.argmax(ll), ll.shape)
+        if ll[i, j] > best[3]:
+            best = (float(COARSE_BETAS[i]), float(COARSE_LAPSES[j]), float(sd), float(ll[i, j]))
+    return best
+
+
+def held_out_interval(curves, observed, trials):
+    """Summed held-out log likelihood: (noise on nominal steps, noise on L)."""
+    circle_total = blurred_total = 0.0
+    for left_out in STEPS:
+        kept = [step for step in STEPS if step != left_out]
+        target = np.array([observed[left_out - 1]])
+        sd, _ = fit_circle(observed, trials, kept)
+        circle_total += float(log_likelihood(circle_fractions([left_out], sd), target, trials))
+        beta, lapse, sd, _ = fit_blurred(curves, observed, trials, kept)
+        blurred_total += float(
+            log_likelihood(blurred_fractions(curves, [left_out], beta, lapse, sd), target, trials)
+        )
+    return circle_total, blurred_total
+
+
+def folded_accuracy(observed):
+    """Fraction judged as the shorter way round predicts at 1 to 4 steps, both directions pooled."""
+    return [(observed[step - 1] + 1 - observed[CIRCLE - step - 1]) / 2 for step in range(1, 5)]
+
+
+def print_interval_noise(paths):
+    curves = odds_curves(paths)
+    print()
+    print("interval noise after the scene model (design relative-pitch-group-iii, P24 to P26)")
+    print(
+        "version            group  s_steps  beta     lapse  log_likelihood  held_out"
+        "  fitted fractions at 1-9 steps"
+    )
+    fits = {}
+    for name, (observed, listeners) in GROUPS.items():
+        trials = listeners * PAIRS_PER_STEP
+        circle_held, blurred_held = held_out_interval(curves, observed, trials)
+        sd, ll = fit_circle(observed, trials)
+        fractions = circle_fractions(STEPS, sd)
+        fits[("nominal steps", name)] = fractions
+        print(
+            f"{'nominal steps':17s}  {name:5s}  {sd:7.2f}  {'':6s}  {'':5s}  {ll:14.1f}  {circle_held:8.1f}  "
+            + " ".join(f"{value:.2f}" for value in fractions)
+        )
+        beta, lapse, sd, ll = fit_blurred(curves, observed, trials)
+        fractions = blurred_fractions(curves, STEPS, beta, lapse, sd)
+        fits[("model log odds", name)] = fractions
+        print(
+            f"{'model log odds':17s}  {name:5s}  {sd:7.2f}  {beta:.4f}  {lapse:.3f}  {ll:14.1f}"
+            f"  {blurred_held:8.1f}  " + " ".join(f"{value:.2f}" for value in fractions)
+        )
+    print()
+    print("adjacent pairs, predicted fraction as the circle predicts (1 step up, 1 step down):")
+    for (version, name), fractions in fits.items():
+        print(
+            f"  {version:14s}  Group {name}: {fractions[0]:.2f}, {1 - fractions[8]:.2f};"
+            f" Shepard {ADJACENT[name]}"
+        )
+    print()
+    print("accuracy at 1-4 steps, both directions pooled, and z of each against 1 step if every")
+    print("presentation were independent (2 x 10 pairs x listeners per step):")
+    for name, (observed, listeners) in GROUPS.items():
+        trials = 2 * listeners * PAIRS_PER_STEP
+        accuracy = folded_accuracy(observed)
+        first = accuracy[0]
+        parts = []
+        for value in accuracy:
+            se = math.sqrt(first * (1 - first) / trials + value * (1 - value) / trials)
+            parts.append(f"{value:.3f} (z {(value - first) / se:+.1f})" if se > 0 else f"{value:.3f}")
+        print(f"  Group {name}: " + ", ".join(parts))
+    observed = GROUPS["III"][0]
+    trials = GROUPS["III"][1] * PAIRS_PER_STEP
+    p8, p9 = observed[7], observed[8]
+    se = math.sqrt(p8 * (1 - p8) / trials + p9 * (1 - p9) / trials)
+    print(f"  Group III, 9 against 8 steps: {p9:.2f} against {p8:.2f}, z {(p9 - p8) / se:+.1f}")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
@@ -164,6 +328,11 @@ def main():
         nargs="+",
         default=[],
         help="pair.py outputs of the same hypotheses at Group I's implied likelihood SD (decision P18)",
+    )
+    parser.add_argument(
+        "--interval-noise",
+        action="store_true",
+        help="also fit noise on the interval (design relative-pitch-group-iii, P24 to P26)",
     )
     args = parser.parse_args()
     odds = log_odds(args.paths)
@@ -228,6 +397,8 @@ def main():
                 f"  {key[0]:5d}  {key[1]:6d}  {steps:5d}  {base[key][1]:+7.1f}"
                 f"  {beta * base[key][1]:+12.2f}  {value:+7.2f}"
             )
+    if args.interval_noise:
+        print_interval_noise(args.paths)
 
 
 if __name__ == "__main__":

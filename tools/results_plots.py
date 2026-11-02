@@ -1082,6 +1082,356 @@ def shepard_pairs():
     )
 
 
+# P1 and P5: one Shepard tone; P8, P9: pairs; P7 and P10: earlier experiments with the options
+
+
+def one_tone_p1(step):
+    """{label: log posterior} for one P1 tone: variational importance (or ELBO) plus structure."""
+    posteriors = {}
+    with open(data("P1", f"step{step}.txt"), encoding="utf-8") as file:
+        rows = [line.split() for line in file if line.split()[:1] and line.split()[0].isdigit()]
+    for row in rows:
+        structure, elbo, importance = float(row[3]), float(row[6]), float(row[7])
+        posteriors[row[1]] = (importance if math.isfinite(importance) else elbo) + structure
+    return posteriors
+
+
+def one_tone_p5():
+    """{step: {label: log posterior}} from P5's combined.txt."""
+    found, step = {}, None
+    with open(data("P5", "combined.txt"), encoding="utf-8") as file:
+        for line in file:
+            if line.startswith("step "):
+                step = int(line.split()[1])
+                found[step] = {}
+            elif re.match(r"\s+(harmonic|whistles)", line):
+                fields = line.split()
+                found[step][fields[0]] = float(fields[1])
+    return found
+
+
+def one_reading(posteriors):
+    """(f0 of the best one-harmonic reading, its log posterior minus the whistles')."""
+    readings = {
+        label: value for label, value in posteriors.items() if re.fullmatch(r"harmonic@[\d.]+", label)
+    }
+    best = max(readings, key=readings.get)
+    whistles = next(value for label, value in posteriors.items() if label.startswith("whistles"))
+    return float(best.split("@")[1]), readings[best] - whistles
+
+
+def shepard_one_tone():
+    p1 = {step: one_reading(one_tone_p1(step)) for step in range(1, SHEPARD_TONES + 1)}
+    p5 = {step: one_reading(posteriors) for step, posteriors in one_tone_p5().items()}
+    margin = Panel(340, 230, (0.5, 10.5), (-30, 60), left=44)
+    margin.axes(
+        list(range(1, 11)),
+        [-20, 0, 20, 40, 60],
+        x_label="tone (tenths of an octave)",
+        y_label="log posterior, one tone − whistles",
+        title="One harmonic tone against whistles",
+    )
+    margin.horizontal(0)
+    reading = Panel(340, 230, (0.5, 10.5), (0, 180), left=44)
+    reading.axes(
+        list(range(1, 11)),
+        [0, 30, 60, 90, 120, 150, 180],
+        x_label="tone (tenths of an octave)",
+        y_label="f0 of the best reading, Hz",
+        title="Which octave the tone is heard at",
+    )
+    for found, color, name in ((p1, "s1", "P1"), (p5, "s2", "P5")):
+        margin.line(
+            [(step, value) for step, (_, value) in sorted(found.items())],
+            color,
+            tip=lambda x, y, name=name: f"{name}, tone {x:g}: {y:+.1f}",
+        )
+        reading.line(
+            [(step, f0) for step, (f0, _) in sorted(found.items())],
+            color,
+            tip=lambda x, y, name=name: f"{name}, tone {x:g}: {y:.1f} Hz",
+        )
+    legend = [
+        ("s1", "P1: dense spectra, f0 floor 87.5 Hz", "line"),
+        ("s2", "P5: sparse spectra, floor 30 Hz", "line"),
+    ]
+    return figure([margin, reading], "P1 and P5: one Shepard tone, heard as one tone or as whistles", legend)
+
+
+def p_up_by_steps(found, band_only=False):
+    """{steps: [P(up) per pair]}; band_only keeps only the harmonic hypotheses from the 52-104 Hz reading."""
+    by_steps = {}
+    for steps, hypotheses in found.values():
+        if band_only:
+            hypotheses = {
+                label: value
+                for label, value in hypotheses.items()
+                if not label.startswith("harmonic") or pair_summary.in_band(label)
+            }
+        by_steps.setdefault(steps, []).append(pair_summary.p_up(hypotheses))
+    return by_steps
+
+
+def shepard_listener_lines(panel):
+    for values, color, name in (
+        (pair_summary.GROUP_I, "s1", "Group I"),
+        (pair_summary.GROUP_III, "s5", "Group III"),
+    ):
+        panel.line(
+            list(enumerate(values, start=1)),
+            color,
+            dash=True,
+            tip=lambda x, y, name=name: f"Shepard {name}, {x:g} steps: {y:.2f}",
+        )
+
+
+def shepard_octave_check():
+    """P(up) by steps and, at 3 to 5 steps, by starting tone: P3's pairs with P8's extra readings."""
+    paths = sorted(glob.glob(data("P3", "[0-9]*.txt"))) + sorted(glob.glob(data("P8", "*.txt")))
+    found = {
+        key: value
+        for key, value in pair_summary.pairs(paths).items()
+        if len(value[1]) >= pair_summary.HYPOTHESES
+    }
+    steps_panel = Panel(400, 230, (1, 9), (0, 1), left=44)
+    steps_panel.axes(
+        list(range(1, 10)),
+        [0, 0.25, 0.5, 0.75, 1],
+        x_label="steps clockwise",
+        y_label="P(up), mean over starting tones",
+        title="By steps, against Shepard's Fig. 3",
+    )
+    steps_panel.horizontal(0.5)
+    for band_only, color, name, dash in (
+        (True, "s4", "one reading", True),
+        (False, "s2", "three readings", False),
+    ):
+        by_steps = p_up_by_steps(found, band_only)
+        steps_panel.line(
+            [(s, sum(v) / len(v)) for s, v in sorted(by_steps.items())],
+            color,
+            dash=dash,
+            tip=lambda x, y, name=name: f"model, {name}, {x:g} steps: {y:.3f}",
+        )
+    shepard_listener_lines(steps_panel)
+    tone_panel = Panel(400, 230, (0.5, 10.5), (0, 1), left=44)
+    tone_panel.axes(
+        list(range(1, 11)),
+        [0, 0.25, 0.5, 0.75, 1],
+        x_label="first tone",
+        y_label="P(up)",
+        title="By starting tone: solid three readings, dashed one",
+    )
+    tone_panel.horizontal(0.5)
+    for steps, color in ((3, "s3"), (4, "s2"), (5, "s1")):
+        for band_only in (True, False):
+            points = []
+            for (first, _), (pair_steps, hypotheses) in sorted(found.items()):
+                if pair_steps != steps:
+                    continue
+                if band_only:
+                    hypotheses = {
+                        label: value
+                        for label, value in hypotheses.items()
+                        if not label.startswith("harmonic") or pair_summary.in_band(label)
+                    }
+                points.append((first, pair_summary.p_up(hypotheses)))
+            reading = "one reading" if band_only else "three readings"
+            tone_panel.line(
+                points,
+                color,
+                dash=band_only,
+                markers=not band_only,
+                tip=lambda x, y, steps=steps, reading=reading: (
+                    f"{steps} steps from tone {x:g}, {reading}: {y:.3f}"
+                ),
+            )
+    return steps_panel, tone_panel
+
+
+def shepard_octave_check_steps():
+    steps_panel, _ = shepard_octave_check()
+    legend = [
+        ("s2", "model, three readings (P8)", "line"),
+        ("s4", "model, one reading (P3)", "dash"),
+        ("s1", "Shepard Group I", "dash"),
+        ("s5", "Shepard Group III", "dash"),
+    ]
+    return figure([steps_panel], "P8: P(up) by steps, one reading of the first tone or three", legend)
+
+
+def shepard_octave_check_tones():
+    _, tone_panel = shepard_octave_check()
+    legend = [
+        ("s3", "3 steps", "line"),
+        ("s2", "4 steps", "line"),
+        ("s1", "5 steps", "line"),
+        ("s5", "dashed: one reading (P3)", "dash"),
+    ]
+    return figure([tone_panel], "P8: P(up) by starting tone at 3 to 5 steps, one reading or three", legend)
+
+
+def listener_fits(path):
+    """{(variant, group): fitted fractions at 1-9 steps} from a listener_noise.py output."""
+    fits = {}
+    with open(path, encoding="utf-8") as file:
+        for line in file:
+            fields = line.split()
+            if len(fields) > 9 and fields[0] in ("A", "C") and fields[1] in ("I", "III"):
+                fits[(fields[0], fields[1])] = [float(value) for value in fields[-9:]]
+            elif len(fields) == 14 and fields[0] in ("I", "III"):
+                fits[("baseline", fields[0])] = [float(value) for value in fields[-9:]]
+    return fits
+
+
+def shepard_listener_noise():
+    without = listener_fits(data("P9", "fit.txt"))
+    options = listener_fits(data("P9", "options", "fit_all.txt"))
+    panels = []
+    for group, observed in (("I", pair_summary.GROUP_I), ("III", pair_summary.GROUP_III)):
+        panel = Panel(340, 230, (1, 9), (0, 1), left=44)
+        panel.axes(
+            list(range(1, 10)),
+            [0, 0.25, 0.5, 0.75, 1],
+            x_label="steps clockwise",
+            y_label="fraction judged up",
+            title=f"Shepard's Group {group}",
+        )
+        panel.horizontal(0.5)
+        steps = range(1, 10)
+        panel.line(
+            list(zip(steps, observed, strict=True)),
+            "s5",
+            dash=True,
+            tip=lambda x, y, group=group: f"Group {group}, {x:g} steps: {y:.2f}",
+        )
+        for fits, color, name in (
+            (without, "s4", "model (P3, P8)"),
+            (options, "s2", "model with threshold and dominance"),
+            (without, "s3", "curve in steps alone"),
+        ):
+            key = ("baseline", group) if name.startswith("curve") else ("A", group)
+            panel.line(
+                list(zip(steps, fits[key], strict=True)),
+                color,
+                tip=lambda x, y, name=name: f"{name}, {x:g} steps: {y:.2f}",
+            )
+        panels.append(panel)
+    legend = [
+        ("s5", "Shepard (Fig. 3, by eye)", "dash"),
+        ("s4", "model with noise and lapse (P3, P8)", "line"),
+        ("s2", "same, threshold and dominance on", "line"),
+        ("s3", "curve in steps alone (no model)", "line"),
+    ]
+    return figure(panels, "P9: decision noise and lapse fitted to Shepard's groups", legend)
+
+
+def interval_noise_fits(path):
+    """{(version, group): fitted fractions at 1-9 steps} from listener_noise.py --interval-noise."""
+    fits = {}
+    with open(path, encoding="utf-8") as file:
+        for line in file:
+            fields = line.split()
+            for version in ("nominal steps", "model log odds"):
+                words = version.split()
+                if fields[: len(words)] == words and len(fields) > 9 and fields[len(words)] in ("I", "III"):
+                    fits[(version, fields[len(words)])] = [float(value) for value in fields[-9:]]
+    return fits
+
+
+def group_iii_interval_noise():
+    plain = listener_fits(data("P11", "fit.txt"))
+    noise = interval_noise_fits(data("P11", "fit.txt"))
+    panels = []
+    for group, observed in (("I", pair_summary.GROUP_I), ("III", pair_summary.GROUP_III)):
+        panel = Panel(340, 230, (1, 9), (0, 1), left=44)
+        panel.axes(
+            list(range(1, 10)),
+            [0, 0.25, 0.5, 0.75, 1],
+            x_label="steps clockwise",
+            y_label="fraction judged up",
+            title=f"Shepard's Group {group}",
+        )
+        panel.horizontal(0.5)
+        steps = range(1, 10)
+        panel.line(
+            list(zip(steps, observed, strict=True)),
+            "s5",
+            dash=True,
+            tip=lambda x, y, group=group: f"Group {group}, {x:g} steps: {y:.2f}",
+        )
+        for fractions, color, name in (
+            (plain[("A", group)], "s2", "noise and lapse on the model (P9)"),
+            (noise[("model log odds", group)], "s1", "interval noise on the model"),
+            (noise[("nominal steps", group)], "s3", "interval noise on steps alone"),
+        ):
+            panel.line(
+                list(zip(steps, fractions, strict=True)),
+                color,
+                tip=lambda x, y, name=name: f"{name}, {x:g} steps: {y:.2f}",
+            )
+        panels.append(panel)
+    legend = [
+        ("s5", "Shepard (Fig. 3, by eye)", "dash"),
+        ("s2", "noise and lapse on the model's log odds (P9)", "line"),
+        ("s1", "interval noise on the model's log odds", "line"),
+        ("s3", "interval noise on steps alone (no model)", "line"),
+    ]
+    return figure(panels, "P11: noise on the interval, fitted to Shepard's groups", legend)
+
+
+MISTUNINGS = (0, 5, 10, 15, 20, 25, 30)
+
+
+def mistuned_odds(*parts):
+    """[(percent, log odds of two over one)] by variational importance, from scene_mistuned_harmonic.py files;
+    a failed estimate (-inf) is left out."""
+    points = []
+    for path in glob.glob(data(*parts)):
+        for row in numeric_rows(path):
+            if math.isfinite(float(row[-1])):
+                points.append((float(row[0]), float(row[-1])))
+    return sorted(points)
+
+
+def earlier_experiments_hearing():
+    panels = []
+    for f0, harmonic, y_range, y_ticks in (
+        (100, 1, (-30, 30), [-30, -15, 0, 15, 30]),
+        (200, 2, (-30, 120), [0, 40, 80, 120]),
+    ):
+        panel = Panel(340, 230, (0, 30), y_range, left=44)
+        panel.axes(
+            list(MISTUNINGS),
+            y_ticks,
+            x_label="mistuning, % of f0",
+            y_label="log odds, two sources vs one",
+            title=f"{f0} Hz, harmonic {harmonic}",
+        )
+        panel.horizontal(0)
+        name = f"f0-{f0}_h{harmonic}_p*.txt"
+        for parts, color, label, dash in (
+            (("P7", "baseline-0.8.0", name), "s5", "dense, 87.5 Hz", True),
+            (("P7", "mistuned", name), "s1", "P7", False),
+            (("P10", "mistuned", name), "s2", "P10, both options", False),
+            (("P10", "dominance_only", name), "s3", "P10, dominance only", False),
+        ):
+            panel.line(
+                mistuned_odds(*parts),
+                color,
+                dash=dash,
+                tip=lambda x, y, label=label: f"{label}, {x:g}%: {y:+.1f}",
+            )
+        panels.append(panel)
+    legend = [
+        ("s5", "dense spectra, 87.5 Hz floor (P7 baseline; 100/1 at 25% failed)", "dash"),
+        ("s1", "sparse spectra, 30 Hz floor (P7)", "line"),
+        ("s2", "+ threshold and dominance (P10)", "line"),
+        ("s3", "+ dominance only (P10, 100/1)", "line"),
+    ]
+    return figure(panels, "P7 and P10: mistuned harmonic with the relative-pitch options", legend)
+
+
 # O3: reset of streaming after silence
 
 BM_SILENCES = (0, 0.5, 1, 2, 4, 8)
@@ -1187,7 +1537,13 @@ PLOTS = {
     "O3-cusack-reset-rule": lambda: reset_cusack(
         "restart_gated", "O3: Cusack et al. (2004), second sequence heard afresh after the silence (E12)"
     ),
+    "P5-shepard-one-tone": shepard_one_tone,
     "P3-shepard-pairs": shepard_pairs,
+    "P8-by-steps": shepard_octave_check_steps,
+    "P8-by-starting-tone": shepard_octave_check_tones,
+    "P9-shepard-listener-noise": shepard_listener_noise,
+    "P10-earlier-experiments-hearing": earlier_experiments_hearing,
+    "P11-group-iii-interval-noise": group_iii_interval_noise,
     "R1-likelihood-slice": likelihood_slice,
     "R1-interval-coverage": interval_coverage,
     "R2-atypical-rooms": atypical_rooms,

@@ -59,6 +59,10 @@ time: 28 to 37 min per mistuning level, 5 to 17 min per two-note hypothesis.
 
 ### Mistuned harmonic
 
+![Log odds against mistuning at 100 Hz harmonic 1 and 200 Hz harmonic 2, P7 and P10](plots/P10-earlier-experiments-hearing.svg)
+
+*Log odds of two sources over one by variational importance, with and without P7's options, and with P10's. Drawn by `tools/results_plots.py`.*
+
 Eqn 2 thresholds (%), 0 to 30% in steps of 5, by the four estimates
 (`data/P7/thresholds.txt`; the baseline's, `thresholds_baseline.txt`; A7's
 from the same tool on its converged outputs, `thresholds_A7.txt`):
@@ -133,3 +137,25 @@ it scores −9999.8, 54 higher, and wins
   responded, so the comparison is loose.
 - **Not checked:** the fifth at other asynchronies and the tritones, other
   seeds, and the other two mistuning conditions.
+
+## Reproduce
+
+Rebuilt on 2026-11-01 from the settings the outputs' headers and this page's
+setup record; the commands themselves were not recorded at the time and
+have not been rerun. One job per mistuning level and per two-note hypothesis, as on
+[P10](P10-earlier-experiments-hearing.md), which used the same commands
+plus its two options. The baseline (`data/P7/baseline-0.8.0/`) is the same
+commands without `--sparse-spectrum --floor 30`.
+
+```
+O="--steps 15000 --tolerance 0.5 --variational-steps 2000 --sparse-spectrum --floor 30"
+for p in 0 5 10 15 20 25 30; do
+    python tools/bass/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --percents $p $O > f0-100_h1_p$p.txt
+    python tools/bass/scene_mistuned_harmonic.py --f0 200 --harmonic 2 --percents $p $O > f0-200_h2_p$p.txt
+done
+python tools/bass/compare_two_notes.py --interval octave --asynchronies 0 --only two $O > octave_0ms_two.txt
+python tools/bass/compare_two_notes.py --interval octave --asynchronies 0 --only one@200 $O > octave_0ms_one@200.txt
+# likewise one@100 and one@400 for the octave; one@100, one@200, one@300, two and whistles for just_fifth
+python tools/bass/variational_thresholds.py results/data/P7/mistuned/*.txt
+python tools/bass/two_notes_summary.py results/data/P7/two_notes/*.txt
+```

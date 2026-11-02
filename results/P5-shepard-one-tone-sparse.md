@@ -50,6 +50,10 @@ a time; 130 fits took 189 to 922 s each.
 
 ## Results
 
+![One tone against whistles, and the reading heard, by tone; P1 and P5](plots/P5-shepard-one-tone.svg)
+
+*Left: the best one-harmonic reading's log posterior minus the whistles' (P5's from `combined.txt`, both starts combined). Right: that reading's f0. Drawn by `tools/results_plots.py`.*
+
 Log posteriors are shifted by 4329.7, as on P1. All per-tone values are in
 `data/P5/combined.txt`, made by
 `python tools/relative_pitch/combine_starts.py results/data/P5/*.txt`.
@@ -113,3 +117,22 @@ P1 had no tone-plus-whistle hypotheses; its search found one at −88.9.
 - **Not checked:** other seeds; the search with the options; whether a
   pair of tones (P3) is heard to move in Shepard's direction, given the
   jump between tones 5 and 6.
+
+## Reproduce
+
+Rebuilt on 2026-11-01 from the settings the outputs' headers and this page's
+setup record; the commands themselves were not recorded at the time and
+have not been rerun. The committed outputs hold one hypothesis per file
+(`--only LABEL --exact`), run four at a time. Files without a suffix come
+from an earlier version of the tool that kept only the start with the
+higher log joint; the `__s1` files rerun one start (`--start`). Today's
+tool fits both starts in one run, so one command per tone gives the same
+fits:
+
+```
+for n in 1 2 3 4 5 6 7 8 9 10; do
+    python tools/relative_pitch/one_tone.py --steps-of-circle $n --sparse-spectrum --floor 30 \
+        --mixed --highest 350 > oct$n.txt
+done
+python tools/relative_pitch/combine_starts.py results/data/P5/*.txt
+```
