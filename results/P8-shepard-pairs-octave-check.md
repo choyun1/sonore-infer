@@ -45,6 +45,12 @@ importance estimate failed and no fit's shift changed sign.
 
 ## Results
 
+![P(up) by steps, one reading or three](plots/P8-by-steps.svg)
+
+![P(up) by starting tone at 3 to 5 steps](plots/P8-by-starting-tone.svg)
+
+*P(up) with the first tone read only between 52 and 104 Hz (P3) and also an octave down and up (P8; extra readings at 3 to 5 steps only). Drawn by `tools/results_plots.py`.*
+
 From `data/P8/summary.txt`, made by
 `python tools/relative_pitch/pair_summary.py --by-steps results/data/P3/[0-9]*.txt results/data/P8/*.txt`.
 P3 is P(up) with the 52 to 104 Hz reading only (the `p_up_band` column),
@@ -105,3 +111,17 @@ By steps clockwise, P(up) averaged over the 10 starting tones (1, 2 and 6 to
 - **Not checked:** other readings at 1, 2 and 6 to 9 steps (P3's margins
   there are large but an octave-down up step was not fitted), other seeds,
   and a start an octave down for the second tone alone.
+
+## Reproduce
+
+Rebuilt on 2026-11-01 from the settings the outputs' headers and this page's
+setup record; the commands themselves were not recorded at the time and
+have not been rerun. One file per pair, octave and direction, harmonic hypotheses
+only (`--octave` fits no whistles):
+
+```
+python tools/relative_pitch/pair.py --first 1 --seconds 4 --octave -1 --sparse-spectrum --floor 30 --only "harmonic up" > 1-4-octave-1-harmonic-up.txt
+python tools/relative_pitch/pair.py --first 1 --seconds 4 --octave 1 --sparse-spectrum --floor 30 --only "harmonic down" > 1-4-octave1-harmonic-down.txt
+# and so on for the 30 pairs 3 to 5 steps apart, both octaves and both directions
+python tools/relative_pitch/pair_summary.py --by-steps results/data/P3/[0-9]*.txt results/data/P8/*.txt > summary.txt
+```

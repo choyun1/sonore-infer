@@ -21,7 +21,9 @@ Conventions on every page:
   numbers come from a local analysis that is not in this repository,
   because BASS's code has no license.
 - **One seed** for our runs and for the BASS run, except A8 and B4, which
-  average 10 seeds as the paper did.
+  average 10 seeds as the paper did, and where a page says otherwise (C2
+  adds seeds 1 to 4 on its two closest cells; C3 checks the just fifth's
+  fits over five seeds).
 - Every number comes from a committed output under [`data/`](data/) and a
   script under `tools/`, or is marked as an estimate.
 - **Plots** in [`plots/`](plots/) are drawn from those outputs by
@@ -92,7 +94,7 @@ What every experiment here shares unless its page says otherwise:
 - **Thresholds.** Eqn 2 as we read it: lowest level plus the area under
   p(one source). Where noted, also the rule in BASS's analysis code.
 
-### The four groups
+### The groups
 
 - **A, mistuned harmonic (milestone (a)).** Reproduce the paper's Fig. 7D.
   A complex tone (f0 100, 200 or 400 Hz, equal 60 dB harmonics, 400 ms)
@@ -117,6 +119,16 @@ What every experiment here shares unless its page says otherwise:
   paper's full grammar (several events per source, inferred
   Gaussian-process hyperparameters) and is rerun on A and B, then on the
   paper's further experiments, starting with ABA streaming.
+- **O, online inference.** The same scene model, with the evidence
+  accumulated window by window as the sound arrives, as a listener hears
+  it. O1 checks it against batch fits on the buildup of streaming
+  (Fig. 8F), O2 makes it faster, and O3 asks whether streaming resets
+  after a silence, as it does for listeners.
+- **P, relative pitch.** Not in the paper. Shepard (1964) tones, whose
+  components are an octave apart: what one tone is heard as (P1, P5, P2,
+  P6), and whether the step between two is heard as up or down (P3, P8),
+  compared with Shepard's listeners (P9). The options these needed are
+  rechecked on earlier experiments (P7, P10).
 
 ## Experiments
 
@@ -136,16 +148,16 @@ What every experiment here shares unless its page says otherwise:
 | [B4](B4-two-notes-seeds.md) | B2 over seeds (5 on close cases, then 10 on all) | none | done | Every sign unchanged; seed SD 1–5 |
 | [C1](C1-kernel-inferred.md) | GP sigma and lengthscale inferred (100/1 and octave) | Fig. 7D, Table A.2 | done | 100/1 still 25%; octave still one source |
 | [C2](C2-aba-streaming.md) | ABA sequences, one stream or two (30 stimuli) | Fig. 8D, App. C.10 | map done; seeds 0–4 on the 2 cells under 10 | One stream at 1 semitone, two from 3 up (paper: from about 6) |
-| [C3](C3-search.md) | Search over structures from detected events | App. B.2 | first pass on 4 (b) and 3 ABA stimuli | Same structure as enumerated on 6 of 7; fifth at 0 ms gives note + whistle |
+| [C3](C3-search.md) | Search over structures from detected events | App. B.2 | first pass on 4 (b) and 3 ABA stimuli; five f0 starts added | Same structure as enumerated on 7 of 7 with five f0 starts; with one start the fifth at 0 ms gave note + whistle |
 | [O1](O1-online-buildup.md) | Buildup of streaming, batch and online | Fig. 8F, App. C.11 | first pass, sweeps | Converged batch odds rise with triplets; online with per-window convergence reproduces them in one pass; the lag, not the window, sets the slope |
 | [O2](O2-online-speed.md) | Faster online inference | none (cost; checked against O1) | S1, S2, S4 checked; S3 dropped; S5 measured; stopping-rule sweep run | Rendering each event over its span changes no answer; with the evidence every 0.5 s, odds stay within 1.2 of O1 in a seventh of the time; L-BFGS, plain or paired with Adam, fails online; shorter look-backs save little, 100 ms windows a sixth; summarizing the past (S4) changes no answer and saves more as the sound grows |
 | [O3](O3-order-effects.md) | Reset of streaming after silence (Beauvois & Meddis 1997; Cusack et al. 2004, Exp. 3), online | none (listening studies) | first pass, one run each; Cusack 10 s gaps running | Both wrong: the test alone already gives two streams, the inducer acts the wrong way at 0 s and does not decay; after a gap the leak carries the lean over, and the per-source rhythm prior pushes the next triplet towards one stream, more after longer gaps, where listeners reset fully after 1 s |
 | [P1](P1-shepard-one-tone.md) | One Shepard tone alone: one tone or whistles, which octave | none (Shepard 1964 §I) | first pass, one seed | Whistles win by 9–20 at 7 of 10 tones, within noise at the other 3; the octave read is set by the 87.5 Hz f0 prior floor; search finds a tone plus a whistle better still |
 | [P2](P2-shepard-minor-third.md) | Octave against minor-third spacing | none (Shepard 1964 §V) | first pass, one seed, 2 tones | Minor-third complex heard as one low tone by about 270: Shepard's contrast backwards |
+| [P3](P3-shepard-pairs.md) | All 90 pairs of Shepard tones: P(up) against steps clockwise and by starting tone, sparse spectra and a 30 Hz floor | none (Shepard 1964 Fig. 3) | first pass, one seed | Shorter way round at 1–2 and 6–9 steps; crossover early on average (P(up) 0.24 at 5 steps vs listeners 0.53) and moves with the starting tone (after 2 to 5 steps); P(up) 0 or 1 in 81 of 90 pairs |
 | [P5](P5-shepard-one-tone-sparse.md) | P1 with sparse harmonic spectra and a 30 Hz floor | none (Shepard 1964 §I) | first pass, one seed | One tone at all 10 tones, whistles 26–55 behind; the octave read is the component between 52 and 104 Hz, so it drops an octave between tones 5 and 6 |
 | [P6](P6-shepard-minor-third-sparse.md) | P2 with sparse harmonic spectra and a 30 Hz floor | none (Shepard 1964 §V) | first pass, one seed, 2 tones | Minor-third complex still one low tone, about 100 ahead of a chord of four tones |
 | [P7](P7-earlier-experiments-sparse.md) | Mistuned harmonic (100/1, 200/2) and two notes (octave, fifth at 0 ms) with sparse spectra and a 30 Hz floor | Fig. 7D; none for two notes | first pass, one seed | Thresholds 25 to 22% (100/1), 12.5% unchanged (200/2); the just fifth flips to one tone at 100 Hz, by 12.7; octave unchanged |
-| [P3](P3-shepard-pairs.md) | All 90 pairs of Shepard tones: P(up) against steps clockwise and by starting tone, sparse spectra and a 30 Hz floor | none (Shepard 1964 Fig. 3) | first pass, one seed | Shorter way round at 1–2 and 6–9 steps; crossover early on average (P(up) 0.24 at 5 steps vs listeners 0.53) and moves with the starting tone (after 2 to 5 steps); P(up) 0 or 1 in 81 of 90 pairs |
 | [P8](P8-shepard-pairs-octave-check.md) | P3's 30 pairs 3–5 steps apart with the first tone also heard an octave down or up | none (Shepard 1964 Fig. 3) | first pass, one seed | P3's starting-tone effect at 3–4 steps came from the single reading: every tone now goes up at 1–4 steps; the half octave still varies by starting tone (up from tones 5–7); mean P(up) at 5 steps 0.37 vs listeners 0.53 |
 | [P9](P9-shepard-listener-noise.md) | Decision noise and lapse on the model's log odds, fitted to Shepard's Groups I and III, with guards against overfitting | none (Shepard 1964 Fig. 3, §IV) | first pass, one seed | For Group I a curve in steps alone beats the model by 46 (64 held out): the model's crossover is too sharp, because up or down is decided mostly by faint energy in the lowest channels (20 to 51 Hz); Group III is mostly guessing; the noise does not read as a likelihood SD (refits at 25.4 dB) |
 | [P10](P10-earlier-experiments-hearing.md) | P7's mistuned harmonic and two notes, and ABA at 1, 3 and 6 semitones, with a hearing threshold and spectral dominance | Fig. 7D, Fig. 8D; none for two notes | first pass, one seed | ABA, two notes and 200/2 unchanged (within 5.4); at 100/1 two sources are never preferred up to 30% (P7: 22.4%), further from listeners; dominance alone does the same |
@@ -220,7 +232,7 @@ or changes how the model compares with listeners.
 | Comparison | Paper | Ours | Status |
 | --- | --- | --- | --- |
 | Mistuned harmonic thresholds, 8 of 9 conditions (Fig. 7D) | by eye | within one grid step ([A5](A5-full-model.md)–[A8](A8-ten-seeds.md)) | **matches** |
-| Mistuned harmonic, 100 Hz harmonic 1 | about 45% (BASS's code, one seed: 40%) | 25% Eqn 2, 30% BASS's rule ([A8](A8-ten-seeds.md), [C1](C1-kernel-inferred.md)) | **differs, not chased**: listeners are about 1–5%, closer to ours; the cause is in BASS's code, which we cannot copy |
+| Mistuned harmonic, 100 Hz harmonic 1 | about 45% (BASS's code, one seed: 40%) | 25% Eqn 2, 30% BASS's rule ([A8](A8-ten-seeds.md), [C1](C1-kernel-inferred.md)) | **differs, not chased**: listeners are about 1–5%, closer to ours; the cause is in BASS's code, which we cannot copy. With spectral dominance (P19/P20 options, off by default) two sources are never preferred up to 30% ([P10](P10-earlier-experiments-hearing.md)), further from listeners |
 | Threshold rule (Eqn 2) | Eqn 2 as printed; BASS's analysis code uses another rule ([A6](A6-bass-own-code.md)) | both reported | **differs by method**; both kept on every page |
 | Evidence method | variational, 250 steps per hypothesis then full fits for the top 5 | Laplace and variational importance ([A7](A7-variational-evidence.md)) | **differs by method**; A7 found the same thresholds by both |
 | Gaussian-process sigma and lengthscale inferred (Table A.2) | inferred per sound | inferred in C1 and C2, fixed at Table A.2's medians elsewhere | **matches where inferred**; Table A.2's quartiles imply an f0 lengthscale bound of 0.01 s, not the 0.1 s printed ([C1](C1-kernel-inferred.md)) |
@@ -272,10 +284,9 @@ paper's model.
 
 ## Design documents
 
-The decisions behind these experiments are in
-[design v1](../docs/design/design-v1.md), [milestone (b)](../docs/design/milestone-b.md),
-[milestone (c)](../docs/design/milestone-c.md) and
-[source and room](../docs/design/source-reverb.md).
+The decisions behind these experiments are in the design documents, listed
+by direction with their decision numbers in the [design index](../docs/README.md).
+Each results page links the ones it follows.
 
 ### Paths cited in the design documents
 
@@ -291,4 +302,4 @@ says where each one is now.
 | `results/two_notes/seeds/` | [B4](B4-two-notes-seeds.md) |
 | `source-reverb/results/recovery_summary.txt` | [`data/R1/recovery_summary.txt`](data/R1/recovery_summary.txt) |
 | `source-reverb/results/atypical_rooms_summary.txt` | [`data/R2/atypical_rooms_summary.txt`](data/R2/atypical_rooms_summary.txt) |
-| `results/aba/raw/` | not here yet; it belongs to the milestone (c) branch |
+| `results/aba/raw/` | [C2](C2-aba-streaming.md), [`data/C2/`](data/C2/) |

@@ -78,7 +78,7 @@ evidence (Cho's choice, 2026-10-10).
 ```
 python tools/bass/compare_two_notes.py --interval octave --steps 3000 > octave.txt
 python tools/bass/compare_two_notes.py --controls --steps 3000 > controls.txt
-python tools/bass/two_notes_summary.py data/B1/*.txt
+python tools/bass/two_notes_summary.py results/data/B1/*.txt
 ```
 
 Raw outputs: [`data/B1/`](data/B1/). The 300-step pass is in the project's

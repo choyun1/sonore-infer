@@ -61,6 +61,10 @@ so the times are rough.
 
 ## Results
 
+![One tone against whistles, and the reading heard, by tone; P1 and P5](plots/P5-shepard-one-tone.svg)
+
+*Left: the best one-harmonic reading's log posterior minus the whistles' (variational importance plus structure prior; the ELBO where importance failed). Right: that reading's f0. P5's line is the same with sparse spectra and a 30 Hz floor. Drawn by `tools/results_plots.py`.*
+
 Log posteriors are shifted by the likelihood's normalising term, 4329.7
 for a 0.225 s tone (64 channels × 21 windows × 3.222), as on
 [C3](C3-search.md); raw outputs in `data/P1/` are not shifted.
@@ -116,3 +120,16 @@ reading (one tone at 155.6 Hz) and 28 above the four whistles.
 - **Not checked:** other seeds, other tones in the search, and whether a
   lower prior floor or a sparse-spectrum prior (decision P3 (B)) changes
   the picture.
+
+## Reproduce
+
+Rebuilt on 2026-11-01 from the settings the outputs' headers and this page's
+setup record; the commands themselves were not recorded at the time and
+have not been rerun. One tone per output file:
+
+```
+for n in 1 2 3 4 5 6 7 8 9 10; do
+    python tools/relative_pitch/one_tone.py --steps-of-circle $n > step$n.txt
+done
+python tools/relative_pitch/search_tone.py shepard:1 > search_step1.txt
+```

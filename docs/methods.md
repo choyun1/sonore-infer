@@ -466,6 +466,13 @@ the paper's sequential inference [App. B.2]:
 5. The best by the screen get the variational estimate (§2.4), which ranks
    them.
 
+- **Option, off by default: several f0 starts** (`f0_scales`,
+  `--f0-scales` in `search_scene.py`). Each hypothesis with a harmonic
+  source is fitted once per scale $s$, from the detector's f0 start
+  multiplied by $s$, and the fit with the highest log joint is kept. C3
+  uses the scales 0.98, 0.99, 1, 1.01 and 1.02: the just fifth's two-note
+  fit reaches the notes' f0s only from about 1% above the detector's.
+
 - **Departure.** The paper's proposals come from a trained segmentation
   network and its screening fits are variational; ours come from a
   hand-built detector and screening uses MAP and Laplace (design C9 (A),
