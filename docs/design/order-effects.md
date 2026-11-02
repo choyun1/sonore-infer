@@ -338,8 +338,8 @@ a plot, as for O1.
    studies.
 2. The stimuli and the tool, with tests; one run timed on the cloud CPU.
 3. Reset after silence on Cho's PC: Beauvois & Meddis, then Cusack et al.;
-   page O3, PR. Done 2026-10-30 except Cusack et al.'s 10 s gaps
-   (running): [O3](../../results/O3-order-effects.md).
+   page O3, PR. Done 2026-10-30, Cusack et al.'s 10 s gaps not run
+   (cost): [O3](../../results/O3-order-effects.md).
 4. The previous trial's context, once a paper with its stimuli is in hand:
    runs, page O4, PR.
 
