@@ -212,7 +212,8 @@ Checks, from the same outputs:
   than 68.
 - Online is not yet cheaper than batch: 680 to 990 s of computing per
   second of sound per hypothesis with a 1 s lag, most of it in each
-  window's Hessian.
+  window's Hessian. These are the costs before the speed-ups of
+  [O2](O2-online-speed.md), which are now the tool's defaults.
 - With the leaky decision (τ 2.5 s), the odds still rise over 6 triplets
   but more slowly each triplet, at 4 st from −3.3 to 11.1 and at 8 st
   from 8.0 to 77.6; with τ 1 s, 8 st levels off near 40.

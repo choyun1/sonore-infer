@@ -87,3 +87,22 @@ the GP, which is what led to the second start.
 - **Not checked:** other seeds and tones; whether a chord of Shepard-like
   tones would win against one tone with a different chord structure (for
   example, three sources); the search with the options.
+
+## Reproduce
+
+Rebuilt on 2026-11-01 from the settings the outputs' headers and this page's
+setup record; the commands themselves were not recorded at the time and
+have not been rerun. As on [P5](P5-shepard-one-tone-sparse.md), the committed outputs
+hold one hypothesis per file:
+
+```
+for n in 1 4; do
+    python tools/relative_pitch/one_tone.py --minor-third --steps-of-circle $n --sparse-spectrum \
+        --floor 30 --chord --highest 200 > mt$n.txt
+done
+python tools/relative_pitch/combine_starts.py results/data/P6/mt*.txt
+# the four combinations on tone 1 (sparse start only, see above)
+python tools/relative_pitch/one_tone.py --minor-third --steps-of-circle 1 --floor 30 --highest 200 > mt_gp_30.txt
+python tools/relative_pitch/one_tone.py --minor-third --steps-of-circle 1 --sparse-spectrum --floor 30 --highest 200 --start 1 > mt_sparse_30.txt
+python tools/relative_pitch/one_tone.py --minor-third --steps-of-circle 1 --sparse-spectrum --highest 200 --start 1 > mt_sparse_87.txt
+```

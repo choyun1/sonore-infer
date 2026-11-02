@@ -255,3 +255,26 @@ costs; no full run on the PC's CPU yet].
 
 - What still grows with the sound under S4 (the prior, inferred). S3 (D)
   is answered above and dropped; S5 (C), float32 on the GPU, not tried.
+
+## Reproduce
+
+Rebuilt on 2026-11-01 from the settings the outputs' headers and this page's
+setup record; the commands themselves were not recorded at the time and
+have not been rerun. The runs predate today's defaults: S2 (evidence every 0.5 s) since
+2026-10-16, 100 ms windows and S4 since 2026-10-18. The runs before S1
+(`online_cost_st8_before_s1.txt`) and with L-BFGS (S3, dropped) need the
+code of their time and cannot be made with today's tools.
+
+```
+# look-back and window sweep (S = 4, 8; W = 0.05, 0.1; P = 50, 20, 10, 5)
+python tools/online/online_buildup.py --semitones 8 --triplets 6 --lag 1 --steps 2000 \
+    --window 0.1 --window-patience 50 --window-tolerance 1 --no-summarize-past > st8_w100_p50_lag1_e0.5.txt
+# S4 (today's default)
+python tools/online/online_buildup.py --semitones 8 --triplets 6 --lag 1 --steps 2000 \
+    --window-patience 50 > st8_w100_p50_lag1_e0.5_s4.txt
+# before S2: evidence at every window
+python tools/online/online_buildup.py --semitones 8 --triplets 6 --lag 1 --steps 2000 \
+    --window 0.05 --window-patience 50 --evidence-every 0 --no-summarize-past > st8_w50_p50_lag1.txt
+# cost per step and per Hessian; S5 adds --device cuda
+python tools/online/online_cost.py --semitones 8 > online_cost_st8.txt
+```

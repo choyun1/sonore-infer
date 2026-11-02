@@ -139,3 +139,19 @@ of 128, as on P5, so the importance estimates are rough.
   yet.
 - **Not checked:** other readings, other seeds, the options off, and
   listener data by starting tone (none read; Shepard pools over tones).
+
+## Reproduce
+
+Rebuilt on 2026-11-01 from the settings the outputs' headers and this page's
+setup record; the commands themselves were not recorded at the time and
+have not been rerun. Tone 1's pairs ran with all hypotheses per file, the rest one
+family per file (`--only harmonic`, `--only whistles`, split by direction
+as `harmonic-up` and `harmonic-down`), four at a time:
+
+```
+python tools/relative_pitch/pair.py --first 1 --seconds 2 --sparse-spectrum --floor 30 > 1-2.txt
+python tools/relative_pitch/pair.py --first 2 --seconds 3 --sparse-spectrum --floor 30 --only whistles > 2-3-whistles.txt
+# and so on for every first tone 1 to 10 and every other second tone
+python tools/relative_pitch/pair_summary.py --by-steps results/data/P3/[0-9]*.txt > summary.txt
+python tools/results_plots.py
+```
