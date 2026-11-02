@@ -61,7 +61,10 @@ the threshold rule, and 100 Hz harmonic 1 from the model.
 
 ## Reproduce
 
-Re-run on main through the scene module (identical outputs, PR #15):
+Re-run on main through the scene module (identical outputs, PR #15). Rechecked
+on main on 2026-11-02 at 400 Hz harmonic 1, mistunings 0, 4 and 10%: the Laplace
+estimates and the working importance estimates match the committed row to the
+printed digit; the failed importance estimate at 4% (ESS 1) moves by 0.3.
 
 ```
 python tools/bass/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --percents 0 1 2 3 4 5 6 7 8 9 10 12 14 16 18 20 22 24 26 28 30 35 40 45 50
