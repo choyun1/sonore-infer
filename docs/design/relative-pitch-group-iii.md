@@ -1,6 +1,6 @@
 # Relative pitch: Group III's errors at small steps — design
 
-Status: **draft, waiting on Cho's answers** (P24 to P26). Other seeds
+Status: **accepted by Cho on 2026-11-02** (P24 to P26 as recommended; see §4). Other seeds
 for the Shepard pairs are a separate design (decision P27, Cho's split of
 2026-11-02).
 Follows [P9](../../results/P9-shepard-listener-noise.md) and
@@ -18,7 +18,7 @@ the numbering of [relative-pitch-dominance.md](relative-pitch-dominance.md)
 
 ## Decisions at a glance
 
-| Decision | Recommended |
+| Decision | Accepted |
 |---|---|
 | P24. What to explain | (A) Group III's lower accuracy at the smallest steps in both directions, with the 9-step rise as one end of it |
 | P25. Mechanism | (A) Noise on the interval between the two pitches, after the scene model, fitted per group; no new fits |
@@ -183,7 +183,8 @@ adds nothing beyond the number of steps. The page should say so.
 
 ## 4. Cho's answers
 
-(waiting)
+2026-11-02: all three accepted as recommended ("accept all"). P25 (B), the
+check that per-trial sensory noise cannot give the dip, is not run.
 
 ## 5. Not in scope
 

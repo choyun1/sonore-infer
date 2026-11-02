@@ -161,6 +161,7 @@ What every experiment here shares unless its page says otherwise:
 | [P8](P8-shepard-pairs-octave-check.md) | P3's 30 pairs 3–5 steps apart with the first tone also heard an octave down or up | none (Shepard 1964 Fig. 3) | first pass, one seed | P3's starting-tone effect at 3–4 steps came from the single reading: every tone now goes up at 1–4 steps; the half octave still varies by starting tone (up from tones 5–7); mean P(up) at 5 steps 0.37 vs listeners 0.53 |
 | [P9](P9-shepard-listener-noise.md) | Decision noise and lapse on the model's log odds, fitted to Shepard's Groups I and III, with guards against overfitting | none (Shepard 1964 Fig. 3, §IV) | first pass, one seed | For Group I a curve in steps alone beats the model by 46 (64 held out): the model's crossover is too sharp, because up or down is decided mostly by faint energy in the lowest channels (20 to 51 Hz); Group III is mostly guessing; the noise does not read as a likelihood SD (refits at 25.4 dB) |
 | [P10](P10-earlier-experiments-hearing.md) | P7's mistuned harmonic and two notes, and ABA at 1, 3 and 6 semitones, with a hearing threshold and spectral dominance | Fig. 7D, Fig. 8D; none for two notes | first pass, one seed | ABA, two notes and 200/2 unchanged (within 5.4); at 100/1 two sources are never preferred up to 30% (P7: 22.4%), further from listeners; dominance alone does the same |
+| [P11](P11-group-iii-interval-noise.md) | Group III's errors at small steps (and its rise at 9 steps) as noise on the heard interval, after the scene model | none (Shepard 1964 Fig. 3, §IV) | first pass, one seed (P9's log odds) | Interval noise of SD 1.95 steps (about 2.3 semitones), with no model, describes Group III best (−736.8, held out −738.3, against P9's −745.1 and −749.7) and gives the dip at 1 step and a rise at 9 (0.32 vs 0.40); on the model's log odds it overfits; Group I has no such noise |
 | [R1](R1-source-and-room.md) | Source and room (RT60) from one sound | none in this paper | done | RT60 within 3%; 90% intervals cover 66% (overconfident) |
 | [R2](R2-atypical-rooms.md) | Atypical rooms, exponential room model | none in this paper | done | Biased like T20 × 3; time-reversed rooms do not fit |
 
@@ -195,10 +196,12 @@ document with its decisions for Cho before any run.
   (from 46). Checked on earlier experiments as P10: no change on ABA,
   two notes or 200/2, but at 100 Hz harmonic 1 the mistuned fundamental
   is no longer heard as separate up to 30%. Next: the remaining early
-  crossover, Group III's rise at 9 steps (design draft
+  crossover, other seeds (decision P27), and whether the options become
+  defaults (decision P13). Group III's rise at 9 steps is the other side of
+  a dip at the smallest step, described as noise on the heard interval
+  outside the scene model (P11; design
   [relative-pitch-group-iii.md](../docs/design/relative-pitch-group-iii.md),
-  decisions P24 to P26), other seeds (decision P27), and whether the options become defaults
-  (decision P13).
+  decisions P24 to P26, accepted 2026-11-02).
 - **ABA margins against graded listener data.** C2's log odds are far
   larger than the paper's (up to +217); whether that matters is deferred
   until graded listener data are compared (the "Against the paper"
