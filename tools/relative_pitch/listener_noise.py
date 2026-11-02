@@ -39,7 +39,7 @@ the adjacent-pair check. It also prints the size of the dip at small steps:
 accuracy folded over both directions and its standard error if every
 presentation were an independent trial.
 
-    python tools/relative_pitch/listener_noise.py results/data/P3/[0-9]*.txt results/data/P8/[0-9]*.txt
+    python tools/relative_pitch/listener_noise.py results/data/P03/[0-9]*.txt results/data/P08/[0-9]*.txt
 """
 
 import argparse

@@ -45,7 +45,7 @@ frequencies and timings. One seed.
 
 ## Results
 
-Log odds of two streams over one at the end of each triplet (`data/O1/`):
+Log odds of two streams over one at the end of each triplet (`data/O01/`):
 
 | Triplets | 1 | 2 | 3 | 4 | 5 | 6 |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -62,7 +62,7 @@ Log odds of two streams over one at the end of each triplet (`data/O1/`):
 | 8 st, online, 30 steps, no lag | 1107.5 | 1534.0 | 1569.8 | 1521.5 | 1578.0 | 1471.9 |
 | 8 st, online, 30 steps, lag 1 s | 1107.5 | 1544.5 | 1729.5 | 1832.0 | 1950.9 | 2064.5 |
 
-![O1-online-buildup](plots/O1-online-buildup.svg)
+![O1-online-buildup](plots/O01-online-buildup.svg)
 
 *Log odds of two streams over one after each triplet: batch with 3000
 Adam steps (the diamond: the one-stream fit run to 10,000 steps), online
@@ -73,10 +73,10 @@ At 6 triplets with the one-stream fit run to 10,000 steps, the batch odds
 are 11.9 (4 st) and 118.5 (8 st). The one-stream log joint is flat from
 step 2,000 at 4 st and from step 5,000 at 8 st, where it gains 5.1 after
 step 3,000 but the Laplace estimate moves by 26: the peak's curvature, not
-the fit (`data/O1/one_stream_10000_steps_*.txt`).
+the fit (`data/O01/one_stream_10000_steps_*.txt`).
 
 Leaky log odds (decision O10) from the online runs to convergence (lag
-1 s), structure prior included (`data/O1/leaky_p50_lag1.txt`):
+1 s), structure prior included (`data/O01/leaky_p50_lag1.txt`):
 
 | Triplets | 1 | 2 | 3 | 4 | 5 | 6 |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -87,7 +87,7 @@ Leaky log odds (decision O10) from the online runs to convergence (lag
 | 8 st, τ 2.5 s | 8.0 | 30.4 | 45.6 | 59.0 | 68.9 | 77.6 |
 | 8 st, τ 5 s | 9.0 | 33.5 | 52.4 | 70.4 | 85.5 | 99.8 |
 
-The same from the 150-step online runs (`data/O1/leaky_s150_lag1.txt`),
+The same from the 150-step online runs (`data/O01/leaky_s150_lag1.txt`),
 whose one-stream fits fall short:
 
 | Triplets | 1 | 2 | 3 | 4 | 5 | 6 |
@@ -103,7 +103,7 @@ whose one-stream fits fall short:
 
 Online, each window fitted to convergence (decision O9), log odds at the
 end of each triplet, and the leaky odds (τ 2.5 s) at 6 triplets
-(`data/O1/st*_p50_*.txt`):
+(`data/O01/st*_p50_*.txt`):
 
 | Run | 1 | 2 | 3 | 4 | 5 | 6 | leaky at 6 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -118,7 +118,7 @@ end of each triplet, and the leaky odds (τ 2.5 s) at 6 triplets
 
 Windows are 50 ms unless named.
 
-![O1-lag-window](plots/O1-lag-window.svg)
+![O1-lag-window](plots/O01-lag-window.svg)
 
 *Online log odds after each triplet by lag (50 ms windows) and, at 8 st
 with a 1 s lag, by window length.*
@@ -147,7 +147,7 @@ with a 1 s lag, by window length.*
   arrived, with only its 10 ms ramp heard. The fit then pushed the
   event's timing off the tone (the A whistle's rest became 0.45 s instead
   of 0.2 s) and never pulled it back, and the log odds fell to −413 at 6
-  triplets (`data/O1/st8_w10_p50_lag1_ramp_entry.txt`). Lowering the
+  triplets (`data/O01/st8_w10_p50_lag1_ramp_entry.txt`). Lowering the
   stopping tolerance from 1 to 0.2 did not help. Events now enter once
   20 ms of their tone has arrived (`--heard`). The 50 and 100 ms runs are
   unaffected: on these stimuli every event entered with at least 25 ms of
@@ -213,7 +213,7 @@ Checks, from the same outputs:
 - Online is not yet cheaper than batch: 680 to 990 s of computing per
   second of sound per hypothesis with a 1 s lag, most of it in each
   window's Hessian. These are the costs before the speed-ups of
-  [O2](O2-online-speed.md), which are now the tool's defaults.
+  [O2](O02-online-speed.md), which are now the tool's defaults.
 - With the leaky decision (τ 2.5 s), the odds still rise over 6 triplets
   but more slowly each triplet, at 4 st from −3.3 to 11.1 and at 8 st
   from 8.0 to 77.6; with τ 1 s, 8 st levels off near 40.
@@ -233,7 +233,7 @@ Checks, from the same outputs:
 
 These runs predate three changes of the tool's defaults: evidence every
 0.5 s (since 2026-10-16), and 100 ms windows and the past summarized (both
-since 2026-10-18), all from [O2](O2-online-speed.md). To reproduce them,
+since 2026-10-18), all from [O2](O02-online-speed.md). To reproduce them,
 add `--evidence-every 0 --no-summarize-past`, and `--window 0.05` where no
 window is given.
 

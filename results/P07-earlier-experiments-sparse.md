@@ -19,23 +19,23 @@ decision P14, second check.
 Shared background: [how the experiments work](README.md#how-the-experiments-work).
 
 With sparse spectra and a 30 Hz floor the model hears an octave Shepard tone
-as one tone ([P5](P5-shepard-one-tone-sparse.md)). Before either option
+as one tone ([P5](P05-shepard-one-tone-sparse.md)). Before either option
 could become a default (decision P13), decision P14 asked what they do to
 earlier results:
 
 - **The mistuned harmonic**, at the two conditions that differ from the
   paper: 100 Hz harmonic 1 and 200 Hz harmonic 2
-  ([A7](A7-variational-evidence.md); "Against the paper" in the
+  ([A7](A07-variational-evidence.md); "Against the paper" in the
   [index](README.md#against-the-paper)). A sparse spectrum makes "a tone with
   that harmonic missing, plus a whistle" cheaper, which should lower the
   thresholds (design, P14).
 - **Two simultaneous notes**, the octave and the just fifth with no
-  asynchrony ([B2](B2-two-notes-variational.md)).
+  asynchrony ([B2](B02-two-notes-variational.md)).
 
 ## Setup
 
-As [A7](A7-variational-evidence.md)'s converged runs (0 to 30% in steps of
-5) and [B2](B2-two-notes-variational.md)'s converged runs at 0 ms, with
+As [A7](A07-variational-evidence.md)'s converged runs (0 to 30% in steps of
+5) and [B2](B02-two-notes-variational.md)'s converged runs at 0 ms, with
 every source given the options of P5:
 
 - Each start with a harmonic 30 dB down also gets a twin with that harmonic
@@ -51,7 +51,7 @@ every source given the options of P5:
 
 Model as B2: FFT cochleagram with BASS's gain, fixed kernels, likelihood SD
 10 dB. sonore 0.8.0 (A7 and B2 used 0.6.0). The same 23 fits without the
-options were rerun on sonore 0.8.0 as a baseline (`data/P7/baseline-0.8.0/`,
+options were rerun on sonore 0.8.0 as a baseline (`data/P07/baseline-0.8.0/`,
 same commands without `--sparse-spectrum --floor 30`). One seed. Cloud CPU, 4 jobs at a
 time: 28 to 37 min per mistuning level, 5 to 17 min per two-note hypothesis.
 
@@ -64,7 +64,7 @@ time: 28 to 37 min per mistuning level, 5 to 17 min per two-note hypothesis.
 *Log odds of two sources over one by variational importance, with and without P7's options, and with P10's. Drawn by `tools/results_plots.py`.*
 
 Eqn 2 thresholds (%), 0 to 30% in steps of 5, by the four estimates
-(`data/P7/thresholds.txt`; the baseline's, `thresholds_baseline.txt`; A7's
+(`data/P07/thresholds.txt`; the baseline's, `thresholds_baseline.txt`; A7's
 from the same tool on its converged outputs, `thresholds_A7.txt`):
 
 | Condition | A7 (sonore 0.6.0): Laplace / variational | Baseline (0.8.0) | Options (0.8.0) |
@@ -87,8 +87,8 @@ variational fit):
 ### Two notes, 0 ms
 
 Log odds against the best one-source reading, variational
-(`data/P7/two_notes_summary.txt`, `two_notes_summary_baseline.txt`; B2 from
-`data/B2/converged/`). The best one-source reading is `one@200` at the octave
+(`data/P07/two_notes_summary.txt`, `two_notes_summary_baseline.txt`; B2 from
+`data/B02/converged/`). The best one-source reading is `one@200` at the octave
 and `one@100` at the fifth in every run.
 
 | Interval | B2 (0.6.0): two / whistles | Baseline (0.8.0): two / whistles | Options (0.8.0): two / whistles |
@@ -102,7 +102,7 @@ sonore version does not account for any of the changes; the options do.
 At the fifth, `one@100` has two modes. With its missing harmonics present
 but quiet it scores −10053.2 (baseline −10064.0); with them marked absent
 it scores −9999.8, 54 higher, and wins
-(`data/P7/two_notes/just_fifth_0ms_one@100.txt`).
+(`data/P07/two_notes/just_fifth_0ms_one@100.txt`).
 
 ## What it says
 
@@ -144,7 +144,7 @@ Rebuilt on 2026-11-01 from the settings the outputs' headers and this page's
 setup record; the commands themselves were not recorded at the time and
 have not been rerun. One job per mistuning level and per two-note hypothesis, as on
 [P10](P10-earlier-experiments-hearing.md), which used the same commands
-plus its two options. The baseline (`data/P7/baseline-0.8.0/`) is the same
+plus its two options. The baseline (`data/P07/baseline-0.8.0/`) is the same
 commands without `--sparse-spectrum --floor 30`.
 
 ```
@@ -156,6 +156,6 @@ done
 python tools/bass/compare_two_notes.py --interval octave --asynchronies 0 --only two $O > octave_0ms_two.txt
 python tools/bass/compare_two_notes.py --interval octave --asynchronies 0 --only one@200 $O > octave_0ms_one@200.txt
 # likewise one@100 and one@400 for the octave; one@100, one@200, one@300, two and whistles for just_fifth
-python tools/bass/variational_thresholds.py results/data/P7/mistuned/*.txt
-python tools/bass/two_notes_summary.py results/data/P7/two_notes/*.txt
+python tools/bass/variational_thresholds.py results/data/P07/mistuned/*.txt
+python tools/bass/two_notes_summary.py results/data/P07/two_notes/*.txt
 ```

@@ -32,7 +32,7 @@ our model, and which from how the paper turned evidence into a threshold?
 
 ## Results
 
-Thresholds, % of f0 (`data/A6/thresholds.txt`, which also lists every
+Thresholds, % of f0 (`data/A06/thresholds.txt`, which also lists every
 ELBO). Ours is A5's full model on the same 7 levels.
 
 | Condition | Paper's model (by eye) | BASS run, BASS's rule | BASS run, Eqn 2 | Ours, BASS's rule | Ours, Eqn 2 |
@@ -41,13 +41,13 @@ ELBO). Ours is A5's full model on the same 7 levels.
 | 200 Hz, harmonic 2 | about 20 | 20 | 14.8 | 20 | 15.0 |
 
 Ours by BASS's rule on all 9 conditions, 7 levels:
-`data/A6/ours_bass_rule.txt`.
+`data/A06/ours_bass_rule.txt`.
 
 ## Plots
 
-![A6-bass-own-code](plots/A6-bass-own-code.svg)
+![A6-bass-own-code](plots/A06-bass-own-code.svg)
 
-*Log odds of two sources over one at the paper's 7 levels, from [`data/A6/thresholds.txt`](data/A6/thresholds.txt). Above zero favors two sources.*
+*Log odds of two sources over one at the paper's 7 levels, from [`data/A06/thresholds.txt`](data/A06/thresholds.txt). Above zero favors two sources.*
 
 ## What it says
 

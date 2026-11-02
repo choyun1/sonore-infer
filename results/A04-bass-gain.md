@@ -24,7 +24,7 @@ became the default on 2026-10-06 (Cho's choice).
 
 ## Results
 
-Thresholds, % of f0 (`data/A4/thresholds.txt`). 7 rows left out.
+Thresholds, % of f0 (`data/A04/thresholds.txt`). 7 rows left out.
 
 | f0 (Hz) | Harmonic | Paper's model (by eye) | A3 | A4, Laplace | A4, importance sampling |
 | --- | --- | --- | --- | --- | --- |
@@ -40,9 +40,9 @@ Thresholds, % of f0 (`data/A4/thresholds.txt`). 7 rows left out.
 
 ## Plots
 
-![A4-bass-gain](plots/A4-bass-gain.svg)
+![A4-bass-gain](plots/A04-bass-gain.svg)
 
-*Posterior probability of two sources against mistuning, per condition, from the kept rows in [`data/A4/`](data/A4/) (Laplace estimate). The solid green line is our threshold (Eqn 2); the dashed line is the paper's model, read by eye. Left-out rows are not plotted.*
+*Posterior probability of two sources against mistuning, per condition, from the kept rows in [`data/A04/`](data/A04/) (Laplace estimate). The solid green line is our threshold (Eqn 2); the dashed line is the paper's model, read by eye. Left-out rows are not plotted.*
 
 ## What it says
 
@@ -57,10 +57,10 @@ today's main.
 
 ```
 python tools/bass/compare_mistuned_harmonic.py --f0 100 --harmonic 1 --whistle-timing inferred --percents 0 1 2 3 4 5 6 7 8 9 10 12 14 16 18 20 22 24 26 28 30 35 40 45 50
-python tools/bass/mistuning_thresholds.py results/data/A4/f0-*.txt
+python tools/bass/mistuning_thresholds.py results/data/A04/f0-*.txt
 ```
 
-Raw outputs: [`data/A4/`](data/A4/).
+Raw outputs: [`data/A04/`](data/A04/).
 
 ## Open
 

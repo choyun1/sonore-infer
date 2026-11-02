@@ -6,7 +6,7 @@
 
 **Status:** S1 and S2 checked (2026-10-15), S2 the online tool's default since 2026-10-16 (Cho); S3 tried in two forms, both failed its check, dropped; stopping-rule and window sweep run 2026-10-17; 100 ms windows the online tool's default since 2026-10-18 (Cho); S4 checked 2026-10-18 and the online tool's default since (Cho); S5 measured 2026-10-18.
 **Paper target:** none; this is about cost, checked against
-[O1](O1-online-buildup.md). **Code:** `src/sonore_infer/sources.py`
+[O1](O01-online-buildup.md). **Code:** `src/sonore_infer/sources.py`
 (`trajectory_event`), `src/sonore_infer/online.py` (`run_online`),
 `tools/online/online_buildup.py`, `tools/online/online_cost.py`. Design:
 [faster online inference](../docs/design/online-speed.md), decisions S1 to S6.
@@ -43,8 +43,8 @@ their tone. One seed, the cloud CPU (4 threads), as O1.
 ### S1 leaves every answer as it was
 
 One online window of the 8-semitone case, before and after S1, median of 5,
-in ms (Hessian in s) [`data/O2/online_cost_st8_before_s1.txt`,
-`data/O2/online_cost_st8.txt`]:
+in ms (Hessian in s) [`data/O02/online_cost_st8_before_s1.txt`,
+`data/O02/online_cost_st8.txt`]:
 
 | Sound so far | Hypothesis | Render | Adam step | Hessian |
 |---|---|---|---|---|
@@ -54,12 +54,12 @@ in ms (Hessian in s) [`data/O2/online_cost_st8_before_s1.txt`,
 
 The O1 case rerun with S1 gives the same window terms as O1 to 0.01, and
 log odds within 0.09 at every triplet (131.85 against 131.94 at 6
-triplets) [`data/O2/st8_w50_p50_lag1.txt`]. Its windows took 2,592 s in all
+triplets) [`data/O02/st8_w50_p50_lag1.txt`]. Its windows took 2,592 s in all
 against O1's 5,598 s; a test run shared the machine for part of it, so the
 gain is if anything larger.
 
 One cheap case of each earlier milestone, old and new code side by side on
-the same machine [`data/O2/rerun/`]: the Laplace estimates are identical in
+the same machine [`data/O02/rerun/`]: the Laplace estimates are identical in
 all three; the importance-sampling estimates differ by up to 4 log units,
 as their sampling does from run to run.
 
@@ -75,7 +75,7 @@ infinite event duration, and the new span's end overflowed. Fixed in PR
 
 ### S2 passes S6 and takes a seventh of the time
 
-![O2 speed agreement](plots/O2-speed-agreement.svg)
+![O2 speed agreement](plots/O02-speed-agreement.svg)
 
 | Triplets | 1 | 2 | 3 | 4 | 5 | 6 |
 |---|---|---|---|---|---|---|
@@ -84,7 +84,7 @@ infinite event duration, and the new span's end overflowed. Fixed in PR
 | 4 st, O1 | −3.27 | −1.58 | 2.56 | 7.09 | 11.36 | 16.31 |
 | 4 st, S1 and S2 | −3.27 | −1.60 | 2.91 | 7.84 | 12.45 | 17.52 |
 
-[`data/O2/st8_w50_p50_lag1_e0.5.txt`, `data/O2/st4_w50_p50_lag1_e0.5.txt`]
+[`data/O02/st8_w50_p50_lag1_e0.5.txt`, `data/O02/st4_w50_p50_lag1_e0.5.txt`]
 
 The difference is at most 1.04 at 8 semitones and 1.21 at 4, inside S6's
 3. It grows by about 0.2 to 0.4 per triplet, so longer sequences need the
@@ -95,7 +95,7 @@ check again. The windows took 835 s in all at 8 semitones (O1: 5,598) and
 ### S3 fails S6, in both forms
 
 **Plain L-BFGS.** The online log odds at 6 triplets were −1.4 million
-against O1's 132 [`data/O2/st8_w50_lbfgs_p5_lag1.txt`]. Tracing the first
+against O1's 132 [`data/O02/st8_w50_lbfgs_p5_lag1.txt`]. Tracing the first
 windows of the one-stream run shows why. Each window's fit moves far along
 directions that the sound heard so far hardly constrains: in the first
 window, the event's log duration rose by 2.0 (its duration seven times) for
@@ -106,7 +106,7 @@ and does not find its way back. Adam's small steps avoid this.
 
 **L-BFGS held near the window's start, then Adam.** The pull stops the
 drift, and Adam finishes on the true log joint, so each window ends at a
-real mode. With S2 at 8 semitones [`data/O2/st8_w50_lbfgs_p50_lag1_e0.5.txt`]:
+real mode. With S2 at 8 semitones [`data/O02/st8_w50_lbfgs_p50_lag1_e0.5.txt`]:
 
 | Triplets | 1 | 2 | 3 | 4 | 5 | 6 |
 |---|---|---|---|---|---|---|
@@ -148,7 +148,7 @@ the last 50 Adam steps. Design S3 (D) and the end of the section above
 asked whether a shorter look-back, at the same gain per step (tolerance
 look-back/50), saves time without changing the answer, and whether 100 ms
 windows do. Each run had S1 and S2, one at a time on the cloud CPU
-[`data/O2/st{4,8}_w{50,100}_p{50,20,10,5}_lag1_e0.5.txt`; the look-back
+[`data/O02/st{4,8}_w{50,100}_p{50,20,10,5}_lag1_e0.5.txt`; the look-back
 50, 50 ms runs are the S2 runs above].
 Each is `online_buildup.py --semitones S --triplets 6 --lag 1 --steps 2000
 --window W --window-patience P --window-tolerance P/50`, plus
@@ -174,7 +174,7 @@ Bold: outside S6's 3.
 - **The 7 at 1 triplet, 8 st, is a second basin, not the change.** Those
   runs give log odds of 17.0 to 17.1 at 1 triplet, where O1 gives 10.0;
   O1's own 100 ms run gives 17.0 there too
-  [`data/O1/st8_w100_p50_lag1.txt`]. Against that run, 100 ms with
+  [`data/O01/st8_w100_p50_lag1.txt`]. Against that run, 100 ms with
   look-back 50 is within 1.12 at every triplet, and with look-back 20
   within 1.53. It is the window-length effect O1 reported, up to 7.
 - **Look-backs of 10 and 5 fail**, at 8 st with both windows and at 4 st
@@ -207,7 +207,7 @@ replaced by its second-order expansion in the means, taken when each
 window joins that past; each step renders and compares only the rest, from
 about the lag on (`run_online(summarize_past=True)`). The O1 case, 100 ms
 windows, look-back 50, against the same runs without it from the sweep
-above [`data/O2/st{8,4}_w100_p50_lag1_e0.5{,_s4}.txt`]:
+above [`data/O02/st{8,4}_w100_p50_lag1_e0.5{,_s4}.txt`]:
 
 | | Max diff from the run without S4 | Window time, without → with | Wall time, without → with |
 |---|---|---|---|
@@ -225,9 +225,9 @@ sound so far; I have not timed it separately.
 ### S5: Cho's GPU is slower than its CPU, in float64
 
 Design S5 (B): the same code on Cho's PC (Ryzen 5 7600X3D, 6 threads; RTX
-2070 SUPER), with `--device cuda` or `cpu` [`data/O2/s5/`]. One window of
+2070 SUPER), with `--device cuda` or `cpu` [`data/O02/s5/`]. One window of
 the 8-semitone case, median of 5, ms (Hessian in s), next to the cloud
-CPU's (4 threads, `data/O2/online_cost_st8.txt`):
+CPU's (4 threads, `data/O02/online_cost_st8.txt`):
 
 | Sound so far | Hypothesis | Adam step: GPU / PC CPU / cloud | Hessian: GPU / PC CPU / cloud |
 |---|---|---|---|

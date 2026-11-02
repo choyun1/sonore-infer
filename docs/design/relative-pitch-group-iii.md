@@ -3,7 +3,7 @@
 Status: **accepted by Cho on 2026-11-02** (P24 to P26 as recommended; see §4). Other seeds
 for the Shepard pairs are a separate design (decision P27, Cho's split of
 2026-11-02).
-Follows [P9](../../results/P9-shepard-listener-noise.md) and
+Follows [P9](../../results/P09-shepard-listener-noise.md) and
 [P10](../../results/P10-earlier-experiments-hearing.md). Decisions continue
 the numbering of [relative-pitch-dominance.md](relative-pitch-dominance.md)
 (P19 to P23). AI-assisted (Claude); code as of `752f48b`.
@@ -52,7 +52,7 @@ uniformly distributed around the circle" [Shepard §IV].
 
 **The model cannot give this as it stands.** Its |L| is largest at the
 smallest steps: +15.7 to +24.3 at 1 step and −17.7 to −27.6 at 9, against
-+3.7 to +18.3 at 3 [measured, `results/data/P9/options/fit_all.txt`]. For
++3.7 to +18.3 at 3 [measured, `results/data/P09/options/fit_all.txt`]. For
 the model, a tenth of an octave is the easiest pair; for Group III it is
 the hardest outside the half octave. Any decision noise or lapse applied to
 L keeps the smallest steps the most accurate.
@@ -141,7 +141,7 @@ Group III's errors at 1 step clockwise are about as common.
   hypotheses' predicted cochleagrams, and its noise with the same distance,
   so its accuracy should follow |L|, which is largest at 1 step [inferred,
   not checked]. Cost: about 6 fits per pair per noise draw at about 12 min
-  each [estimate, median 711 s in `results/data/P9/options/all/`], so 10
+  each [estimate, median 711 s in `results/data/P09/options/all/`], so 10
   draws on 4 pairs is about 50 CPU hours.
 - **(C) Listening to single components** (Terhardt's spectral pitch rather
   than virtual pitch). In a Shepard tone every component moves by the same

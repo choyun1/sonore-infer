@@ -158,7 +158,7 @@ are as in BASS's configuration.
   (u_{\max} - u_{\min})\,\operatorname{sigmoid}(v)$ so that every real $v$
   is allowed (`priors.KernelParameterPrior`). The f0 lengthscale's lower
   bound is 0.01 s, not the 0.1 s printed, because the table's own quartiles
-  need 0.01 ([C1](../results/C1-kernel-inferred.md)).
+  need 0.01 ([C1](../results/C01-kernel-inferred.md)).
 - **Departure.** With several events the within-event term uses the gates
   $\gamma_j$, which lie between 0 and 1, instead of a hard 0 or 1, so the
   prior moves smoothly with the timing (design C4).
@@ -245,7 +245,7 @@ likelihood with respect to $\boldsymbol\theta$ come from automatic
 differentiation. Experiment B3 uses $\sigma_y = 5$ dB.
 
 - **Options, off by default** (design relative-pitch-dominance, P19 and
-  P20; tried on 8 Shepard pairs in [P9](../results/P9-shepard-listener-noise.md)).
+  P20; tried on 8 Shepard pairs in [P9](../results/P09-shepard-listener-noise.md)).
   `Cochleagram.threshold_floor` floors channel $c$ of both $\mathbf{y}$ and
   $\mathbf{c}(\boldsymbol\theta)$ at the larger of 20 dB and the threshold
   of hearing at $f_c$ (Terhardt et al., 1982, Eq. 8), converted to the
@@ -304,8 +304,8 @@ so a sinusoid at $f_c$ and level $L$ reads $L$.
 - **Departure, deliberate.** BASS's FFT cochleagram has channels 2 to 3.6
   times wider than true half-ERB filters below 600 Hz, and uncalibrated
   gains. Each moved our thresholds toward the paper's, so both are used to
-  reproduce the paper ([A2](../results/A2-fft-cochleagram.md),
-  [A4](../results/A4-bass-gain.md)). Neither is a claim about the ear.
+  reproduce the paper ([A2](../results/A02-fft-cochleagram.md),
+  [A4](../results/A04-bass-gain.md)). Neither is a claim about the ear.
 - **What it leaves out.** The cochleagram keeps no phase, and smooths
   envelope modulation above a few tens of Hz. See "Timing in the
   likelihood" under [Planned](../results/README.md#planned).
@@ -437,9 +437,9 @@ $$
 When $H_0$ wins everywhere, $\tau = v_{\max}$, which the paper reports as
 not measurable. Some pages also give the rule in BASS's analysis code,
 computed outside this repository because BASS has no license
-([A6](../results/A6-bass-own-code.md)).
+([A6](../results/A06-bass-own-code.md)).
 
-For Shepard pairs ([P3](../results/P3-shepard-pairs.md)), P(up) is the
+For Shepard pairs ([P3](../results/P03-shepard-pairs.md)), P(up) is the
 posterior mass of the hypotheses whose fitted f0 (or whistle frequency)
 rises from the first tone to the second.
 
@@ -447,7 +447,7 @@ rises from the first tone to the second.
 
 Enumeration needs the hypotheses written by hand. The search
 (`search.search`, design C9 and C10, experiment
-[C3](../results/C3-search.md)) builds them from the sound instead, after
+[C3](../results/C03-search.md)) builds them from the sound instead, after
 the paper's sequential inference [App. B.2]:
 
 1. A detector (`detect.detect`) finds onset groups in the cochleagram and,
@@ -480,8 +480,8 @@ the paper's sequential inference [App. B.2]:
 
 ### 3.4 Online inference
 
-For streaming and buildup ([O1](../results/O1-online-buildup.md),
-[O2](../results/O2-online-speed.md); design O1 to O10), the sound arrives in
+For streaming and buildup ([O1](../results/O01-online-buildup.md),
+[O2](../results/O02-online-speed.md); design O1 to O10), the sound arrives in
 windows $\mathbf{y}_1, \mathbf{y}_2, \dots$ ending at times $t_1, t_2,
 \dots$ (`online.run_online`). The evidence of the sound so far is the
 product of predictive likelihoods,
@@ -516,8 +516,8 @@ latents.
 
 ## 4. The source-and-room model
 
-Experiments [R1](../results/R1-source-and-room.md) and
-[R2](../results/R2-atypical-rooms.md) ask whether a room's reverberation
+Experiments [R1](../results/R01-source-and-room.md) and
+[R2](../results/R02-atypical-rooms.md) ask whether a room's reverberation
 time can be told apart from the source from one sound (design R1 to R8).
 The model is separate from §1 to §3.
 

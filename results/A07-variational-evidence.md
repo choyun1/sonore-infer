@@ -38,7 +38,7 @@ condition.
 
 The four estimates are Laplace, importance sampling from Laplace, the ELBO,
 and importance sampling from the variational fit (the four log-odds
-columns of each output in [`data/A7/`](data/A7/)). All 7 levels are used,
+columns of each output in [`data/A07/`](data/A07/)). All 7 levels are used,
 including 3 rows where a Laplace Hessian was floored. The Eqn 2 values are
 `sonore_infer.thresholds` applied to those four columns (checked again
 for this page). The BASS-rule values come from a local script in the
@@ -48,9 +48,9 @@ floored rows, so it is not used here.
 
 ## Plots
 
-![A7-variational-evidence](plots/A7-variational-evidence.svg)
+![A7-variational-evidence](plots/A07-variational-evidence.svg)
 
-*p(two) by four evidence estimates at the paper's 7 levels, from [`data/A7/`](data/A7/). The four lines mostly lie on top of each other.*
+*p(two) by four evidence estimates at the paper's 7 levels, from [`data/A07/`](data/A07/). The four lines mostly lie on top of each other.*
 
 ## What it says
 
@@ -61,11 +61,11 @@ sampling from Laplace +22578, from the variational fit +59).
 
 ## Fits run to convergence (2026-10-15)
 
-The fits above stop after 300 Adam steps. In [C2](C2-aba-streaming.md) that
+The fits above stop after 300 Adam steps. In [C2](C02-aba-streaming.md) that
 left an ABA one-stream fit far from its mode, so the same conditions were
 rerun with each fit continuing until its log joint rose by less than 0.5 over
 1000 steps (at most 15000), seed 0, on the same cloud machine, on a 0-30%
-grid in steps of 5 (`data/A7/converged/`, `tools/run_seeds.py --seeds 0
+grid in steps of 5 (`data/A07/converged/`, `tools/run_seeds.py --seeds 0
 --tolerance 0.5`, commit c3a2968).
 
 Eqn 2 thresholds (%), Laplace / variational:
@@ -96,4 +96,4 @@ python tools/bass/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --variational
 
 - Importance sampling's effective sample size stays low (mostly 1–8 of 128).
 - GP variance and lengthscale are still fixed, not inferred as in the paper.
-- Ten seeds of the same run: [A8](A8-ten-seeds.md). Kernel hyperparameters inferred: [C1](C1-kernel-inferred.md).
+- Ten seeds of the same run: [A8](A08-ten-seeds.md). Kernel hyperparameters inferred: [C1](C01-kernel-inferred.md).

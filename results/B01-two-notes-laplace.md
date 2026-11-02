@@ -4,7 +4,7 @@
 > results. The work was done with AI assistance (Claude) and has not yet been
 > checked carefully. Numbers, methods and interpretations may change.
 
-**Status:** done (2026-10-07), **superseded by [B2](B2-two-notes-variational.md)**:
+**Status:** done (2026-10-07), **superseded by [B2](B02-two-notes-variational.md)**:
 the octave's margins here are within Laplace's own run-to-run noise.
 **Paper target:** none. The paper has no two-note experiment; the closest
 are its simultaneous-grouping illusions (§3.1.2, Fig. 7) and onset
@@ -39,7 +39,7 @@ how does that depend on the interval and on onset asynchrony?
 ## Results
 
 Log posterior odds over the best one-source fit; positive favours the
-alternative (`data/B1/summary.txt`, Laplace). `*` marks a value resting
+alternative (`data/B01/summary.txt`, Laplace). `*` marks a value resting
 on a fit with no true peak (floored Hessian), where Laplace is not valid.
 
 Two sources vs one:
@@ -59,9 +59,9 @@ at the fifth, all but one resting on fits with no true peak.
 
 ## Plots
 
-![B1-two-notes-laplace](plots/B1-two-notes-laplace.svg)
+![B1-two-notes-laplace](plots/B01-two-notes-laplace.svg)
 
-*Log odds of two sources over the best one-source fit (Laplace estimate), from [`data/B1/summary.txt`](data/B1/summary.txt). Above zero favors two notes.*
+*Log odds of two sources over the best one-source fit (Laplace estimate), from [`data/B01/summary.txt`](data/B01/summary.txt). Above zero favors two notes.*
 
 ## What it says
 
@@ -78,10 +78,10 @@ evidence (Cho's choice, 2026-10-10).
 ```
 python tools/bass/compare_two_notes.py --interval octave --steps 3000 > octave.txt
 python tools/bass/compare_two_notes.py --controls --steps 3000 > controls.txt
-python tools/bass/two_notes_summary.py results/data/B1/*.txt
+python tools/bass/two_notes_summary.py results/data/B01/*.txt
 ```
 
-Raw outputs: [`data/B1/`](data/B1/). The 300-step pass is in the project's
+Raw outputs: [`data/B01/`](data/B01/). The 300-step pass is in the project's
 files, not here.
 
 ## Open

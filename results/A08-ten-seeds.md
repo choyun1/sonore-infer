@@ -9,7 +9,7 @@ averaged its model over 10 seeds. **Code:** `tools/run_seeds.py`, PRs
 [#30](https://github.com/choyun1/sonore-infer/pull/30) and
 [#33](https://github.com/choyun1/sonore-infer/pull/33); its comment
 on the grid fixed in PR [#36](https://github.com/choyun1/sonore-infer/pull/36).
-The same run covers milestone (b) in [B4](B4-two-notes-seeds.md).
+The same run covers milestone (b) in [B4](B04-two-notes-seeds.md).
 
 ## Question
 
@@ -17,7 +17,7 @@ Shared background: [how the experiments work](README.md#how-the-experiments-work
 
 A7's thresholds come from one seed. Do ten seeds change them, and is the
 100 Hz h1 gap (A7: 25%, against about 45% in the paper and 40% from BASS's
-own code, [A6](A6-bass-own-code.md)) seed noise?
+own code, [A6](A06-bass-own-code.md)) seed noise?
 
 ## Setup
 
@@ -34,7 +34,7 @@ until PR #36. Every condition has crossed well before 30% (mean log odds +8 to
 ## Results
 
 Thresholds (% of f0) from the mean log odds over ten seeds, variational
-importance estimate (`data/A8/summary.txt`; the ELBO agrees within 0.5).
+importance estimate (`data/A08/summary.txt`; the ELBO agrees within 0.5).
 BASS's rule is from the local averaging script, as in A6.
 
 | Condition | 5% grid, Eqn 2 | Per seed, Eqn 2 | Paper's points to 30%, Eqn 2 / BASS's rule | A7 (one seed) | BASS's code (A6) | Paper (Fig. 7D, by eye) |
@@ -49,9 +49,9 @@ with one 7.8 (100 Hz h1 at 0%, far below zero).
 
 ## Plots
 
-![A8-ten-seeds](plots/A8-ten-seeds.svg)
+![A8-ten-seeds](plots/A08-ten-seeds.svg)
 
-*Log odds of two sources over one against mistuning, from [`data/A8/summary.txt`](data/A8/summary.txt) and [`data/A7/`](data/A7/). Bars are ± 1 SD over seeds. Above zero favors two sources.*
+*Log odds of two sources over one against mistuning, from [`data/A08/summary.txt`](data/A08/summary.txt) and [`data/A07/`](data/A07/). Bars are ± 1 SD over seeds. Above zero favors two sources.*
 
 ## What it says
 
@@ -67,7 +67,7 @@ with one 7.8 (100 Hz h1 at 0%, far below zero).
 python tools/run_seeds.py --out seeds_out --seeds 0 1 2 3 4 5 6 7 8 9
 ```
 
-`data/A8/summary.txt` is made by a local averaging script (`average.py`,
+`data/A08/summary.txt` is made by a local averaging script (`average.py`,
 in the project files with the 550 raw outputs, 2.2 MB), not committed
 because it also computes BASS's threshold rule.
 
@@ -75,5 +75,5 @@ because it also computes BASS's threshold rule.
 
 - Same seed, same code on two machines differs by more than the seed noise
   in a few cells (in (a): 200 Hz h3 at 10%, 400 Hz h3 at 5% and 20%, where
-  the variational log odds move by 1 to 7). See [B4](B4-two-notes-seeds.md).
+  the variational log odds move by 1 to 7). See [B4](B04-two-notes-seeds.md).
 - Mistunings above 30% were not rerun.

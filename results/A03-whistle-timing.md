@@ -25,7 +25,7 @@ grid (0 1 2 3 4 5 6 7 8 9 10 12 14 16 18 20 22 24 26 28 30 35 40 45 50).
 
 ## Results
 
-Thresholds, % of f0 (`data/A3/thresholds.txt`). 5 rows left out.
+Thresholds, % of f0 (`data/A03/thresholds.txt`). 5 rows left out.
 
 | f0 (Hz) | Harmonic | Paper's model (by eye) | A2 | A3, Laplace | A3, importance sampling |
 | --- | --- | --- | --- | --- | --- |
@@ -41,9 +41,9 @@ Thresholds, % of f0 (`data/A3/thresholds.txt`). 5 rows left out.
 
 ## Plots
 
-![A3-whistle-timing](plots/A3-whistle-timing.svg)
+![A3-whistle-timing](plots/A03-whistle-timing.svg)
 
-*Posterior probability of two sources against mistuning, per condition, from the kept rows in [`data/A3/`](data/A3/) (Laplace estimate). The solid green line is our threshold (Eqn 2); the dashed line is the paper's model, read by eye. Left-out rows are not plotted.*
+*Posterior probability of two sources against mistuning, per condition, from the kept rows in [`data/A03/`](data/A03/) (Laplace estimate). The solid green line is our threshold (Eqn 2); the dashed line is the paper's model, read by eye. Left-out rows are not plotted.*
 
 ## What it says
 
@@ -62,10 +62,10 @@ Not re-run on today's main.
 ```
 python tools/bass/compare_mistuned_harmonic.py --f0 100 --harmonic 1 --cochleagram fft-calibrated \
     --whistle-timing inferred --percents 0 1 2 3 4 5 6 7 8 9 10 12 14 16 18 20 22 24 26 28 30 35 40 45 50
-python tools/bass/mistuning_thresholds.py results/data/A3/f0-*.txt
+python tools/bass/mistuning_thresholds.py results/data/A03/f0-*.txt
 ```
 
-Raw outputs: [`data/A3/`](data/A3/).
+Raw outputs: [`data/A03/`](data/A03/).
 
 ## Open
 

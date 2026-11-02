@@ -12,7 +12,7 @@ from the stimulus and scored by its variational evidence:
   and inside the frequency prior.
 - ``harmonic@F+whistle@G`` (with ``--mixed``): the harmonic reading at F plus
   a whistle at the component an octave below it, G = F/2, the structure the
-  scene search found best on the octave tone 1 (``results/P1-shepard-one-tone.md``).
+  scene search found best on the octave tone 1 (``results/P01-shepard-one-tone.md``).
 - ``chord×K`` (with ``--chord``): K harmonic sources, one at each of the K
   lowest readings, K being the components per octave, so each source takes
   one octave-spaced series of components. With minor-third spacing, four

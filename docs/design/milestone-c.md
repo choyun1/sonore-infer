@@ -471,8 +471,8 @@ option (C), and Cho chose it.
   6 semitones and 100 ms is −63313 after 300 steps and −62875 after 7500,
   and it stays there to 15000. The two-stream fit gains only 0.2 from 300
   to 1000 steps on all 30 stimuli [measured: `tools/grammar/aba_fit_steps.py`,
-  `results/data/C2/fit_steps_check/`]. The online work found the same
-  for its batch reference (`results/O1-online-buildup.md`). So ABA fits
+  `results/data/C02/fit_steps_check/`]. The online work found the same
+  for its batch reference (`results/O01-online-buildup.md`). So ABA fits
   run until the best log joint rises by less than 0.5 over 1000 steps
   (`fit`'s `patience=1000, tolerance=0.5`, the rule added with the online
   work), at most 15000 steps. At 3 and 6 semitones (100 ms), stopping

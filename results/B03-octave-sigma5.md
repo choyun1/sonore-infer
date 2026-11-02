@@ -5,7 +5,7 @@
 > checked carefully. Numbers, methods and interpretations may change.
 
 **Status:** done (2026-10-10). **Paper target:** none (see
-[B1](B1-two-notes-laplace.md)). **Code:** `tools/bass/compare_two_notes.py --sigma`,
+[B1](B01-two-notes-laplace.md)). **Code:** `tools/bass/compare_two_notes.py --sigma`,
 PR [#24](https://github.com/choyun1/sonore-infer/pull/24) (`2ee4996`).
 Design: [milestone (b)](../docs/design/milestone-b.md).
 
@@ -13,7 +13,7 @@ Design: [milestone (b)](../docs/design/milestone-b.md).
 
 Shared background: [how the experiments work](README.md#how-the-experiments-work).
 
-In [B2](B2-two-notes-variational.md) the octave stays one source up to
+In [B2](B02-two-notes-variational.md) the octave stays one source up to
 240 ms. Is that because the likelihood's 10 dB SD (BASS's value) makes the
 upper note's late +6 dB on the shared harmonics cheap to explain with one
 source?
@@ -27,7 +27,7 @@ asynchronies and the 4 one-note controls.
 ## Results
 
 Log odds of two sources over the best one source, variational estimate,
-ELBO in brackets (`data/B3/`, by `tools/bass/two_notes_summary.py`):
+ELBO in brackets (`data/B03/`, by `tools/bass/two_notes_summary.py`):
 
 | Asynchrony (ms) | 0 | 10 | 20 | 40 | 80 | 120 | 160 | 240 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -39,9 +39,9 @@ Controls at 5 dB: 200 Hz −25.6, 282.8 Hz −19.0, 300 Hz −21.7, 400 Hz
 
 ## Plots
 
-![B3-octave-sigma5](plots/B3-octave-sigma5.svg)
+![B3-octave-sigma5](plots/B03-octave-sigma5.svg)
 
-*Octave: log odds of two sources over the best one source, recomputed from [`data/B2/`](data/B2/) and [`data/B3/`](data/B3/) by `tools/bass/two_notes_summary.py`. Below zero is one source.*
+*Octave: log odds of two sources over the best one source, recomputed from [`data/B02/`](data/B02/) and [`data/B03/`](data/B03/) by `tools/bass/two_notes_summary.py`. Below zero is one source.*
 
 ## What it says
 
@@ -67,11 +67,11 @@ for a in 0 0.01 0.02 0.04 0.08 0.12 0.16 0.24; do
       --interval octave --asynchronies $a > octave_$a.txt
 done
 python tools/bass/compare_two_notes.py --variational-steps 2000 --sigma 5 --controls > controls.txt
-python tools/bass/two_notes_summary.py results/data/B3/octave_*.txt results/data/B3/controls.txt
+python tools/bass/two_notes_summary.py results/data/B03/octave_*.txt results/data/B03/controls.txt
 ```
 
 The decomposition scripts (`decompose.py`, `channels.py`) are local, in the
-project files next to the raw outputs; their outputs are in `data/B3/`.
+project files next to the raw outputs; their outputs are in `data/B03/`.
 
 ## Open
 

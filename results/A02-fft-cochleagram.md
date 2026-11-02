@@ -23,14 +23,14 @@ As A1, with one change: the FFT cochleagram, calibrated per channel (the
 calibration is removed in A4). Mistuning on a 22-level grid (0–10% in 1%
 steps, then 12–20 in 2s, then 25–50 in 5s).
 
-Measured effect on channel width (`data/A2/bandwidths.txt`, from
+Measured effect on channel width (`data/A02/bandwidths.txt`, from
 `tools/measurements/channel_bandwidths.py`): below about 600 Hz the FFT channels are
 2.1–3.6 times wider than true half-ERB channels (64.4 Hz against 18.0 Hz
 at 104 Hz; 72.1 Hz against 34.0 Hz at 401 Hz).
 
 ## Results
 
-Thresholds, % of f0 (`data/A2/thresholds.txt`). 1 row left out.
+Thresholds, % of f0 (`data/A02/thresholds.txt`). 1 row left out.
 
 | f0 (Hz) | Harmonic | Paper's model (by eye) | A1 | A2, Laplace | A2, importance sampling |
 | --- | --- | --- | --- | --- | --- |
@@ -46,9 +46,9 @@ Thresholds, % of f0 (`data/A2/thresholds.txt`). 1 row left out.
 
 ## Plots
 
-![A2-fft-cochleagram](plots/A2-fft-cochleagram.svg)
+![A2-fft-cochleagram](plots/A02-fft-cochleagram.svg)
 
-*Posterior probability of two sources against mistuning, per condition, from the kept rows in [`data/A2/`](data/A2/) (Laplace estimate). The solid green line is our threshold (Eqn 2); the dashed line is the paper's model, read by eye. Left-out rows are not plotted.*
+*Posterior probability of two sources against mistuning, per condition, from the kept rows in [`data/A02/`](data/A02/) (Laplace estimate). The solid green line is our threshold (Eqn 2); the dashed line is the paper's model, read by eye. Left-out rows are not plotted.*
 
 ## What it says
 
@@ -67,10 +67,10 @@ On today's main, `--cochleagram fft-calibrated` selects this cochleagram
 ```
 python tools/bass/compare_mistuned_harmonic.py --f0 100 --harmonic 1 --cochleagram fft-calibrated \
     --percents 0 1 2 3 4 5 6 7 8 9 10 12 14 16 18 20 25 30 35 40 45 50
-python tools/bass/mistuning_thresholds.py results/data/A2/f0-*.txt
+python tools/bass/mistuning_thresholds.py results/data/A02/f0-*.txt
 ```
 
-Raw outputs: [`data/A2/`](data/A2/). The first run of 400 Hz harmonic 2
+Raw outputs: [`data/A02/`](data/A02/). The first run of 400 Hz harmonic 2
 stopped at 7% with an error (its traceback is kept in
 `f0-400_h2.txt`); `f0-400_h2_rest.txt` is the rerun of the remaining
 levels.

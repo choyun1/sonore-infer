@@ -15,7 +15,7 @@ decisions P10 to P14.
 
 Shared background: [how the experiments work](README.md#how-the-experiments-work).
 
-[P1](P1-shepard-one-tone.md) again, with the two options of the relative
+[P1](P01-shepard-one-tone.md) again, with the two options of the relative
 pitch prior design: each harmonic of a harmonic source may be absent
 (decisions P10 and P11), and the f0 and whistle-frequency floor is 30 Hz
 instead of 87.5 Hz (decision P12). Does the model now hear one Shepard tone
@@ -24,7 +24,7 @@ octave it reads?
 
 ## Setup
 
-As [P1](P1-shepard-one-tone.md), except:
+As [P1](P01-shepard-one-tone.md), except:
 
 - **Model options.** `Harmonic(sparse_spectrum=True, frequency_floor_hz=30)`
   and `Whistle(frequency_floor_hz=30)`. Each harmonic's level is the
@@ -50,13 +50,13 @@ a time; 130 fits took 189 to 922 s each.
 
 ## Results
 
-![One tone against whistles, and the reading heard, by tone; P1 and P5](plots/P5-shepard-one-tone.svg)
+![One tone against whistles, and the reading heard, by tone; P1 and P5](plots/P05-shepard-one-tone.svg)
 
 *Left: the best one-harmonic reading's log posterior minus the whistles' (P5's from `combined.txt`, both starts combined). Right: that reading's f0. Drawn by `tools/results_plots.py`.*
 
 Log posteriors are shifted by 4329.7, as on P1. All per-tone values are in
-`data/P5/combined.txt`, made by
-`python tools/relative_pitch/combine_starts.py results/data/P5/*.txt`.
+`data/P05/combined.txt`, made by
+`python tools/relative_pitch/combine_starts.py results/data/P05/*.txt`.
 
 | Tone | Best (one harmonic source at) | Its log posterior | Next octave, relative | Best tone + whistle, relative | Whistles, relative |
 | --- | --- | --- | --- | --- | --- |
@@ -79,13 +79,13 @@ present is 26 to 42 lower.
 The effective sample size of the importance estimates is 1 to 4 for most
 fits, as on P1, so margins under about 10 are not resolved.
 
-**The four combinations on tone 1** (`data/P5/tone1-combinations/`, run
+**The four combinations on tone 1** (`data/P05/tone1-combinations/`, run
 before the second start was added: the sparse runs there have the sparse
 start only, which is the better mode for every reading on this tone).
 
 | Spectrum prior, floor | Best enumerated | Its log posterior | Best one harmonic source | Whistles |
 | --- | --- | --- | --- | --- |
-| GP, 87.5 Hz ([P1](P1-shepard-one-tone.md)) | 4 whistles | −116.7 | 155.6 Hz, −126.0 | −116.7 |
+| GP, 87.5 Hz ([P1](P01-shepard-one-tone.md)) | 4 whistles | −116.7 | 155.6 Hz, −126.0 | −116.7 |
 | GP, 30 Hz | tone at 311.2 Hz + whistle at 155.6 Hz | −91.4 | 77.8 Hz, −93.6 | −116.0 |
 | Sparse, 87.5 Hz | tone at 311.2 Hz + whistle at 155.6 Hz | −94.7 | 155.6 Hz, −108.1 | −116.7 |
 | Sparse, 30 Hz | one tone at 77.8 Hz | −65.4 | 77.8 Hz, −65.4 | −116.0 |
@@ -111,7 +111,7 @@ P1 had no tone-plus-whistle hypotheses; its search found one at −88.9.
   established (not tested).
 - **The two starts matter.** For the octave complex the mode with missing
   harmonics marked absent wins by 26 to 42; for the minor-third complex
-  ([P6](P6-shepard-minor-third-sparse.md)) the mode with every harmonic
+  ([P6](P06-shepard-minor-third-sparse.md)) the mode with every harmonic
   present wins. Scoring only the mode with the higher log joint would have
   picked the wrong one for some readings.
 - **Not checked:** other seeds; the search with the options; whether a
@@ -134,5 +134,5 @@ for n in 1 2 3 4 5 6 7 8 9 10; do
     python tools/relative_pitch/one_tone.py --steps-of-circle $n --sparse-spectrum --floor 30 \
         --mixed --highest 350 > oct$n.txt
 done
-python tools/relative_pitch/combine_starts.py results/data/P5/*.txt
+python tools/relative_pitch/combine_starts.py results/data/P05/*.txt
 ```

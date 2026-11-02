@@ -4,10 +4,10 @@
 > results. The work was done with AI assistance (Claude) and has not yet been
 > checked carefully. Numbers, methods and interpretations may change.
 
-**Rerun** with sparse spectra and a 30 Hz floor: [P6](P6-shepard-minor-third-sparse.md).
+**Rerun** with sparse spectra and a 30 Hz floor: [P6](P06-shepard-minor-third-sparse.md).
 **Status:** first pass, one seed, tones 1 and 4; search on tone 1.
 **Paper target:** none in Cusimano et al.; listeners in Shepard (1964) §V.
-**Code:** as [P1](P1-shepard-one-tone.md), with `--minor-third`.
+**Code:** as [P1](P01-shepard-one-tone.md), with `--minor-third`.
 Design: [relative pitch](../docs/design/relative-pitch.md), decisions P3,
 P4 and P7.
 
@@ -22,13 +22,13 @@ same way?
 
 ## Setup
 
-As [P1](P1-shepard-one-tone.md), with 4 components per octave (40, of which
+As [P1](P01-shepard-one-tone.md), with 4 components per octave (40, of which
 those up to 5 kHz are kept) under the same envelope. Hypotheses: one
 harmonic source per component reading from the lowest above 87.5 Hz (up to
 1300 Hz at tone 1, 200 Hz at tone 4), and one whistle per component at or
 above 30 dB and above 87.5 Hz (17 whistles). Tone 1's harmonic readings
 and its whistles ran separately, because a container restart stopped the
-first run (`data/P2/step1_harmonics.txt`, `step1_whistles.txt`). The
+first run (`data/P02/step1_harmonics.txt`, `step1_whistles.txt`). The
 search ran on tone 1.
 
 Log posteriors are shifted by 4329.7, as on P1. Importance sampling failed
@@ -45,10 +45,10 @@ a lower bound.
 At tone 1 the whistles fit 727 better at their modes (log joint) than
 the best harmonic reading, but their 850 parameters lose about
 960 in the Laplace volume term and 52.5 in the structure prior
-(`data/P2/step1_*.txt`). The Laplace estimates give the same margins
+(`data/P02/step1_*.txt`). The Laplace estimates give the same margins
 within 15.
 
-**Search on tone 1** (`data/P2/search_step1.txt`, 12 hypotheses, 30 min).
+**Search on tone 1** (`data/P02/search_step1.txt`, 12 hypotheses, 30 min).
 Its best is one harmonic tone fitted to 97 Hz alone, log posterior −95.4,
 5.2 above the enumerated reading at 92.5 Hz. Two whistles (305 and
 113 Hz) came out 99 below it.
@@ -57,7 +57,7 @@ Its best is one harmonic tone fitted to 97 Hz alone, log posterior −95.4,
 
 - **The model gets Shepard's contrast backwards.** It hears the
   minor-third complex as one low tone, by about 270, and the octave
-  complex ([P1](P1-shepard-one-tone.md)) as whistles or a tone plus a
+  complex ([P1](P01-shepard-one-tone.md)) as whistles or a tone plus a
   whistle. Listeners hear the octave complex as one tone and the
   minor-third complex as a chord.
 - **Why, in the model's terms (inferred).** A harmonic tone at about

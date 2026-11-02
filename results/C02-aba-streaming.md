@@ -35,7 +35,7 @@ onsets and durations, as the paper did:
 - **two streams:** one whistle with the 8 A tones, one with the 4 B tones
   (1280 parameters).
 
-Full model as in [C1](C1-kernel-inferred.md): trajectories, all timing
+Full model as in [C1](C01-kernel-inferred.md): trajectories, all timing
 inferred, each GP's sigma and lengthscale inferred. Variational evidence
 with 2000 steps, seed 0. The one-stream fits run until the best log joint
 rises by less than 0.5 over 1000 Adam steps (1162 to 9532 steps). The
@@ -46,7 +46,7 @@ Cho's PC.
 ## Results
 
 Log odds of two streams over one, variational importance estimate
-(`data/C2/map.txt`; positive favours two streams):
+(`data/C02/map.txt`; positive favours two streams):
 
 | Semitones \ interval (ms) | 67 | 83 | 100 | 117 | 134 | 150 |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -58,7 +58,7 @@ Log odds of two streams over one, variational importance estimate
 
 The ELBO and Laplace estimates give the same signs everywhere. The ELBO
 is within 6.4 of this table in every cell; Laplace is within 7.1 at 1 and 3
-semitones and up to 30 higher at 6 to 12 semitones (`data/C2/map.txt`).
+semitones and up to 30 higher at 6 to 12 semitones (`data/C02/map.txt`).
 
 The paper's model, read by eye from Fig. 8D (right), whose color scale
 stops at ±20: about −15 to −20 at 1 semitone, slightly negative (about −5)
@@ -68,7 +68,7 @@ with little change across intervals.
 ### Seeds 0–4 on the two cells under 10
 
 Two cells had margins under 10, so they were rerun with seeds 1 to 4
-(`data/C2/seeds/`), as the design asks (milestone-c.md §8). The seed
+(`data/C02/seeds/`), as the design asks (milestone-c.md §8). The seed
 changes only the draws of the evidence estimates; the fits are the same.
 In these reruns the two-stream fit also used the stopping rule (1222
 steps); its log joint at the mode is within 0.3 of the 300-step fit and its
@@ -85,9 +85,9 @@ gives 6.0 and 5.4. Every seed prefers two streams, by 8 to 10.5, so the
 
 ## Plots
 
-![C2-aba-streaming](plots/C2-aba-streaming.svg)
+![C2-aba-streaming](plots/C02-aba-streaming.svg)
 
-*Log odds of two streams over one, variational importance estimate, seed 0, from [`data/C2/`](data/C2/). Top: the map with its color scale stopping at ±20, as in the paper's Fig. 8D, for comparison by eye. Bottom: the same values on their full scale.*
+*Log odds of two streams over one, variational importance estimate, seed 0, from [`data/C02/`](data/C02/). Top: the map with its color scale stopping at ±20, as in the paper's Fig. 8D, for comparison by eye. Bottom: the same values on their full scale.*
 
 ## What it says
 
@@ -107,11 +107,11 @@ gives 6.0 and 5.4. Every seed prefers two streams, by 8 to 10.5, so the
 With 300 Adam steps, as milestones (a) and (b) used, the one-stream fit is
 far from its mode: at 6 semitones and 100 ms its log joint is −63313,
 against −62875 when converged, and the map then read +48 there instead of
-+97 (`data/C2/run_300steps/`, `data/C2/fit_steps_check/one_fit_curve.txt`).
++97 (`data/C02/run_300steps/`, `data/C02/fit_steps_check/one_fit_curve.txt`).
 At 3 semitones the 300-step map read +5 to +21. The stopping rule
 gives the same Laplace evidence as 15000 steps and variational evidence
 within 0.6, checked at 3 and 6 semitones, 100 ms
-(`data/C2/fit_steps_check/st*_one_*.txt`).
+(`data/C02/fit_steps_check/st*_one_*.txt`).
 
 ## Reproduce
 
@@ -124,7 +124,7 @@ python tools/grammar/aba_fit_steps.py --semitones 6 --interval 0.1 --hypothesis 
 ```
 
 Each `compare_aba.py` hypothesis takes about 1 to 1.5 h on one thread of
-Cho's PC [measured]. `data/C2/cloud_1st/` holds four 1-semitone stimuli
+Cho's PC [measured]. `data/C02/cloud_1st/` holds four 1-semitone stimuli
 run in the cloud container at 300 steps: the same Laplace evidence as the
 PC, variational evidence within 5.
 

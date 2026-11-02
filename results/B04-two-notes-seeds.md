@@ -5,13 +5,13 @@
 > checked carefully. Numbers, methods and interpretations may change.
 
 **Status:** done (2026-10-12). **Paper target:** none (see
-[B1](B1-two-notes-laplace.md)); the paper averaged its model over 10 seeds.
+[B1](B01-two-notes-laplace.md)); the paper averaged its model over 10 seeds.
 **Code:** `--seed` in `tools/bass/compare_two_notes.py`, PR
 [#28](https://github.com/choyun1/sonore-infer/pull/28) (`5e840c2`);
 `tools/run_seeds.py`, PRs [#30](https://github.com/choyun1/sonore-infer/pull/30)
 and [#33](https://github.com/choyun1/sonore-infer/pull/33); the n!
 structure prior, PR [#31](https://github.com/choyun1/sonore-infer/pull/31).
-The same ten-seed run covers milestone (a) in [A8](A8-ten-seeds.md).
+The same ten-seed run covers milestone (a) in [A8](A08-ten-seeds.md).
 
 ## Question
 
@@ -37,7 +37,7 @@ estimates' own noise for the same mode.
 ## Results
 
 Ten seeds, log odds over the best one source, variational estimate, mean ±
-SD (`data/A8/summary.txt`; ELBO and min-max there too):
+SD (`data/A08/summary.txt`; ELBO and min-max there too):
 
 | Interval | 0 ms | 10 | 20 | 40 | 80 | 120 | 160 | 240 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -50,15 +50,15 @@ SD (`data/A8/summary.txt`; ELBO and min-max there too):
 Controls: 200 Hz −20.4 ± 2.4, 282.8 Hz −17.9 ± 1.5, 300 Hz −19.8 ± 1.6,
 400 Hz −29.4 ± 2.2. The tritones' whistles lose to one source (means −56 to −109).
 
-Five seeds on the close cases (`data/B4/`, seed 0 from `data/B2/`): octave
+Five seeds on the close cases (`data/B04/`, seed 0 from `data/B02/`): octave
 0 ms −34.4 ± 2.6, octave 240 ms −22.0 ± 2.1; fifth whistles at 10 ms
 4.1 ± 4.6 (ELBO −1.2 ± 1.6), at 80 ms 2.3 ± 3.6 (ELBO 0.2 ± 0.6).
 
 ## Plots
 
-![B4-two-notes-seeds](plots/B4-two-notes-seeds.svg)
+![B4-two-notes-seeds](plots/B04-two-notes-seeds.svg)
 
-*Mean log odds over 10 seeds (Cho's PC, variational estimate) ± 1 SD, from [`data/A8/summary.txt`](data/A8/summary.txt): two notes against the best one source, and for the fifth also harmonic plus whistles.*
+*Mean log odds over 10 seeds (Cho's PC, variational estimate) ± 1 SD, from [`data/A08/summary.txt`](data/A08/summary.txt): two notes against the best one source, and for the fifth also harmonic plus whistles.*
 
 ## What it says
 
@@ -87,7 +87,7 @@ python tools/bass/compare_two_notes.py --seed 1 --variational-steps 2000 \
     --interval just_fifth --asynchronies 0.01 0.08 --only one@100 one@200 whistles > fifth_seed1.txt
 ```
 
-`data/A8/summary.txt` is made by a local averaging script (`average.py`,
+`data/A08/summary.txt` is made by a local averaging script (`average.py`,
 in the project files with the 550 raw outputs, 2.2 MB), not committed
 because it also computes BASS's threshold rule.
 

@@ -208,7 +208,7 @@ Per pair, enumerated:
    events, so each component is matched to its neighbor in the next tone.
 
 The search (C3) took 20–74 min per (b) stimulus and 6–9 h per ABA sequence
-[measured, `results/C3-search.md`], so it runs on a few pairs only, to check
+[measured, `results/C03-search.md`], so it runs on a few pairs only, to check
 that the enumerated set is not missing a better structure.
 
 **Recommendation: as above.**
@@ -268,7 +268,7 @@ One seed throughout at first. Experiment P3 starts with one starting tone
 control: 5 hypotheses in 20 min], so about 7 min for a 0.875 s pair
 [estimate, scaled by length]. S1 (each event rendered over its own span,
 `docs/design/online-speed.md`) made an Adam step 2.8 times and the Hessian
-2.3 times faster at 1.05 s of sound [measured: `results/O2-online-speed.md`,
+2.3 times faster at 1.05 s of sound [measured: `results/O02-online-speed.md`,
 one hypothesis, 8 semitones]. Applied to the pairs, that is about 2.5 to
 3 min per hypothesis, and 90 pairs × about 4 hypotheses about 15 to 18
 thread-hours [estimate, the O2 ratios applied to the C3 figure]. Experiment

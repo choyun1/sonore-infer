@@ -30,7 +30,7 @@ effect, and at what thresholds?
 
 ## Results
 
-Thresholds, % of f0 (`data/A1/thresholds.txt`). 1 row left out (unreliable
+Thresholds, % of f0 (`data/A01/thresholds.txt`). 1 row left out (unreliable
 evidence estimate).
 
 | f0 (Hz) | Harmonic | Paper's model (by eye) | Ours, Laplace | Ours, importance sampling | Levels used |
@@ -47,9 +47,9 @@ evidence estimate).
 
 ## Plots
 
-![A1-gammatone-baseline](plots/A1-gammatone-baseline.svg)
+![A1-gammatone-baseline](plots/A01-gammatone-baseline.svg)
 
-*Posterior probability of two sources against mistuning, per condition, from the kept rows in [`data/A1/`](data/A1/) (Laplace estimate). The solid green line is our threshold (Eqn 2); the dashed line is the paper's model, read by eye. Left-out rows are not plotted.*
+*Posterior probability of two sources against mistuning, per condition, from the kept rows in [`data/A01/`](data/A01/) (Laplace estimate). The solid green line is our threshold (Eqn 2); the dashed line is the paper's model, read by eye. Left-out rows are not plotted.*
 
 ## What it says
 
@@ -68,11 +68,11 @@ it with `--cochleagram gammatone`. Not re-run on today's main.
 python tools/bass/compare_mistuned_harmonic.py --f0 200 --harmonic 3 --cochleagram gammatone > f0-200_h3.txt
 python tools/bass/compare_mistuned_harmonic.py --f0 200 --harmonic 3 --cochleagram gammatone \
     --percents 11 12 13 14 15 16 17 18 19 > f0-200_h3_fine.txt
-python tools/bass/mistuning_thresholds.py results/data/A1/coarse/f0-*.txt results/data/A1/fine/f0-*.txt
+python tools/bass/mistuning_thresholds.py results/data/A01/coarse/f0-*.txt results/data/A01/fine/f0-*.txt
 ```
 
-Raw outputs: [`data/A1/coarse/`](data/A1//coarse) (7 levels) and
-[`data/A1/fine/`](data/A1//fine) (the 1% grids).
+Raw outputs: [`data/A01/coarse/`](data/A01//coarse) (7 levels) and
+[`data/A01/fine/`](data/A01//fine) (the 1% grids).
 
 ## Open
 

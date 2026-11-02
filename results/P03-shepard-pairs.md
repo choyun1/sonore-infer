@@ -36,7 +36,7 @@ Shepard does not report)?
   scene whose sources have two events, one per tone:
   - `harmonic up` and `harmonic down`: one harmonic source starting at the
     first tone's component between 52 and 104 Hz (the reading
-    [P5](P5-shepard-one-tone-sparse.md) found for every tone), whose second
+    [P5](P05-shepard-one-tone-sparse.md) found for every tone), whose second
     event starts at the nearest component of the second tone above (up) or
     below (down) it.
   - `whistles up` and `whistles down`: one whistle per component of the
@@ -65,10 +65,10 @@ repeated fits matched to the printed digits.
 
 ## Results
 
-![P(up) for each pair, and against Shepard's Fig. 3](plots/P3-shepard-pairs.svg)
+![P(up) for each pair, and against Shepard's Fig. 3](plots/P03-shepard-pairs.svg)
 
-All values are in `data/P3/summary.txt`, made by
-`python tools/relative_pitch/pair_summary.py --by-steps results/data/P3/[0-9]*.txt`,
+All values are in `data/P03/summary.txt`, made by
+`python tools/relative_pitch/pair_summary.py --by-steps results/data/P03/[0-9]*.txt`,
 and recomputed from the rows' printed log posteriors (one decimal), so
 they can differ from pair.py's own P(up) lines in the third decimal.
 
@@ -114,7 +114,7 @@ of 128, as on P5, so the importance estimates are rough.
 - **The crossover moves with the starting tone, by up to 3 steps.**
   *(Not confirmed: with the first tone also allowed an octave lower or
   higher, every starting tone says up at 3 and 4 steps;
-  see [P8](P8-shepard-pairs-octave-check.md).)* Tones
+  see [P8](P08-shepard-pairs-octave-check.md).)* Tones
   3 to 5, whose f0 sits near the top of the 52 to 104 Hz band, turn down
   after 2 steps; tones 6 and 7, near the bottom, still go up at 5. In
   every pair exactly one of the two harmonic hypotheses keeps the second
@@ -129,7 +129,7 @@ of 128, as on P5, so the importance estimates are rough.
 - **It is far too sure.** P(up) is 0 or 1 in 81 of 90 pairs, where even
   Group I is graded from 3 to 6 steps and Group III never goes beyond 0.83
   or below 0.24. This is the same overconfidence as for one tone against
-  two on [P7](P7-earlier-experiments-sparse.md). Decision P9 plans to model
+  two on [P7](P07-earlier-experiments-sparse.md). Decision P9 plans to model
   listener differences as fitted noise per group; nothing here does that
   yet.
 - **Not like for like.** Only one reading of the first tone is tried (the
@@ -152,6 +152,6 @@ as `harmonic-up` and `harmonic-down`), four at a time:
 python tools/relative_pitch/pair.py --first 1 --seconds 2 --sparse-spectrum --floor 30 > 1-2.txt
 python tools/relative_pitch/pair.py --first 2 --seconds 3 --sparse-spectrum --floor 30 --only whistles > 2-3-whistles.txt
 # and so on for every first tone 1 to 10 and every other second tone
-python tools/relative_pitch/pair_summary.py --by-steps results/data/P3/[0-9]*.txt > summary.txt
+python tools/relative_pitch/pair_summary.py --by-steps results/data/P03/[0-9]*.txt > summary.txt
 python tools/results_plots.py
 ```

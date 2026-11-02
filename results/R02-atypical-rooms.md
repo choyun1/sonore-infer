@@ -5,7 +5,7 @@
 > checked carefully. Numbers, methods and interpretations may change.
 
 **Status:** done (2026-10-12). **Paper target:** none in Cusimano et al.
-(2024); see [R1](R1-source-and-room.md). The design's experiment (b) (decision R7),
+(2024); see [R1](R01-source-and-room.md). The design's experiment (b) (decision R7),
 after Traer & McDermott (2016), who found listeners' judgments of
 reverberation biased by atypical rooms. Listeners are not compared here.
 **Code:** `tools/source_room/atypical_rooms.py`, PR
@@ -41,7 +41,7 @@ impulse response by Schroeder T20 × 3 (median over bands).
 ## Results
 
 Posterior median RT60 over the true RT60, median over 5 seeds
-(`data/R2/atypical_rooms_summary.txt`); T20 × 3 of the same rooms in the
+(`data/R02/atypical_rooms_summary.txt`); T20 × 3 of the same rooms in the
 last column.
 
 | Room | 0.4 s, floor 60 | 0.4 s, 40 | 0.8 s, 60 | 0.8 s, 40 | T20 × 3, 0.4 and 0.8 s |
@@ -67,9 +67,9 @@ at floors 60 and 40: time-reversed −2,141 to −34,458 nats; the other rooms
 
 ## Plots
 
-![R2-atypical-rooms](plots/R2-atypical-rooms.svg)
+![R2-atypical-rooms](plots/R02-atypical-rooms.svg)
 
-*Posterior median RT60 over the true RT60, median over 5 seeds, against T20 × 3 measured from the same impulse responses. From [`data/R2/atypical_rooms_summary.txt`](data/R2/atypical_rooms_summary.txt).*
+*Posterior median RT60 over the true RT60, median over 5 seeds, against T20 × 3 measured from the same impulse responses. From [`data/R02/atypical_rooms_summary.txt`](data/R02/atypical_rooms_summary.txt).*
 
 ## What it says
 
@@ -96,7 +96,7 @@ python tools/source_room/atypical_rooms.py --out atypical_rooms.jsonl --shard 0 
 python tools/source_room/atypical_rooms.py --summary atypical_rooms.jsonl
 ```
 
-Raw outputs: `data/R2/atypical_rooms.jsonl` (one line per inference) and
+Raw outputs: `data/R02/atypical_rooms.jsonl` (one line per inference) and
 `atypical_rooms_summary.txt` (rerunning `--summary` on the committed file
 gives the same text).
 

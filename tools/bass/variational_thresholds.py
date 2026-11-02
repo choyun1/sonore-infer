@@ -8,7 +8,7 @@ importance sampling from the variational fit) are turned into p(two
 sources) and Eqn 2's threshold (``sonore_infer.thresholds``). A row whose
 estimate is not finite is left out of that estimate's threshold and counted.
 
-    python tools/bass/variational_thresholds.py results/data/A7/converged/*.txt
+    python tools/bass/variational_thresholds.py results/data/A07/converged/*.txt
 """
 
 import argparse

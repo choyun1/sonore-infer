@@ -28,11 +28,11 @@ file, **[code]** with file and line, **[estimate]** with its basis.
 [online-realtime.md](online-realtime.md) measured where an online window's
 time goes. At 3.05 s of sound, 8 semitones, a 1 s lag and 50 ms windows,
 one window took 69 to 179 s (one stream) and 86 to 121 s (two streams)
-[measured: `results/data/O1/st8_w50_p50_lag1.txt`]. Of that, the Laplace
+[measured: `results/data/O01/st8_w50_p50_lag1.txt`]. Of that, the Laplace
 Hessian took 54 s (one stream) and 108 s (two), one Adam step 0.20 to
 0.24 s, and the render of the whole sound so far 54 to 62 ms of each
 step's 65 to 72 ms forward pass [measured:
-`results/data/O1/online_cost_st8.txt`].
+`results/data/O01/online_cost_st8.txt`].
 
 This design turns that note's §4 into changes, in the order that keeps each
 one checkable on its own. Each keeps the model as it is (priors, likelihood,
@@ -109,7 +109,7 @@ Adam stays the default until L-BFGS reproduces the O1 fits (S6), because
 the learning rates per latent were tuned for Adam in milestones (a) to (c).
 
 **Outcome (2026-10-15).** Tried twice on the O1 case and dropped
-([O2](../../results/O2-online-speed.md)): plain L-BFGS drifts along
+([O2](../../results/O02-online-speed.md)): plain L-BFGS drifts along
 directions the sound so far does not constrain and the next window never
 recovers (odds −1.4 million against 132); held near the window's start and
 finished by Adam, it lands the one-stream fit in a worse basin (odds 167

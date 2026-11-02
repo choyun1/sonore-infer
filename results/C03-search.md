@@ -47,7 +47,7 @@ used.
   1000 steps) and screened by its Laplace log posterior. A Laplace that
   fails (covariance not positive definite) leaves the hypothesis out. The
   5 best get 2000 variational steps and are ranked by the variational
-  importance estimate, as in [B2](B2-two-notes-variational.md).
+  importance estimate, as in [B2](B02-two-notes-variational.md).
 
 Model as B2: FFT cochleagram, fixed kernels, likelihood SD 10 dB. One
 seed. The (b) stimuli ran with one thread each on the cloud CPU; the ABA
@@ -64,7 +64,7 @@ back here. It is the same for every hypothesis of a stimulus, so it cancels in
 every comparison; the raw outputs in `data/` are not shifted.
 
 Log posterior of the best structure, variational importance estimate
-(`data/C3/`), against B2's enumerative values (`data/B2/`: `vi_importance` plus
+(`data/C03/`), against B2's enumerative values (`data/B02/`: `vi_importance` plus
 `structure`). B2 predates the n! labelling count (decision C6), which adds
 0.69 to the search's two-source values:
 
@@ -80,8 +80,8 @@ variational fits. Time is wall clock for the whole search.
 
 ### ABA sequences
 
-1, 6 and 12 semitones at 100 ms onset to onset, 12 tones (`data/C3/aba_pc/`),
-against [C2](C2-aba-streaming.md)'s enumerative values (`data/C2/`: the
+1, 6 and 12 semitones at 100 ms onset to onset, 12 tones (`data/C03/aba_pc/`),
+against [C2](C02-aba-streaming.md)'s enumerative values (`data/C02/`: the
 one-stream fit from `one_converged/`, two streams from `run_300steps/`,
 `vi_importance` plus `structure`). C2 inferred each Gaussian process's sigma
 and lengthscale; this search kept them fixed, so the two are not exactly the
@@ -104,7 +104,7 @@ tone in the right stream (`fitted:` lines).
 Why did the search's two-note fit to the just fifth (0 ms) end about 10
 below B2's? The same two-note hypothesis was fitted from five starts,
 on current main, as the C3 search was (fits to convergence, 2000 variational
-steps; `data/C3/fifth_starts/`). The detector's candidates sit at 197
+steps; `data/C03/fifth_starts/`). The detector's candidates sit at 197
 and 304 Hz. Their spectra come from the peaks. The lower note's harmonics 4, 7
 and 10 (800, 1400 and 2000 Hz) start at the −30 dB floor, because no peak was resolved there
 next to the upper note's 900, 1500 and 2100 Hz:
@@ -121,20 +121,20 @@ The seed changes only the variational fit and its samples. Every seed starts the
 Adam fit at the same place. The search's own run gave −125.8 and −117.5 for its
 start and its best. It ran on code from before PR #61, so its numbers differ
 slightly. The Laplace estimates (−127 to −87) disagree with the variational ones
-by up to 33 and do not rank these fits consistently (`data/C3/fifth_starts/`).
+by up to 33 and do not rank these fits consistently (`data/C03/fifth_starts/`).
 
 A better f0 from the detector does not fix this. A comb over the lowest six
 harmonics brought every candidate f0 on the (b) stimuli within 0.7% of the
 truth, where the peaks' average had been up to 7.5% off. The fifth then got
 199 and 298 Hz. The four (b) searches, rerun with it
-(`data/C3/fifth_starts/comb_search/`), chose the same structures as
+(`data/C03/fifth_starts/comb_search/`), chose the same structures as
 before, within 2.1 of their log posteriors. The fifth's two-note fit stayed
 low, at −125.6. Fitted from 198.7 Hz, the lower note drifts down to
 197.8 Hz instead of up to 200. Starting one or both notes 0.7% off costs 4
 to 9 against starting exactly at 200 and 300 Hz. Starting the muted harmonics at 0 dB costs
 about 9 more. Fitting first at a wider likelihood SD (40, then 20 dB) does
 not help either: from exactly 200 and 300 Hz it gives −123.2
-(`data/C3/fifth_starts/f0_sensitivity.txt`). The comb was dropped.
+(`data/C03/fifth_starts/f0_sensitivity.txt`). The comb was dropped.
 
 So the two-note posterior has several modes within about 1% of the notes'
 f0s, and the evidence, estimated around one mode, depends on which mode the
@@ -143,7 +143,7 @@ f0s, which the model would not have.
 
 Several starts do find it. Both hypotheses were fitted from 16 starts, with
 the detector's f0s scaled by 0.99 to 1.02 (lower) and 0.98 to 1.01 (upper)
-(`data/C3/fifth_starts/multi_start.txt`). Of the two-note fits, 1 of 16
+(`data/C03/fifth_starts/multi_start.txt`). Of the two-note fits, 1 of 16
 reached 200.0 and 300.0 Hz. That fit has the highest log joint of the 16,
 by 4. The rest stopped 4 to 27 below it, in modes with an f0 up to 5% off. Keeping the fit with the highest log joint, as
 `evaluate` does with several starts, therefore picks the right mode. Its
@@ -161,7 +161,7 @@ The search now takes `f0_scales` (`--f0-scales` in `search_scene.py`).
 Each hypothesis with a harmonic source is fitted once per scale, with every
 harmonic f0 start multiplied by it, and the fit with the highest log joint
 is kept. The four (b) searches were rerun with scales 0.98, 0.99, 1, 1.01
-and 1.02 (`data/C3/multistart/`, on current main):
+and 1.02 (`data/C03/multistart/`, on current main):
 
 | Stimulus | Search's best | Its log posterior | One start (above) | Enumerative winner | Same structure? | Time (min) |
 | --- | --- | --- | --- | --- | --- | --- |

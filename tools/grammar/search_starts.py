@@ -2,7 +2,7 @@
 
 The search's best for the just fifth at 0 ms was a note plus a whistle,
 and its own two-note fit came out about 10 below milestone (b)'s
-(results/C3-search.md). This fits one hypothesis to that stimulus from one
+(results/C03-search.md). This fits one hypothesis to that stimulus from one
 start and prints its log posteriors, shifted by the likelihood's
 normalising constant as on the C3 page. Starts:
 

@@ -26,7 +26,7 @@ As A4, plus:
 
 ## Results
 
-Thresholds, % of f0 (`data/A5/thresholds.txt`). 48 of 225 rows left out
+Thresholds, % of f0 (`data/A05/thresholds.txt`). 48 of 225 rows left out
 (a fit stopped at a point that was not a peak, so the Laplace estimate is
 not valid there).
 
@@ -47,9 +47,9 @@ The scene module of PR #15 reproduces all 225 rows identically as printed
 
 ## Plots
 
-![A5-full-model](plots/A5-full-model.svg)
+![A5-full-model](plots/A05-full-model.svg)
 
-*Posterior probability of two sources against mistuning, per condition, from the kept rows in [`data/A5/`](data/A5/) (Laplace estimate). The solid green line is our threshold (Eqn 2); the dashed line is the paper's model, read by eye. Left-out rows are not plotted.*
+*Posterior probability of two sources against mistuning, per condition, from the kept rows in [`data/A05/`](data/A05/) (Laplace estimate). The solid green line is our threshold (Eqn 2); the dashed line is the paper's model, read by eye. Left-out rows are not plotted.*
 
 ## What it says
 
@@ -70,10 +70,10 @@ printed digit; the failed importance estimate at 4% (ESS 1) moves by 0.3.
 python tools/bass/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --percents 0 1 2 3 4 5 6 7 8 9 10 12 14 16 18 20 22 24 26 28 30 35 40 45 50
 python tools/bass/compare_mistuned_harmonic.py --f0 100 --harmonic 1 --whistle-timing inferred \
     --trajectories --harmonic-timing inferred --percents 0 1 2 3 4 5 6 7 8 9 10 12 14 16 18 20 22 24 26 28 30 35 40 45 50     # the original script
-python tools/bass/mistuning_thresholds.py results/data/A5/f0-*.txt
+python tools/bass/mistuning_thresholds.py results/data/A05/f0-*.txt
 ```
 
-Raw outputs: [`data/A5/`](data/A5/).
+Raw outputs: [`data/A05/`](data/A05/).
 
 ## Open
 

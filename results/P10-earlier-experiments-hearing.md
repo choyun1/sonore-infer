@@ -21,9 +21,9 @@ Shared background: [how the experiments work](README.md#how-the-experiments-work
 
 On Shepard pairs, a threshold of hearing (P19) and spectral dominance (P20)
 bring the model's crossover close to listeners'
-([P9](P9-shepard-listener-noise.md)). Before either could become a default
+([P9](P09-shepard-listener-noise.md)). Before either could become a default
 (decision P13), what do they do to results they were not designed for? As
-[P7](P7-earlier-experiments-sparse.md) did for the sparse spectrum and the
+[P7](P07-earlier-experiments-sparse.md) did for the sparse spectrum and the
 30 Hz floor.
 
 ## Setup
@@ -34,7 +34,7 @@ P7's runs repeated with both options added, and C2's ABA runs at 1, 3 and
 - **Mistuned harmonic** (100 Hz harmonic 1, 200 Hz harmonic 2, 0 to 30% in
   steps of 5) and **two notes** (octave and just fifth at 0 ms): as P7,
   with sparse spectra and a 30 Hz floor. P7's own runs are the comparison.
-- **ABA**: as [C2](C2-aba-streaming.md), kernels inferred, one stream run
+- **ABA**: as [C2](C02-aba-streaming.md), kernels inferred, one stream run
   to the stopping rule, two streams 300 steps. The hypotheses are whistles
   only, so the sparse spectrum and the f0 floor do not apply, and C2's runs
   are the comparison.
@@ -61,7 +61,7 @@ hypothesis, 5 to 16 min per two-note hypothesis.
 Eqn 2 thresholds (%), variational importance estimate
 (`data/P10/thresholds.txt`; dominance only, run after the rest at Cho's
 request, `data/P10/thresholds_dominance_only.txt` from
-`data/P10/dominance_only/`; P7's from `data/P7/thresholds.txt`):
+`data/P10/dominance_only/`; P7's from `data/P07/thresholds.txt`):
 
 | Condition | P7 (sparse, 30 Hz floor) | With both options | Dominance only |
 | --- | --- | --- | --- |
@@ -101,8 +101,8 @@ Log odds against the best one-source reading, variational
 ### ABA, 100 ms
 
 Log odds of two streams over one, variational importance estimate
-(`data/P10/aba/`; C2 from `data/C2/one_converged/` and
-`data/C2/run_300steps/`, as C2's map):
+(`data/P10/aba/`; C2 from `data/C02/one_converged/` and
+`data/C02/run_300steps/`, as C2's map):
 
 | Semitones | C2 | With both options |
 | --- | --- | --- |

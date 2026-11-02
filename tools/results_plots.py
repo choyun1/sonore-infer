@@ -246,8 +246,9 @@ def figure(panels, label, legend=(), columns=None, gap=10, padding=14):
     return "\n".join(parts) + "\n"
 
 
-def data(*parts):
-    return os.path.join(DATA, *parts)
+def data(experiment, *parts):
+    """Path under results/data; ``experiment`` is an ID such as "P1" (its folder is padded, P01)."""
+    return os.path.join(DATA, re.sub(r"^([A-Z])(\d)$", r"\g<1>0\2", experiment), *parts)
 
 
 def numeric_rows(path):
@@ -1516,35 +1517,35 @@ def reset_cusack():
 
 PLOTS = {
     "milestone-a-thresholds": threshold_ladder,
-    "A1-gammatone-baseline": lambda: mistuning_grid("A1"),
-    "A2-fft-cochleagram": lambda: mistuning_grid("A2"),
-    "A3-whistle-timing": lambda: mistuning_grid("A3"),
-    "A4-bass-gain": lambda: mistuning_grid("A4"),
-    "A5-full-model": lambda: mistuning_grid("A5"),
-    "A6-bass-own-code": bass_own_code,
-    "A7-variational-evidence": variational_evidence,
-    "A8-ten-seeds": ten_seeds,
-    "B1-two-notes-laplace": lambda: two_notes("B1", "laplace", [0, 10, 20, 40, 80]),
-    "B2-two-notes-variational": lambda: two_notes("B2", "variational", ASYNCHRONIES),
-    "B3-octave-sigma5": octave_sigma5,
-    "B4-two-notes-seeds": two_notes_seeds,
-    "C1-kernel-inferred": kernel_inferred,
-    "C2-aba-streaming": aba_streaming,
-    "O1-online-buildup": online_buildup,
-    "O1-lag-window": online_sweep,
-    "O2-speed-agreement": speed_agreement,
-    "O3-beauvois-meddis": reset_beauvois_meddis,
-    "O3-cusack": reset_cusack,
-    "P5-shepard-one-tone": shepard_one_tone,
-    "P3-shepard-pairs": shepard_pairs,
-    "P8-by-steps": shepard_octave_check_steps,
-    "P8-by-starting-tone": shepard_octave_check_tones,
-    "P9-shepard-listener-noise": shepard_listener_noise,
+    "A01-gammatone-baseline": lambda: mistuning_grid("A1"),
+    "A02-fft-cochleagram": lambda: mistuning_grid("A2"),
+    "A03-whistle-timing": lambda: mistuning_grid("A3"),
+    "A04-bass-gain": lambda: mistuning_grid("A4"),
+    "A05-full-model": lambda: mistuning_grid("A5"),
+    "A06-bass-own-code": bass_own_code,
+    "A07-variational-evidence": variational_evidence,
+    "A08-ten-seeds": ten_seeds,
+    "B01-two-notes-laplace": lambda: two_notes("B1", "laplace", [0, 10, 20, 40, 80]),
+    "B02-two-notes-variational": lambda: two_notes("B2", "variational", ASYNCHRONIES),
+    "B03-octave-sigma5": octave_sigma5,
+    "B04-two-notes-seeds": two_notes_seeds,
+    "C01-kernel-inferred": kernel_inferred,
+    "C02-aba-streaming": aba_streaming,
+    "O01-online-buildup": online_buildup,
+    "O01-lag-window": online_sweep,
+    "O02-speed-agreement": speed_agreement,
+    "O03-beauvois-meddis": reset_beauvois_meddis,
+    "O03-cusack": reset_cusack,
+    "P05-shepard-one-tone": shepard_one_tone,
+    "P03-shepard-pairs": shepard_pairs,
+    "P08-by-steps": shepard_octave_check_steps,
+    "P08-by-starting-tone": shepard_octave_check_tones,
+    "P09-shepard-listener-noise": shepard_listener_noise,
     "P10-earlier-experiments-hearing": earlier_experiments_hearing,
     "P11-group-iii-interval-noise": group_iii_interval_noise,
-    "R1-likelihood-slice": likelihood_slice,
-    "R1-interval-coverage": interval_coverage,
-    "R2-atypical-rooms": atypical_rooms,
+    "R01-likelihood-slice": likelihood_slice,
+    "R01-interval-coverage": interval_coverage,
+    "R02-atypical-rooms": atypical_rooms,
 }
 
 

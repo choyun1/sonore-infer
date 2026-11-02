@@ -14,7 +14,7 @@ decisions P15 to P18 and the guards against overfitting under P16.
 
 ## Question
 
-On [P3](P3-shepard-pairs.md) and [P8](P8-shepard-pairs-octave-check.md)
+On [P3](P03-shepard-pairs.md) and [P8](P08-shepard-pairs-octave-check.md)
 the model answers up or down with near certainty, while Shepard's listeners
 are graded. If each group's answers are the model's log odds passed through
 some noise, how much noise does each group need, does the model then
@@ -41,12 +41,12 @@ each; 3 importance estimates failed and their ELBOs stand in.
 
 ## Results
 
-![Fitted fractions judged up against Shepard's Groups I and III](plots/P9-shepard-listener-noise.svg)
+![Fitted fractions judged up against Shepard's Groups I and III](plots/P09-shepard-listener-noise.svg)
 
-*Variant A fits (decision noise and lapse per group) from `data/P9/fit.txt`, the same with the threshold and dominance options on all 90 pairs from `data/P9/options/fit_all.txt` (see the last section), and the curve in steps alone. Drawn by `tools/results_plots.py`.*
+*Variant A fits (decision noise and lapse per group) from `data/P09/fit.txt`, the same with the threshold and dominance options on all 90 pairs from `data/P09/options/fit_all.txt` (see the last section), and the curve in steps alone. Drawn by `tools/results_plots.py`.*
 
-All from `data/P9/fit.txt`, made by
-`python tools/relative_pitch/listener_noise.py results/data/P3/[0-9]*.txt results/data/P8/[0-9]*.txt --refits results/data/P9/refits/*.txt`.
+All from `data/P09/fit.txt`, made by
+`python tools/relative_pitch/listener_noise.py results/data/P03/[0-9]*.txt results/data/P08/[0-9]*.txt --refits results/data/P09/refits/*.txt`.
 
 **Fits.** Fraction judged up at 1 to 9 steps clockwise:
 
@@ -116,7 +116,7 @@ log odds would match β times the 10 dB log odds:
 ## Why the crossover is too sharp
 
 Measured with `tools/relative_pitch/decompose.py` (outputs in
-`results/data/P9/decompose/`; one seed, the harmonic hypotheses of P3
+`results/data/P09/decompose/`; one seed, the harmonic hypotheses of P3
 from the 52 to 104 Hz reading, refitted to their modes with P3's settings,
 which give the same log joint at the mode as P3, for example −9758.2 for
 1 → 3 up). Each mode's log joint is split into the likelihood of each
@@ -170,10 +170,10 @@ SD 10 dB / √w with Terhardt's dominance weight w (1 at 700 Hz, 0.27 at
 51 Hz). Same 8 pairs and settings as above, one seed.
 
 Up minus down, likelihood at the mode [measured, `decompose.py`, outputs
-in `results/data/P9/options/{threshold,dominance,both}/`], and the log
+in `results/data/P09/options/{threshold,dominance,both}/`], and the log
 odds of the harmonic hypotheses by the ELBO with both options [measured,
 `pair.py --only harmonic --threshold-floor --dominance`, outputs in
-`results/data/P9/options/evidence/`]:
+`results/data/P09/options/evidence/`]:
 
 | Pair | Steps | Likelihood, neither | threshold | dominance | both | Log odds, neither (P3) | Log odds, both |
 |---|---|---|---|---|---|---|---|
@@ -216,8 +216,8 @@ Every pair rerun with `--threshold-floor --dominance`, harmonic hypotheses
 only (the whistles were 91 to 147 behind on P3), from all three readings
 of the first tone (the 52 to 104 Hz reading and an octave either side, as
 P8 did for 3 to 5 steps): 510 fits, one seed [measured, `pair.py`,
-outputs in `results/data/P9/options/all/`; fit by `listener_noise.py`,
-output in `results/data/P9/options/fit_all.txt`]. A first fit with the
+outputs in `results/data/P09/options/all/`; fit by `listener_noise.py`,
+output in `results/data/P09/options/fit_all.txt`]. A first fit with the
 extra readings at 3 to 5 steps only, as decision P17 had it, made the
 predicted fraction rise from 0.40 at 5 steps to 0.46 at 6, because at 5
 steps the extra readings turned 5 of the 10 pairs from up to down and at
@@ -257,22 +257,22 @@ Fitted fractions at 1 to 9 steps, Group I: 0.99 0.97 0.89 0.69 0.42 0.21
 
 Rebuilt on 2026-11-01 from the settings the outputs' headers and this page's
 setup record; the commands themselves were not recorded at the time and
-have not been rerun. Pair fits one per file, as on [P3](P3-shepard-pairs.md) and
-[P8](P8-shepard-pairs-octave-check.md); the 8 pairs are 1 to 3, 5, 6, 7
+have not been rerun. Pair fits one per file, as on [P3](P03-shepard-pairs.md) and
+[P8](P08-shepard-pairs-octave-check.md); the 8 pairs are 1 to 3, 5, 6, 7
 and 9, and 6 to 1, 2 and 10.
 
 ```
-# listener fit (data/P9/fit.txt), and the refits at 25.4 dB on 6 pairs
+# listener fit (data/P09/fit.txt), and the refits at 25.4 dB on 6 pairs
 python tools/relative_pitch/pair.py --first 1 --seconds 4 --sigma 25.4 --sparse-spectrum --floor 30 \
     --only "harmonic up" > 1-4-sigma25.4-octave0-harmonic-up.txt
-python tools/relative_pitch/listener_noise.py results/data/P3/[0-9]*.txt results/data/P8/[0-9]*.txt \
-    --refits results/data/P9/refits/*.txt > fit.txt
-# why the crossover is too sharp (data/P9/decompose/; options/threshold, dominance, both)
+python tools/relative_pitch/listener_noise.py results/data/P03/[0-9]*.txt results/data/P08/[0-9]*.txt \
+    --refits results/data/P09/refits/*.txt > fit.txt
+# why the crossover is too sharp (data/P09/decompose/; options/threshold, dominance, both)
 python tools/relative_pitch/decompose.py --first 1 --seconds 3 --only up --sparse-spectrum --floor 30 > 1-3-up.txt
 python tools/relative_pitch/decompose.py --first 1 --seconds 3 --only up --sparse-spectrum --floor 30 \
     --threshold-floor --dominance > 1-3-up.txt     # options/both; one option alone for threshold/ and dominance/
 # evidence with both options (options/evidence/), then all 90 pairs from three readings (options/all/)
 python tools/relative_pitch/pair.py --first 1 --seconds 3 --sparse-spectrum --floor 30 --only harmonic --threshold-floor --dominance
 python tools/relative_pitch/pair.py --first 1 --seconds 3 --octave -1 --sparse-spectrum --floor 30 --only harmonic --threshold-floor --dominance
-python tools/relative_pitch/listener_noise.py results/data/P9/options/all/*.txt > fit_all.txt
+python tools/relative_pitch/listener_noise.py results/data/P09/options/all/*.txt > fit_all.txt
 ```

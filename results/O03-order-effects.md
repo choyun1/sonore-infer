@@ -17,7 +17,7 @@ of §7.
 Shared background: [how the experiments work](README.md#how-the-experiments-work).
 
 A batch model gives the same answer whatever order the sound arrives in;
-the online model of [O1](O1-online-buildup.md) need not. Two studies
+the online model of [O1](O01-online-buildup.md) need not. Two studies
 interrupt a sequence with silence and disagree on what follows:
 
 - **Beauvois & Meddis (1997).** 10 s of A tones alone, a silence, then a
@@ -62,13 +62,13 @@ against −83,419 batch).
 
 ## Results
 
-Raw outputs are in `data/O3/` (B&M as `bm_s<silence>.txt` and
+Raw outputs are in `data/O03/` (B&M as `bm_s<silence>.txt` and
 `bm_alone.txt`, Cusack et al. as `cu<semitones>_s<silence>.txt`); the
 tables come from `tools/online/reset_summary.py`.
 
 ### Beauvois & Meddis
 
-![Beauvois & Meddis](plots/O3-beauvois-meddis.svg)
+![Beauvois & Meddis](plots/O03-beauvois-meddis.svg)
 
 Log odds of two streams over one: the evidence the test adds, and the
 leaky decision at its end. The inducer adds exactly 0: both hypotheses
@@ -94,7 +94,7 @@ explain A tones alone the same way. Listeners are their fit,
 
 ### Cusack et al.
 
-![Cusack et al.](plots/O3-cusack.svg)
+![Cusack et al.](plots/O03-cusack.svg)
 
 The leaky decision through the second sequence, against the first
 sequence at the same times from its first tone:
@@ -180,7 +180,7 @@ with the gap's length, where listeners reset fully after 1 s.
 Cusack et al. stimulus (4 st, first sequence cut to 2 s, 5 s gap, all four
 hypotheses) run twice on the cloud, unchanged and with rests longer than
 0.75 s left out of the rhythm prior (`tools/online/reset_rest_check.py`),
-nothing else changed [measured: `data/O3/e8/`]:
+nothing else changed [measured: `data/O03/e8/`]:
 
 | | unchanged | long rest left out |
 | --- | --- | --- |
@@ -241,5 +241,5 @@ would take about a day or more [estimate].
     python tools/online/online_reset.py cusack --semitones 6 --silence 1 --restart
     python tools/online/reset_rest_check.py --cutoff 0.75 cusack --semitones 4 --silence 5 \
         --first-duration 2 --restart
-    python tools/online/reset_summary.py results/data/O3/*.txt results/data/O3/e8/*.txt
+    python tools/online/reset_summary.py results/data/O03/*.txt results/data/O03/e8/*.txt
     python tools/results_plots.py

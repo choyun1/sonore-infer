@@ -16,9 +16,9 @@ Design: [milestone (c)](../docs/design/milestone-c.md), decision C3.
 Shared background: [how the experiments work](README.md#how-the-experiments-work).
 
 Two results stand out against expectations: 100 Hz h1's threshold is 25%
-where the paper's model has about 45% ([A7](A7-variational-evidence.md),
-[A8](A8-ten-seeds.md)), and the octave stays one source up to 240 ms
-([B2](B2-two-notes-variational.md)). Does inferring each Gaussian
+where the paper's model has about 45% ([A7](A07-variational-evidence.md),
+[A8](A08-ten-seeds.md)), and the octave stays one source up to 240 ms
+([B2](B02-two-notes-variational.md)). Does inferring each Gaussian
 process's sigma and lengthscale, as the paper does, change either?
 
 ## Setup
@@ -32,7 +32,7 @@ odds against A7 and B2.
 
 ## Results
 
-Log odds of two sources over one, variational importance estimate (`data/C1/`):
+Log odds of two sources over one, variational importance estimate (`data/C01/`):
 
 | Mistuning (%) | 0 | 5 | 10 | 20 | 30 | 40 | 50 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -41,7 +41,7 @@ Log odds of two sources over one, variational importance estimate (`data/C1/`):
 
 Threshold, kernel inferred: 25% by Eqn 2 with every estimate (Laplace,
 ELBO, both importance estimates), and 30% by BASS's rule, the same as with
-the kernel fixed (`data/C1/thresholds.txt`).
+the kernel fixed (`data/C01/thresholds.txt`).
 
 | Octave asynchrony (ms) | 0 | 10 | 20 | 40 | 80 | 120 | 160 | 240 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -50,9 +50,9 @@ the kernel fixed (`data/C1/thresholds.txt`).
 
 ## Plots
 
-![C1-kernel-inferred](plots/C1-kernel-inferred.svg)
+![C1-kernel-inferred](plots/C01-kernel-inferred.svg)
 
-*Log odds of two sources over one, variational importance estimate, from [`data/C1/`](data/C1/), [`data/A7/`](data/A7/) and [`data/B2/`](data/B2/).*
+*Log odds of two sources over one, variational importance estimate, from [`data/C01/`](data/C01/), [`data/A07/`](data/A07/) and [`data/B02/`](data/B02/).*
 
 ## What it says
 
@@ -60,7 +60,7 @@ the kernel fixed (`data/C1/thresholds.txt`).
 - The octave stays one source at every asynchrony. With the kernel
   inferred it leans further toward one source at 0 to 40 ms, by 5 to 12,
   and is about the same from 80 ms on. Seed SDs at the octave are 1.1 to
-  4.6 ([B4](B4-two-notes-seeds.md)), so the shift at 0 to 40 ms is likely
+  4.6 ([B4](B04-two-notes-seeds.md)), so the shift at 0 to 40 ms is likely
   real but small next to the margins.
 
 ## Reproduce
@@ -70,7 +70,7 @@ python tools/bass/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --percents 30
     --infer-kernel --variational-steps 2000 > a_30.txt      # one mistuning per job
 python tools/bass/compare_two_notes.py --interval octave --asynchronies 0.24 \
     --only one@200 two --infer-kernel --variational-steps 2000 > octave_0.24.txt
-python tools/bass/two_notes_summary.py results/data/C1/octave_*.txt
+python tools/bass/two_notes_summary.py results/data/C01/octave_*.txt
 ```
 
 `thresholds.txt` is made by a local script that also computes BASS's rule

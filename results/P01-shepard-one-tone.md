@@ -4,7 +4,7 @@
 > results. The work was done with AI assistance (Claude) and has not yet been
 > checked carefully. Numbers, methods and interpretations may change.
 
-**Rerun** with sparse spectra and a 30 Hz floor: [P5](P5-shepard-one-tone-sparse.md).
+**Rerun** with sparse spectra and a 30 Hz floor: [P5](P05-shepard-one-tone-sparse.md).
 **Status:** first pass, one seed, all 10 tones; search on tone 1.
 **Paper target:** none in Cusimano et al.; listeners in Shepard (1964) §I.
 **Code:** `src/sonore_infer/stimuli/shepard.py`,
@@ -49,7 +49,7 @@ change first (decision P3).
   joint rises by less than 0.5 over 1000 steps), then 2000 variational
   steps and 128 importance samples; ranked by the variational importance
   estimate plus the structure prior, as in
-  [B2](B2-two-notes-variational.md). Where importance sampling failed
+  [B2](B02-two-notes-variational.md). Where importance sampling failed
   (−inf), the ELBO is used and marked.
 - **Search.** The C3 search (`tools/grammar/search_scene.py`, unchanged,
   wrapped to build Shepard tones) on tone 1, as a check that the
@@ -61,13 +61,13 @@ so the times are rough.
 
 ## Results
 
-![One tone against whistles, and the reading heard, by tone; P1 and P5](plots/P5-shepard-one-tone.svg)
+![One tone against whistles, and the reading heard, by tone; P1 and P5](plots/P05-shepard-one-tone.svg)
 
 *Left: the best one-harmonic reading's log posterior minus the whistles' (variational importance plus structure prior; the ELBO where importance failed). Right: that reading's f0. P5's line is the same with sparse spectra and a 30 Hz floor. Drawn by `tools/results_plots.py`.*
 
 Log posteriors are shifted by the likelihood's normalising term, 4329.7
 for a 0.225 s tone (64 channels × 21 windows × 3.222), as on
-[C3](C3-search.md); raw outputs in `data/P1/` are not shifted.
+[C3](C03-search.md); raw outputs in `data/P01/` are not shifted.
 
 | Tone | Best harmonic reading (start) | Its log posterior | Next octave up, relative | Whistles | Whistles, relative to the best harmonic |
 | --- | --- | --- | --- | --- | --- |
@@ -85,9 +85,9 @@ for a 0.225 s tone (64 channels × 21 windows × 3.222), as on
 The effective sample size of the importance estimate is 1 to 4 for every
 best reading and every whistle set, and the ELBO differs from it by up to
 10, so margins under about 10 are not resolved. The Laplace estimates
-agree in sign at 8 of 10 tones (`data/P1/step*.txt`).
+agree in sign at 8 of 10 tones (`data/P01/step*.txt`).
 
-**Search on tone 1** (`data/P1/search_step1.txt`, 17 hypotheses, 29 min).
+**Search on tone 1** (`data/P01/search_step1.txt`, 17 hypotheses, 29 min).
 The detector offered whistles at the four components and harmonic tones at
 155, 309 and 77 Hz. Its best is a harmonic tone fitted to 310 Hz plus a
 whistle at 111 Hz, log posterior −88.9: 37 above the best enumerated

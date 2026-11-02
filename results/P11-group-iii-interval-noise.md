@@ -15,7 +15,7 @@ decisions P24 to P26.
 
 Shepard's Group III (his 14 least accurate listeners on pure tones) judged
 the second tone higher in 0.40 of presentations at 9 steps clockwise,
-against 0.26 at 8 [Shepard Fig. 3, read by eye]. [P9](P9-shepard-listener-noise.md)
+against 0.26 at 8 [Shepard Fig. 3, read by eye]. [P9](P09-shepard-listener-noise.md)
 could not produce this rise, because its noise acts on the model's log
 odds L, and L is most negative at 9 steps. The design reads the rise as
 the down side of a dip at the smallest step in both directions, and
@@ -47,7 +47,7 @@ one step out and Shepard's adjacent pairs as in P9.
 ## Results
 
 All from `data/P11/fit.txt`, made by
-`python tools/relative_pitch/listener_noise.py results/data/P9/options/all/*.txt --interval-noise`.
+`python tools/relative_pitch/listener_noise.py results/data/P09/options/all/*.txt --interval-noise`.
 Its first part repeats P9's `fit_all.txt` exactly.
 
 ![Fitted fractions judged up with interval noise, against Shepard's Groups I and III](plots/P11-group-iii-interval-noise.svg)
@@ -120,7 +120,7 @@ overstate the certainty. Group I has no dip: 0.990, 0.990, 0.900, 0.750.
 ## Reproduce
 
 ```
-python tools/relative_pitch/listener_noise.py results/data/P9/options/all/*.txt --interval-noise
+python tools/relative_pitch/listener_noise.py results/data/P09/options/all/*.txt --interval-noise
 ```
 
 Takes about a minute on one CPU.

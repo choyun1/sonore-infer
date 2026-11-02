@@ -13,7 +13,7 @@ the two-over-one window terms of each 0.5 s. Log odds are
 without the structure prior, as ``online_reset.py`` prints them (it adds
 under 2).
 
-    python tools/online/reset_summary.py results/data/O3/*.txt
+    python tools/online/reset_summary.py results/data/O03/*.txt
 """
 
 import argparse
