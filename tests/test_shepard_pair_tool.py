@@ -1,4 +1,4 @@
-"""tools/relative_pitch/pair.py (experiment P3): each hypothesis's start moves the way its label says."""
+"""tools/relative_pitch/pair.py (experiment P03): each hypothesis's start moves the way its label says."""
 
 import importlib.util
 from pathlib import Path

@@ -20,7 +20,7 @@ it also means on long input, minutes rather than 3 s.
 On the buildup stimulus (8 st, 6 triplets, 3.05 s), online with each
 window fitted to convergence and a 1 s lag took 3026 s (one stream) and
 2572 s (two streams) for the whole sound
-[measured: `results/data/O1/st8_w50_p50_lag1.txt`, `seconds` column]:
+[measured: `results/data/O01/st8_w50_p50_lag1.txt`, `seconds` column]:
 about 1,000 and 850 s of computing per second of sound, per hypothesis.
 That is three orders of magnitude from real time, and it gets worse as the
 sound goes on: the last windows took 69 to 179 s (one stream) and 86 to
@@ -30,7 +30,7 @@ slower than real time at 3 s.
 ## 3. Where the time goes
 
 `tools/online/online_cost.py` times the parts of one window at four points in the
-sound [measured: `results/data/O1/online_cost_st8.txt`, 8 st, lag 1 s,
+sound [measured: `results/data/O01/online_cost_st8.txt`, 8 st, lag 1 s,
 4 threads, median of 5]:
 
 | Sound so far (s) | 0.55 | 1.05 | 2.05 | 3.05 |

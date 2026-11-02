@@ -21,22 +21,22 @@ Shared background: [how the experiments work](README.md#how-the-experiments-work
 
 On Shepard pairs, a threshold of hearing (P19) and spectral dominance (P20)
 bring the model's crossover close to listeners'
-([P9](P9-shepard-listener-noise.md)). Before either could become a default
+([P09](P09-shepard-listener-noise.md)). Before either could become a default
 (decision P13), what do they do to results they were not designed for? As
-[P7](P7-earlier-experiments-sparse.md) did for the sparse spectrum and the
+[P07](P07-earlier-experiments-sparse.md) did for the sparse spectrum and the
 30 Hz floor.
 
 ## Setup
 
-P7's runs repeated with both options added, and C2's ABA runs at 1, 3 and
+P07's runs repeated with both options added, and C02's ABA runs at 1, 3 and
 6 semitones, 100 ms, repeated with both options added:
 
 - **Mistuned harmonic** (100 Hz harmonic 1, 200 Hz harmonic 2, 0 to 30% in
-  steps of 5) and **two notes** (octave and just fifth at 0 ms): as P7,
-  with sparse spectra and a 30 Hz floor. P7's own runs are the comparison.
-- **ABA**: as [C2](C2-aba-streaming.md), kernels inferred, one stream run
+  steps of 5) and **two notes** (octave and just fifth at 0 ms): as P07,
+  with sparse spectra and a 30 Hz floor. P07's own runs are the comparison.
+- **ABA**: as [C02](C02-aba-streaming.md), kernels inferred, one stream run
   to the stopping rule, two streams 300 steps. The hypotheses are whistles
-  only, so the sparse spectrum and the f0 floor do not apply, and C2's runs
+  only, so the sparse spectrum and the f0 floor do not apply, and C02's runs
   are the comparison.
 
 The threshold floor clips each channel at the threshold of hearing
@@ -54,12 +54,16 @@ hypothesis, 5 to 16 min per two-note hypothesis.
 
 ### Mistuned harmonic
 
+![Log odds against mistuning at 100 Hz harmonic 1 and 200 Hz harmonic 2, P07 and P10](plots/P10-earlier-experiments-hearing.svg)
+
+*Log odds of two sources over one by variational importance: P07's baseline and P07, then with the threshold of hearing and dominance (both), and dominance alone (100/1 only). Drawn by `tools/results_plots.py`.*
+
 Eqn 2 thresholds (%), variational importance estimate
 (`data/P10/thresholds.txt`; dominance only, run after the rest at Cho's
 request, `data/P10/thresholds_dominance_only.txt` from
-`data/P10/dominance_only/`; P7's from `data/P7/thresholds.txt`):
+`data/P10/dominance_only/`; P07's from `data/P07/thresholds.txt`):
 
-| Condition | P7 (sparse, 30 Hz floor) | With both options | Dominance only |
+| Condition | P07 (sparse, 30 Hz floor) | With both options | Dominance only |
 | --- | --- | --- | --- |
 | 100 Hz, harmonic 1 | 22.4 | 30.0 (two sources never preferred) | 30.0 (two sources never preferred) |
 | 200 Hz, harmonic 2 | 12.5 | 12.5 | not run |
@@ -72,10 +76,10 @@ Log odds of two sources over one, variational importance estimate:
 
 | Mistuning (%) | 0 | 5 | 10 | 15 | 20 | 25 | 30 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 100/1, P7 | −20.5 | −12.5 | −17.2 | −9.8 | −4.3 | 5.8 | 17.5 |
+| 100/1, P07 | −20.5 | −12.5 | −17.2 | −9.8 | −4.3 | 5.8 | 17.5 |
 | 100/1, both options | −12.3 | −13.1 | −16.2 | −26.2 | −18.2 | −11.6 | −11.3 |
 | 100/1, dominance only | −14.0 | −15.1 | −17.2 | −12.4 | −14.2 | −10.0 | −8.2 |
-| 200/2, P7 | −17.0 | −21.7 | −5.5 | 16.6 | 43.1 | 77.3 | 105.5 |
+| 200/2, P07 | −17.0 | −21.7 | −5.5 | 16.6 | 43.1 | 77.3 | 105.5 |
 | 200/2, both options | −19.3 | −20.6 | −6.4 | 14.3 | 40.9 | 72.3 | 100.1 |
 
 At 100/1, 30%, the two-source modes still fit better than the one-source
@@ -87,9 +91,9 @@ the extra parameters (`data/P10/mistuned/f0-100_h1_p30.txt`).
 
 Log odds against the best one-source reading, variational
 (`data/P10/two_notes_summary.txt`). The best one-source reading is
-`one@200` at the octave and `one@100` at the fifth, as in P7.
+`one@200` at the octave and `one@100` at the fifth, as in P07.
 
-| Interval | P7: two / whistles | With both options: two / whistles |
+| Interval | P07: two / whistles | With both options: two / whistles |
 | --- | --- | --- |
 | Octave | −38.9 / | −35.2 / |
 | Just fifth | −12.7 / −57.0 | −10.3 / −57.5 |
@@ -97,10 +101,10 @@ Log odds against the best one-source reading, variational
 ### ABA, 100 ms
 
 Log odds of two streams over one, variational importance estimate
-(`data/P10/aba/`; C2 from `data/C2/one_converged/` and
-`data/C2/run_300steps/`, as C2's map):
+(`data/P10/aba/`; C02 from `data/C02/one_converged/` and
+`data/C02/run_300steps/`, as C02's map):
 
-| Semitones | C2 | With both options |
+| Semitones | C02 | With both options |
 | --- | --- | --- |
 | 1 | −18.7 | −18.5 |
 | 3 | 13.2 | 13.5 |
@@ -115,7 +119,7 @@ Log odds of two streams over one, variational importance estimate
   move by at most 5.4.
 - **At 100 Hz harmonic 1 the model no longer hears the mistuned
   fundamental as separate**, up to 30%: the log odds stay between −11 and
-  −26, where P7 crossed zero between 20 and 25%. Listeners' thresholds for
+  −26, where P07 crossed zero between 20 and 25%. Listeners' thresholds for
   mistuned harmonics are about 1 to 5% (Moore, Glasberg & Peters 1986, as in
   the index's "Against the paper"), so this moves the model further from
   listeners. It moves toward the paper's model (about 45%), which by the

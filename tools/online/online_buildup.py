@@ -21,7 +21,7 @@ The evidence is taken every ``--evidence-every`` seconds (0.5 by default,
 speed-up S2 of docs/design/online-speed.md, the default since 2026-10-16)
 and at each triplet's end; the fit still runs every window. A window line is
 printed only at the evidence times, with the seconds and steps since the
-last. ``--evidence-every 0`` takes it at every window, as the O1 runs did.
+last. ``--evidence-every 0`` takes it at every window, as the O01 runs did.
 
     python tools/online/online_buildup.py --semitones 8 --triplets 6 --lag inf 1 --batch-steps 300
 """

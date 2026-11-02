@@ -81,7 +81,7 @@ sonore promises. One 10 ms block (64 channels at 20 kHz) takes a median
 
 What is slow is the inference. With 100 ms windows and S4, the 8 st
 buildup case took 527 s of window time for its two hypotheses
-[`results/O2-online-speed.md`, S4 table], for about 3 s of sound: roughly
+[`results/O02-online-speed.md`, S4 table], for about 3 s of sound: roughly
 175 times slower than real time [estimate: 527 s / 3 s]. Live input would
 not change that: the predicted cochleagram must stay in PyTorch, because
 the fit differentiates through it, and sonore's streams are NumPy.

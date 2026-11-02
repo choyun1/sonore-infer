@@ -1,24 +1,24 @@
-"""Experiment P3: does the model hear a pair of Shepard tones go up or down?
+"""Experiment P03: does the model hear a pair of Shepard tones go up or down?
 
 Per pair (decision P4), enumerated hypotheses, each a source with two
 events, one per tone:
 
 - ``harmonic up`` and ``harmonic down``: one harmonic source whose first
   event starts at ``--reading``'s component of the first tone (default: the
-  one between 52 and 104 Hz, experiment P5's reading) and whose second event
+  one between 52 and 104 Hz, experiment P05's reading) and whose second event
   starts at the nearest component of the second tone above it (up) or below
   it (down). Harmonics start at the first tone's levels where it has a
-  component; with ``--sparse-spectrum`` the others start absent, as on P5,
+  component; with ``--sparse-spectrum`` the others start absent, as on P05,
   whose octave tones all preferred that start.
 - ``whistles up`` and ``whistles down``: one whistle per component of the
   first tone at or above 30 dB and above the floor, each moving to the
   nearest component of the second tone above (up) or below (down) it.
 
 With ``--octave k`` the harmonic hypotheses start the first tone's f0 at its
-component k octaves from that reading (experiment P8), and the whistle
+component k octaves from that reading (experiment P08), and the whistle
 hypotheses, which do not depend on the reading, are left out.
 
-Each hypothesis is fitted and scored as on P5. Its direction is read at its
+Each hypothesis is fitted and scored as on P05. Its direction is read at its
 fitted mode, not from its start: up when the second event's mean f0 (or,
 for whistles, the mean of the whistles' frequency shifts, in ERB number) is
 higher than the first's. P(up) (decision P5 (A)) is the posterior mass of

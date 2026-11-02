@@ -217,7 +217,7 @@ whatever τ is.
 ### E5. Cost
 
 The O1 runs took about 1,000 s of computing per second of sound per
-hypothesis [measured: `results/data/O1/st8_w50_p50_lag1.txt`], and each
+hypothesis [measured: `results/data/O01/st8_w50_p50_lag1.txt`], and each
 window re-renders the whole sound so far [online-realtime.md §3].
 
 **Options.**
@@ -234,7 +234,7 @@ showed the curve barely depends on the window length [measured: O1 page,
 [online-speed.md](online-speed.md) are merged (100 ms windows, evidence
 every 0.5 s, the past summarized), and the 3 s O1 run at 8 semitones, both
 hypotheses, now takes 527 s of window time and 803 s of wall time on the
-cloud CPU [measured: results/O2-online-speed.md, S4].
+cloud CPU [measured: results/O02-online-speed.md, S4].
 These sequences hold 11 to 14 s of tones, so a run is several times
 longer; the cost per run is measured on one run before the rest are
 started (§7). Beauvois & Meddis need 7 sequences and Cusack et al. 8, each
@@ -329,7 +329,7 @@ already resets its evidence across a gap.
 
 No change to the library is expected: `run_online` takes any tones and any
 window ends. A new tool in `tools/online/` builds the inducer–gap–test
-sequences and the third hypothesis, and a results page (experiment O3) with
+sequences and the third hypothesis, and a results page (experiment O03) with
 a plot, as for O1.
 
 ## 7. Order of work
@@ -338,8 +338,8 @@ a plot, as for O1.
    studies.
 2. The stimuli and the tool, with tests; one run timed on the cloud CPU.
 3. Reset after silence on Cho's PC: Beauvois & Meddis, then Cusack et al.;
-   page O3, PR. Done 2026-10-30 except Cusack et al.'s 10 s gaps
-   (running): [O3](../../results/O3-order-effects.md).
+   page O3, PR. Done 2026-10-30, Cusack et al.'s 10 s gaps not run
+   (cost): [O03](../../results/O03-order-effects.md).
 4. The previous trial's context, once a paper with its stimuli is in hand:
    runs, page O4, PR.
 

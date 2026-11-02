@@ -25,11 +25,13 @@ has its own design documents, tools and results.
 | **Online inference** | [design/online.md](design/online.md): evidence accumulated window by window, and a phone-app roadmap | O1-O10 | 2026-10-13, O10 2026-10-14 |
 | | [design/online-realtime.md](design/online-realtime.md): what real time would take, measured on the buildup runs | none | n/a |
 | | [design/online-speed.md](design/online-speed.md): faster online inference, each change checked against O1 | S1-S6 | 2026-10-15 |
-| | [design/order-effects.md](design/order-effects.md): reset after silence and the previous trial's context, run online | E1-E6 | draft |
+| | [design/order-effects.md](design/order-effects.md): reset after silence and the previous trial's context, run online | E1-E7 | 2026-10-28 |
 | | [design/live-input.md](design/live-input.md): what sonore 0.10.0's streams give the online work, with the upgrade's check that no stimulus changes | L1-L3 | 2026-10-29 |
 | **Source and room** | [design/source-reverb.md](design/source-reverb.md): a random spectrogram and its room's RT60, inferred together | R1-R8 | 2026-10-10 |
 | **Relative pitch** | [design/relative-pitch.md](design/relative-pitch.md): direction of pitch change between Shepard tones (Shepard, 1964) | P1-P9 | 2026-10-18 |
-| | [design/relative-pitch-prior.md](design/relative-pitch-prior.md): sparse harmonic spectra and a lower f0 floor, after experiments P1 and P2 | P10-P14 | 2026-10-18 |
+| | [design/relative-pitch-prior.md](design/relative-pitch-prior.md): sparse harmonic spectra and a lower f0 floor, after experiments P01 and P02 | P10-P14 | 2026-10-18 |
+| | [design/relative-pitch-listeners.md](design/relative-pitch-listeners.md): decision noise and lapse fitted to Shepard's listener groups, after experiments P03 and P08 | P15-P18 | 2026-10-28 |
+| | [design/relative-pitch-dominance.md](design/relative-pitch-dominance.md): a hearing threshold and spectral dominance in the likelihood, after experiment P09, and their check on earlier results | P19-P23 | 2026-10-28, P22-P23 2026-10-30 |
 
 ## Names used across the code
 
@@ -41,10 +43,11 @@ has its own design documents, tools and results.
   not milestones (a) and (b).
 - **Decision numbers** carry the letter of their document: D (design-v1),
   B (milestone-b), R (source-reverb), C (milestone-c), O (online),
-  S (online-speed), E (order-effects), P (relative-pitch).
-- **Experiment IDs** (A1–A8, B1–B4, C1, R1, R2; pages in
-  [`results/`](../results/README.md)) share letters with decision numbers,
-  so outside their own document both are written with their word: "experiment B1" is a result
+  S (online-speed), E (order-effects), L (live-input), P (relative-pitch).
+- **Experiment IDs** have two digits (A01–A08, B01–B04, C01–C03, O01–O03,
+  P01–P11, R01, R02; pages in [`results/`](../results/README.md)) and share
+  letters with decision numbers, which have none (B1),
+  so outside their own document both are written with their word: "experiment B01" is a result
   page, "decision B1" is a section of milestone-b.md. Inside a design
   document a bare number is one of its decisions; on a result page a bare
   ID is an experiment.

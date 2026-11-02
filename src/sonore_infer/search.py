@@ -360,7 +360,7 @@ def search(
     ``f0_scales``, every harmonic source's f0 start multiplied by it, and the
     fit with the highest log joint is kept (as :func:`~sonore_infer.scene.evaluate`
     does with several starts). The just fifth's two-note fit reaches the
-    notes' f0s only from about 1% above the detector's (results/C3-search.md).
+    notes' f0s only from about 1% above the detector's (results/C03-search.md).
     """
     started = time.perf_counter()
     fs = cochleagram.fs
