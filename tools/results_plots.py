@@ -260,8 +260,8 @@ def numeric_rows(path):
 
 
 def load_milestone_a(experiment):
-    if experiment == "A1":
-        paths = glob.glob(data("A1", "coarse", "f0-*.txt")) + glob.glob(data("A1", "fine", "f0-*.txt"))
+    if experiment == "A01":
+        paths = glob.glob(data("A01", "coarse", "f0-*.txt")) + glob.glob(data("A01", "fine", "f0-*.txt"))
     else:
         paths = glob.glob(data(experiment, "f0-*.txt"))
     conditions = {}
@@ -314,7 +314,7 @@ def mistuning_grid(experiment):
 
 def threshold_ladder():
     conditions = [(f0, harmonic) for f0 in (100, 200, 400) for harmonic in (1, 2, 3)]
-    experiments = ["A1", "A2", "A3", "A4", "A5"]
+    experiments = ["A01", "A02", "A03", "A04", "A05"]
     loaded = {experiment: load_milestone_a(experiment) for experiment in experiments}
     row_height, top = 26, 30
     panel = Panel(
@@ -342,18 +342,18 @@ def threshold_ladder():
             parts.append(circle_element(f"marker q{order + 1}", x, y, 4.5, f"{experiment}: {text}"))
     panel.items = parts
     legend = [
-        ("q1", "A1 gammatone", "dot"),
-        ("q2", "A2 FFT", "dot"),
-        ("q3", "A3 + whistle timing", "dot"),
-        ("q4", "A4 + BASS gain", "dot"),
-        ("q5", "A5 full model", "dot"),
+        ("q1", "A01 gammatone", "dot"),
+        ("q2", "A02 FFT", "dot"),
+        ("q3", "A03 + whistle timing", "dot"),
+        ("q4", "A04 + BASS gain", "dot"),
+        ("q5", "A05 full model", "dot"),
         ("", "paper (by eye)", "diamond"),
     ]
     return figure([panel], "Milestone (a) thresholds by experiment", legend)
 
 
 def bass_own_code():
-    with open(data("A6", "thresholds.txt"), encoding="utf-8") as file:
+    with open(data("A06", "thresholds.txt"), encoding="utf-8") as file:
         blocks = file.read().split("\n\n")
     panels = []
     for block, condition in zip(blocks, [(100, 1), (200, 2)], strict=False):
@@ -376,10 +376,10 @@ def bass_own_code():
         panels.append(panel)
     legend = [
         ("s1", "BASS's code (ELBO, one seed)", "line"),
-        ("s2", "ours (A5, Laplace)", "line"),
+        ("s2", "ours (A05, Laplace)", "line"),
         ("s3", "paper's threshold (by eye)", "dash"),
     ]
-    return figure(panels, "A6: log odds, BASS's code and ours", legend)
+    return figure(panels, "A06: log odds, BASS's code and ours", legend)
 
 
 def variational_evidence():
@@ -390,7 +390,7 @@ def variational_evidence():
         (17, "s4", "IS from variational"),
     ]
     panels = []
-    for path in sorted(glob.glob(data("A7", "f0-*.txt"))):
+    for path in sorted(glob.glob(data("A07", "f0-*.txt"))):
         f0, harmonic = (int(value) for value in re.findall(r"f0-(\d+)_h(\d)", path)[0])
         rows = numeric_rows(path)
         mistunings = [float(row[0]) for row in rows]
@@ -411,11 +411,11 @@ def variational_evidence():
             )
         panels.append(panel)
     legend = [(color, name, "line") for _, color, name in estimates] + [("s5", "paper (by eye)", "dash")]
-    return figure(panels, "A7: p(two) by four evidence estimates", legend, columns=2)
+    return figure(panels, "A07: p(two) by four evidence estimates", legend, columns=2)
 
 
 def ten_seeds_by_condition():
-    with open(data("A8", "summary.txt"), encoding="utf-8") as file:
+    with open(data("A08", "summary.txt"), encoding="utf-8") as file:
         text = file.read().split("== (b)")[0]
     seeds = {}
     for block in re.split(r"\n(?=f0-)", text):
@@ -449,19 +449,19 @@ def ten_seeds():
             "s1",
             tip=lambda x, y, sds=sds: f"{x:g}%: {y:+.1f} ± {sds[x]:.1f}",
         )
-        one_seed = numeric_rows(data("A7", f"f0-{f0}_h{harmonic}.txt"))
+        one_seed = numeric_rows(data("A07", f"f0-{f0}_h{harmonic}.txt"))
         panel.line(
             [(float(row[0]), float(row[17])) for row in one_seed if float(row[0]) <= 30],
             "s2",
             dash=True,
-            tip=lambda x, y: f"A7 one seed {x:g}%: {y:+.1f}",
+            tip=lambda x, y: f"A07 one seed {x:g}%: {y:+.1f}",
         )
         panels.append(panel)
     legend = [
         ("s1", "mean ± SD over 10 seeds (variational)", "line"),
-        ("s2", "A7, one seed (container)", "line"),
+        ("s2", "A07, one seed (container)", "line"),
     ]
-    return figure(panels, "A8: log odds over ten seeds", legend, columns=2)
+    return figure(panels, "A08: log odds over ten seeds", legend, columns=2)
 
 
 # Milestone (b): two simultaneous notes, and milestone (c)'s kernel experiment
@@ -531,25 +531,25 @@ def octave_odds(paths, estimate="variational"):
 
 
 def octave_sigma5():
-    sd10 = octave_odds(glob.glob(data("B2", "octave*.txt")))
-    sd5 = octave_odds(glob.glob(data("B3", "octave_*.txt")))
-    sd5_elbo = octave_odds(glob.glob(data("B3", "octave_*.txt")), "elbo")
+    sd10 = octave_odds(glob.glob(data("B02", "octave*.txt")))
+    sd5 = octave_odds(glob.glob(data("B03", "octave_*.txt")))
+    sd5_elbo = octave_odds(glob.glob(data("B03", "octave_*.txt")), "elbo")
     series = [
-        (sd10, "s1", "SD 10 dB (B2)", None),
+        (sd10, "s1", "SD 10 dB (B02)", None),
         (sd5, "s2", "SD 5 dB", None),
         (sd5_elbo, "s3", "SD 5 dB, ELBO", None),
     ]
     panel = asynchrony_panel(series, "Octave", (-90, 10), [-80, -60, -40, -20, 0])
     legend = [
-        ("s1", "likelihood SD 10 dB (B2), variational", "line"),
+        ("s1", "likelihood SD 10 dB (B02), variational", "line"),
         ("s2", "SD 5 dB, variational", "line"),
         ("s3", "SD 5 dB, ELBO", "line"),
     ]
-    return figure([panel], "B3: octave log odds by likelihood SD", legend)
+    return figure([panel], "B03: octave log odds by likelihood SD", legend)
 
 
 def two_notes_seeds():
-    with open(data("A8", "summary.txt"), encoding="utf-8") as file:
+    with open(data("A08", "summary.txt"), encoding="utf-8") as file:
         text = file.read().split("== (b)")[1]
     seeds = {}
     pattern = r"^(\w+) (\d+) ms\s+(\w+)\s+(\w+)\s+(-?[\d.]+) ±\s+([\d.]+)"
@@ -563,12 +563,12 @@ def two_notes_seeds():
         series.append(([(a, mean) for a, mean, _ in points], color, name, points))
     panel = asynchrony_panel(series, "", (-40, 80), [-40, -20, 0, 20, 40, 60, 80], height=270)
     legend = [(color, name, "line") for _, name, color in rows]
-    return figure([panel], "B4: log odds over ten seeds", legend)
+    return figure([panel], "B04: log odds over ten seeds", legend)
 
 
 def kernel_inferred():
-    inferred = numeric_rows(data("C1", "f0-100_h1.txt"))
-    fixed = numeric_rows(data("A7", "f0-100_h1.txt"))
+    inferred = numeric_rows(data("C01", "f0-100_h1.txt"))
+    fixed = numeric_rows(data("A07", "f0-100_h1.txt"))
     mistuned = Panel(380, 230, (0, 50), (-30, 30), left=46)
     mistuned.axes(
         [0, 10, 20, 30, 40, 50],
@@ -589,8 +589,8 @@ def kernel_inferred():
     )
     octave = asynchrony_panel(
         [
-            (octave_odds(glob.glob(data("B2", "octave*.txt"))), "s1", "kernel fixed (B2)", None),
-            (octave_odds(glob.glob(data("C1", "octave_*.txt"))), "s2", "kernel inferred", None),
+            (octave_odds(glob.glob(data("B02", "octave*.txt"))), "s1", "kernel fixed (B02)", None),
+            (octave_odds(glob.glob(data("C01", "octave_*.txt"))), "s2", "kernel inferred", None),
         ],
         "Octave",
         (-50, 5),
@@ -599,11 +599,11 @@ def kernel_inferred():
         height=230,
     )
     legend = [
-        ("s1", "kernel fixed (A7, B2)", "line"),
+        ("s1", "kernel fixed (A07, B02)", "line"),
         ("s2", "kernel inferred", "line"),
         ("s5", "paper's 100/1 threshold (by eye)", "dash"),
     ]
-    return figure([mistuned, octave], "C1: log odds with the GP kernel fixed and inferred", legend)
+    return figure([mistuned, octave], "C01: log odds with the GP kernel fixed and inferred", legend)
 
 
 ABA_SEMITONES = (1, 3, 6, 9, 12)
@@ -664,7 +664,7 @@ def aba_heatmap(found):
 
 
 def aba_streaming():
-    found = aba_map.collect([data("C2", "one_converged"), data("C2", "run_300steps")])
+    found = aba_map.collect([data("C02", "one_converged"), data("C02", "run_300steps")])
     panel = Panel(600, 260, (60, 157), (-50, 230), left=46)
     panel.axes(
         list(ABA_INTERVALS),
@@ -681,7 +681,7 @@ def aba_streaming():
         legend.append((color, f"{semitones} semitone{'s' if semitones > 1 else ''}", "line"))
     return figure(
         [aba_heatmap(found), panel],
-        "C2: ABA, log odds of two streams by interval and frequency gap",
+        "C02: ABA, log odds of two streams by interval and frequency gap",
         legend,
         columns=1,
     )
@@ -691,7 +691,7 @@ def aba_streaming():
 
 
 def likelihood_slice():
-    with open(data("R1", "likelihood_slices.txt"), encoding="utf-8") as file:
+    with open(data("R01", "likelihood_slices.txt"), encoding="utf-8") as file:
         lines = file.read().splitlines()
     header = next(index for index, line in enumerate(lines) if line.startswith("RT60"))
     rt60s = [float(value) for value in lines[header].split()[2:]]
@@ -724,11 +724,11 @@ def likelihood_slice():
         ("s3", "floor 20 dB (BASS's)", "line"),
         ("s5", "true RT60", "dash"),
     ]
-    return figure([panel], "R1: likelihood against the model's RT60", legend)
+    return figure([panel], "R01: likelihood against the model's RT60", legend)
 
 
 def interval_coverage():
-    with open(data("R1", "recovery_summary.txt"), encoding="utf-8") as file:
+    with open(data("R01", "recovery_summary.txt"), encoding="utf-8") as file:
         lines = file.read().splitlines()
     settings = ["fine-slow-small", "default", "coarse-fast-large"]
     cells = []
@@ -761,11 +761,11 @@ def interval_coverage():
             panel.text(panel.x(3 * group + 1), panel.height - 18, name, anchor="middle")
         panels.append(panel)
     legend = [("s1", "sigma 3.6 dB (measured)", "dot"), ("s2", "sigma 7.2 dB (twice)", "dot")]
-    return figure(panels, "R1: coverage of 90% intervals", legend, columns=2)
+    return figure(panels, "R01: coverage of 90% intervals", legend, columns=2)
 
 
 def atypical_rooms():
-    with open(data("R2", "atypical_rooms_summary.txt"), encoding="utf-8") as file:
+    with open(data("R02", "atypical_rooms_summary.txt"), encoding="utf-8") as file:
         lines = file.read().splitlines()
     header = next(index for index, line in enumerate(lines) if line.startswith("condition"))
     rows = [line.split() for line in lines[header + 1 :] if line.strip()]
@@ -823,7 +823,7 @@ def atypical_rooms():
         ("s3", "floor 20 dB", "dot"),
         ("", "T20 × 3 of the same rooms", "diamond"),
     ]
-    return figure(panels, "R2: RT60 read in atypical rooms", legend)
+    return figure(panels, "R02: RT60 read in atypical rooms", legend)
 
 
 # Online inference
@@ -853,9 +853,9 @@ def batch_odds(path):
 
 def ten_thousand_steps_odds(semitones):
     """Batch log odds at 6 triplets with the one-stream fit run to 10,000 steps."""
-    with open(data("O1", f"one_stream_10000_steps_st{semitones}.txt"), encoding="utf-8") as file:
+    with open(data("O01", f"one_stream_10000_steps_st{semitones}.txt"), encoding="utf-8") as file:
         one = float(re.search(r"laplace\+structure (\S+)", file.read()).group(1))
-    return batch_evidence(data("O1", f"st{semitones}_batch3000.txt"))[6, "two"] - one
+    return batch_evidence(data("O01", f"st{semitones}_batch3000.txt"))[6, "two"] - one
 
 
 def leaky_odds(path, tau, lead=0.05):
@@ -892,9 +892,9 @@ def online_buildup():
     for semitones, y_range, y_ticks in axes:
         panel = buildup_panel(f"{semitones} semitones", y_range, y_ticks)
         series = [
-            (batch_odds(data("O1", f"st{semitones}_batch3000.txt")), "s1", "batch"),
-            (online_odds(data("O1", f"st{semitones}_w50_p50_lag1.txt")), "s2", "online"),
-            (leaky_odds(data("O1", f"st{semitones}_w50_p50_lag1.txt"), 2.5), "s3", "leaky"),
+            (batch_odds(data("O01", f"st{semitones}_batch3000.txt")), "s1", "batch"),
+            (online_odds(data("O01", f"st{semitones}_w50_p50_lag1.txt")), "s2", "online"),
+            (leaky_odds(data("O01", f"st{semitones}_w50_p50_lag1.txt"), 2.5), "s3", "leaky"),
         ]
         for points, color, name in series:
             panel.line(points, color, tip=lambda x, y, name=name: f"{name}, {x:g} triplets: {y:+.1f}")
@@ -907,7 +907,7 @@ def online_buildup():
         ("s2", "online, lag 1 s", "line"),
         ("s3", "online, leaky τ 2.5 s", "line"),
     ]
-    return figure(panels, "O1: buildup of two streams, batch, online and leaky", legend)
+    return figure(panels, "O01: buildup of two streams, batch, online and leaky", legend)
 
 
 def online_sweep():
@@ -927,7 +927,7 @@ def online_sweep():
             ]
         for name, color, dash, label in series:
             panel.line(
-                online_odds(data("O1", name)),
+                online_odds(data("O01", name)),
                 color,
                 dash=dash,
                 tip=lambda x, y, label=label: f"{label}, {x:g} triplets: {y:+.1f}",
@@ -940,11 +940,11 @@ def online_sweep():
         ("s3", "window 10 ms (8 st)", "dash"),
         ("s1", "window 100 ms (8 st)", "dash"),
     ]
-    return figure(panels, "O1: online log odds by lag and window, windows 50 ms unless named", legend)
+    return figure(panels, "O01: online log odds by lag and window, windows 50 ms unless named", legend)
 
 
 def speed_agreement():
-    """Design online-speed S6: each speed-up's online log odds minus O1's, at each triplet."""
+    """Design online-speed S6: each speed-up's online log odds minus O01's, at each triplet."""
     panels = []
     for semitones in (4, 8):
         panel = Panel(340, 230, (0.7, 6.3), (-4, 4), left=44)
@@ -952,25 +952,25 @@ def speed_agreement():
             TRIPLETS,
             [-3, -2, -1, 0, 1, 2, 3],
             x_label="triplets heard",
-            y_label="log odds minus O1's",
+            y_label="log odds minus O01's",
             title=f"{semitones} semitones",
         )
         panel.horizontal(0)
         for bound in (-3, 3):
             panel.horizontal(bound, kind="grid")
-        reference = dict(online_odds(data("O1", f"st{semitones}_w50_p50_lag1.txt")))
+        reference = dict(online_odds(data("O01", f"st{semitones}_w50_p50_lag1.txt")))
         series = [(f"st{semitones}_w50_p50_lag1_e0.5.txt", "s2", "S1 and S2")]
         if semitones == 8:
             series.insert(0, ("st8_w50_p50_lag1.txt", "s1", "S1"))
         for name, color, label in series:
-            points = [(n, odds - reference[n]) for n, odds in online_odds(data("O2", name))]
+            points = [(n, odds - reference[n]) for n, odds in online_odds(data("O02", name))]
             panel.line(points, color, tip=lambda x, y, label=label: f"{label}, {x:g} triplets: {y:+.2f}")
         panels.append(panel)
     legend = [
         ("s1", "S1: each event over its span", "line"),
         ("s2", "S1 and S2: evidence every 0.5 s", "line"),
     ]
-    return figure(panels, "O2: log odds minus O1's, lag 1 s, 50 ms windows; S6 allows ±3", legend)
+    return figure(panels, "O02: log odds minus O01's, lag 1 s, 50 ms windows; S6 allows ±3", legend)
 
 
 # Relative pitch: Shepard pairs
@@ -1037,7 +1037,7 @@ def shepard_matrix(found):
 
 
 def shepard_pairs():
-    found = pair_summary.pairs(sorted(glob.glob(data("P3", "*.txt"))))
+    found = pair_summary.pairs(sorted(glob.glob(data("P03", "*.txt"))))
     found = {key: value for key, value in found.items() if len(value[1]) == pair_summary.HYPOTHESES}
     by_steps = {}
     for steps, hypotheses in found.values():
@@ -1076,19 +1076,19 @@ def shepard_pairs():
     ]
     return figure(
         [shepard_matrix(found), panel],
-        "P3: Shepard pairs, P(up) by pair and by steps clockwise",
+        "P03: Shepard pairs, P(up) by pair and by steps clockwise",
         legend,
         columns=1,
     )
 
 
-# P1 and P5: one Shepard tone; P8, P9: pairs; P7 and P10: earlier experiments with the options
+# P01 and P05: one Shepard tone; P08, P09: pairs; P07 and P10: earlier experiments with the options
 
 
 def one_tone_p1(step):
-    """{label: log posterior} for one P1 tone: variational importance (or ELBO) plus structure."""
+    """{label: log posterior} for one P01 tone: variational importance (or ELBO) plus structure."""
     posteriors = {}
-    with open(data("P1", f"step{step}.txt"), encoding="utf-8") as file:
+    with open(data("P01", f"step{step}.txt"), encoding="utf-8") as file:
         rows = [line.split() for line in file if line.split()[:1] and line.split()[0].isdigit()]
     for row in rows:
         structure, elbo, importance = float(row[3]), float(row[6]), float(row[7])
@@ -1097,9 +1097,9 @@ def one_tone_p1(step):
 
 
 def one_tone_p5():
-    """{step: {label: log posterior}} from P5's combined.txt."""
+    """{step: {label: log posterior}} from P05's combined.txt."""
     found, step = {}, None
-    with open(data("P5", "combined.txt"), encoding="utf-8") as file:
+    with open(data("P05", "combined.txt"), encoding="utf-8") as file:
         for line in file:
             if line.startswith("step "):
                 step = int(line.split()[1])
@@ -1140,7 +1140,7 @@ def shepard_one_tone():
         y_label="f0 of the best reading, Hz",
         title="Which octave the tone is heard at",
     )
-    for found, color, name in ((p1, "s1", "P1"), (p5, "s2", "P5")):
+    for found, color, name in ((p1, "s1", "P01"), (p5, "s2", "P05")):
         margin.line(
             [(step, value) for step, (_, value) in sorted(found.items())],
             color,
@@ -1152,10 +1152,12 @@ def shepard_one_tone():
             tip=lambda x, y, name=name: f"{name}, tone {x:g}: {y:.1f} Hz",
         )
     legend = [
-        ("s1", "P1: dense spectra, f0 floor 87.5 Hz", "line"),
-        ("s2", "P5: sparse spectra, floor 30 Hz", "line"),
+        ("s1", "P01: dense spectra, f0 floor 87.5 Hz", "line"),
+        ("s2", "P05: sparse spectra, floor 30 Hz", "line"),
     ]
-    return figure([margin, reading], "P1 and P5: one Shepard tone, heard as one tone or as whistles", legend)
+    return figure(
+        [margin, reading], "P01 and P05: one Shepard tone, heard as one tone or as whistles", legend
+    )
 
 
 def p_up_by_steps(found, band_only=False):
@@ -1186,8 +1188,8 @@ def shepard_listener_lines(panel):
 
 
 def shepard_octave_check():
-    """P(up) by steps and, at 3 to 5 steps, by starting tone: P3's pairs with P8's extra readings."""
-    paths = sorted(glob.glob(data("P3", "[0-9]*.txt"))) + sorted(glob.glob(data("P8", "*.txt")))
+    """P(up) by steps and, at 3 to 5 steps, by starting tone: P03's pairs with P08's extra readings."""
+    paths = sorted(glob.glob(data("P03", "[0-9]*.txt"))) + sorted(glob.glob(data("P08", "*.txt")))
     found = {
         key: value
         for key, value in pair_summary.pairs(paths).items()
@@ -1252,12 +1254,12 @@ def shepard_octave_check():
 def shepard_octave_check_steps():
     steps_panel, _ = shepard_octave_check()
     legend = [
-        ("s2", "model, three readings (P8)", "line"),
-        ("s4", "model, one reading (P3)", "dash"),
+        ("s2", "model, three readings (P08)", "line"),
+        ("s4", "model, one reading (P03)", "dash"),
         ("s1", "Shepard Group I", "dash"),
         ("s5", "Shepard Group III", "dash"),
     ]
-    return figure([steps_panel], "P8: P(up) by steps, one reading of the first tone or three", legend)
+    return figure([steps_panel], "P08: P(up) by steps, one reading of the first tone or three", legend)
 
 
 def shepard_octave_check_tones():
@@ -1266,9 +1268,9 @@ def shepard_octave_check_tones():
         ("s3", "3 steps", "line"),
         ("s2", "4 steps", "line"),
         ("s1", "5 steps", "line"),
-        ("s5", "dashed: one reading (P3)", "dash"),
+        ("s5", "dashed: one reading (P03)", "dash"),
     ]
-    return figure([tone_panel], "P8: P(up) by starting tone at 3 to 5 steps, one reading or three", legend)
+    return figure([tone_panel], "P08: P(up) by starting tone at 3 to 5 steps, one reading or three", legend)
 
 
 def listener_fits(path):
@@ -1285,8 +1287,8 @@ def listener_fits(path):
 
 
 def shepard_listener_noise():
-    without = listener_fits(data("P9", "fit.txt"))
-    options = listener_fits(data("P9", "options", "fit_all.txt"))
+    without = listener_fits(data("P09", "fit.txt"))
+    options = listener_fits(data("P09", "options", "fit_all.txt"))
     panels = []
     for group, observed in (("I", pair_summary.GROUP_I), ("III", pair_summary.GROUP_III)):
         panel = Panel(340, 230, (1, 9), (0, 1), left=44)
@@ -1306,7 +1308,7 @@ def shepard_listener_noise():
             tip=lambda x, y, group=group: f"Group {group}, {x:g} steps: {y:.2f}",
         )
         for fits, color, name in (
-            (without, "s4", "model (P3, P8)"),
+            (without, "s4", "model (P03, P08)"),
             (options, "s2", "model with threshold and dominance"),
             (without, "s3", "curve in steps alone"),
         ):
@@ -1319,11 +1321,11 @@ def shepard_listener_noise():
         panels.append(panel)
     legend = [
         ("s5", "Shepard (Fig. 3, by eye)", "dash"),
-        ("s4", "model with noise and lapse (P3, P8)", "line"),
+        ("s4", "model with noise and lapse (P03, P08)", "line"),
         ("s2", "same, threshold and dominance on", "line"),
         ("s3", "curve in steps alone (no model)", "line"),
     ]
-    return figure(panels, "P9: decision noise and lapse fitted to Shepard's groups", legend)
+    return figure(panels, "P09: decision noise and lapse fitted to Shepard's groups", legend)
 
 
 def interval_noise_fits(path):
@@ -1361,7 +1363,7 @@ def group_iii_interval_noise():
             tip=lambda x, y, group=group: f"Group {group}, {x:g} steps: {y:.2f}",
         )
         for fractions, color, name in (
-            (plain[("A", group)], "s2", "noise and lapse on the model (P9)"),
+            (plain[("A", group)], "s2", "noise and lapse on the model (P09)"),
             (noise[("model log odds", group)], "s1", "interval noise on the model"),
             (noise[("nominal steps", group)], "s3", "interval noise on steps alone"),
         ):
@@ -1373,7 +1375,7 @@ def group_iii_interval_noise():
         panels.append(panel)
     legend = [
         ("s5", "Shepard (Fig. 3, by eye)", "dash"),
-        ("s2", "noise and lapse on the model's log odds (P9)", "line"),
+        ("s2", "noise and lapse on the model's log odds (P09)", "line"),
         ("s1", "interval noise on the model's log odds", "line"),
         ("s3", "interval noise on steps alone (no model)", "line"),
     ]
@@ -1411,8 +1413,8 @@ def earlier_experiments_hearing():
         panel.horizontal(0)
         name = f"f0-{f0}_h{harmonic}_p*.txt"
         for parts, color, label, dash in (
-            (("P7", "baseline-0.8.0", name), "s5", "dense, 87.5 Hz", True),
-            (("P7", "mistuned", name), "s1", "P7", False),
+            (("P07", "baseline-0.8.0", name), "s5", "dense, 87.5 Hz", True),
+            (("P07", "mistuned", name), "s1", "P07", False),
             (("P10", "mistuned", name), "s2", "P10, both options", False),
             (("P10", "dominance_only", name), "s3", "P10, dominance only", False),
         ):
@@ -1424,15 +1426,15 @@ def earlier_experiments_hearing():
             )
         panels.append(panel)
     legend = [
-        ("s5", "dense spectra, 87.5 Hz floor (P7 baseline; 100/1 at 25% failed)", "dash"),
-        ("s1", "sparse spectra, 30 Hz floor (P7)", "line"),
+        ("s5", "dense spectra, 87.5 Hz floor (P07 baseline; 100/1 at 25% failed)", "dash"),
+        ("s1", "sparse spectra, 30 Hz floor (P07)", "line"),
         ("s2", "+ threshold and dominance (P10)", "line"),
         ("s3", "+ dominance only (P10, 100/1)", "line"),
     ]
-    return figure(panels, "P7 and P10: mistuned harmonic with the relative-pitch options", legend)
+    return figure(panels, "P07 and P10: mistuned harmonic with the relative-pitch options", legend)
 
 
-# O3: reset of streaming after silence
+# O03: reset of streaming after silence
 
 BM_SILENCES = (0, 0.5, 1, 2, 4, 8)
 
@@ -1443,8 +1445,8 @@ def beauvois_meddis_listeners(silence):
 
 
 def reset_beauvois_meddis():
-    alone = reset_summary.summary(data("O3", "bm_alone.txt"))
-    runs = {s: reset_summary.summary(data("O3", f"bm_s{s:g}.txt")) for s in BM_SILENCES}
+    alone = reset_summary.summary(data("O03", "bm_alone.txt"))
+    runs = {s: reset_summary.summary(data("O03", f"bm_s{s:g}.txt")) for s in BM_SILENCES}
     model = Panel(340, 230, (-0.3, 8.3), (0, 200), left=44)
     model.axes(
         [0, 1, 2, 4, 8],
@@ -1480,7 +1482,7 @@ def reset_beauvois_meddis():
         ("s2", "listeners", "line"),
         ("s5", "dashed: test alone", "dash"),
     ]
-    return figure([model, listeners], "O3: Beauvois & Meddis (1997), inducer then test", legend)
+    return figure([model, listeners], "O03: Beauvois & Meddis (1997), inducer then test", legend)
 
 
 def reset_cusack():
@@ -1498,7 +1500,7 @@ def reset_cusack():
             title=f"{semitones} semitones",
         )
         panel.horizontal(0)
-        runs = {g: reset_summary.summary(data("O3", f"cu{semitones}_s{g}.txt")) for g in (1, 2, 5)}
+        runs = {g: reset_summary.summary(data("O03", f"cu{semitones}_s{g}.txt")) for g in (1, 2, 5)}
         panel.line(runs[1]["first"], "s5", tip=lambda x, y: f"first sequence, {x:g} s: {y:+.1f}")
         for g, color in ((1, "s1"), (2, "s3"), (5, "s2")):
             panel.line(
@@ -1511,40 +1513,40 @@ def reset_cusack():
         ("s3", "after 2 s", "line"),
         ("s2", "after 5 s", "line"),
     ]
-    return figure(panels, "O3: Cusack et al. (2004), second sequence against the first", legend)
+    return figure(panels, "O03: Cusack et al. (2004), second sequence against the first", legend)
 
 
 PLOTS = {
     "milestone-a-thresholds": threshold_ladder,
-    "A1-gammatone-baseline": lambda: mistuning_grid("A1"),
-    "A2-fft-cochleagram": lambda: mistuning_grid("A2"),
-    "A3-whistle-timing": lambda: mistuning_grid("A3"),
-    "A4-bass-gain": lambda: mistuning_grid("A4"),
-    "A5-full-model": lambda: mistuning_grid("A5"),
-    "A6-bass-own-code": bass_own_code,
-    "A7-variational-evidence": variational_evidence,
-    "A8-ten-seeds": ten_seeds,
-    "B1-two-notes-laplace": lambda: two_notes("B1", "laplace", [0, 10, 20, 40, 80]),
-    "B2-two-notes-variational": lambda: two_notes("B2", "variational", ASYNCHRONIES),
-    "B3-octave-sigma5": octave_sigma5,
-    "B4-two-notes-seeds": two_notes_seeds,
-    "C1-kernel-inferred": kernel_inferred,
-    "C2-aba-streaming": aba_streaming,
-    "O1-online-buildup": online_buildup,
-    "O1-lag-window": online_sweep,
-    "O2-speed-agreement": speed_agreement,
-    "O3-beauvois-meddis": reset_beauvois_meddis,
-    "O3-cusack": reset_cusack,
-    "P5-shepard-one-tone": shepard_one_tone,
-    "P3-shepard-pairs": shepard_pairs,
-    "P8-by-steps": shepard_octave_check_steps,
-    "P8-by-starting-tone": shepard_octave_check_tones,
-    "P9-shepard-listener-noise": shepard_listener_noise,
+    "A01-gammatone-baseline": lambda: mistuning_grid("A01"),
+    "A02-fft-cochleagram": lambda: mistuning_grid("A02"),
+    "A03-whistle-timing": lambda: mistuning_grid("A03"),
+    "A04-bass-gain": lambda: mistuning_grid("A04"),
+    "A05-full-model": lambda: mistuning_grid("A05"),
+    "A06-bass-own-code": bass_own_code,
+    "A07-variational-evidence": variational_evidence,
+    "A08-ten-seeds": ten_seeds,
+    "B01-two-notes-laplace": lambda: two_notes("B01", "laplace", [0, 10, 20, 40, 80]),
+    "B02-two-notes-variational": lambda: two_notes("B02", "variational", ASYNCHRONIES),
+    "B03-octave-sigma5": octave_sigma5,
+    "B04-two-notes-seeds": two_notes_seeds,
+    "C01-kernel-inferred": kernel_inferred,
+    "C02-aba-streaming": aba_streaming,
+    "O01-online-buildup": online_buildup,
+    "O01-lag-window": online_sweep,
+    "O02-speed-agreement": speed_agreement,
+    "O03-beauvois-meddis": reset_beauvois_meddis,
+    "O03-cusack": reset_cusack,
+    "P05-shepard-one-tone": shepard_one_tone,
+    "P03-shepard-pairs": shepard_pairs,
+    "P08-by-steps": shepard_octave_check_steps,
+    "P08-by-starting-tone": shepard_octave_check_tones,
+    "P09-shepard-listener-noise": shepard_listener_noise,
     "P10-earlier-experiments-hearing": earlier_experiments_hearing,
     "P11-group-iii-interval-noise": group_iii_interval_noise,
-    "R1-likelihood-slice": likelihood_slice,
-    "R1-interval-coverage": interval_coverage,
-    "R2-atypical-rooms": atypical_rooms,
+    "R01-likelihood-slice": likelihood_slice,
+    "R01-interval-coverage": interval_coverage,
+    "R02-atypical-rooms": atypical_rooms,
 }
 
 

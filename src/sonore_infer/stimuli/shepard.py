@@ -82,7 +82,7 @@ def tone(
 
 
 def single_tone(step: int, *, components_per_octave: int = 1, fs: float = FS) -> so.Sound:
-    """One tone alone, with ``PADDING`` before and after (experiments P1 and P2)."""
+    """One tone alone, with ``PADDING`` before and after (experiments P01 and P02)."""
     return tone(step, components_per_octave=components_per_octave, fs=fs).pad(PADDING, PADDING)
 
 
