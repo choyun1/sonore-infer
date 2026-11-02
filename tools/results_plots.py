@@ -1326,6 +1326,60 @@ def shepard_listener_noise():
     return figure(panels, "P9: decision noise and lapse fitted to Shepard's groups", legend)
 
 
+def interval_noise_fits(path):
+    """{(version, group): fitted fractions at 1-9 steps} from listener_noise.py --interval-noise."""
+    fits = {}
+    with open(path, encoding="utf-8") as file:
+        for line in file:
+            fields = line.split()
+            for version in ("nominal steps", "model log odds"):
+                words = version.split()
+                if fields[: len(words)] == words and len(fields) > 9 and fields[len(words)] in ("I", "III"):
+                    fits[(version, fields[len(words)])] = [float(value) for value in fields[-9:]]
+    return fits
+
+
+def group_iii_interval_noise():
+    plain = listener_fits(data("P11", "fit.txt"))
+    noise = interval_noise_fits(data("P11", "fit.txt"))
+    panels = []
+    for group, observed in (("I", pair_summary.GROUP_I), ("III", pair_summary.GROUP_III)):
+        panel = Panel(340, 230, (1, 9), (0, 1), left=44)
+        panel.axes(
+            list(range(1, 10)),
+            [0, 0.25, 0.5, 0.75, 1],
+            x_label="steps clockwise",
+            y_label="fraction judged up",
+            title=f"Shepard's Group {group}",
+        )
+        panel.horizontal(0.5)
+        steps = range(1, 10)
+        panel.line(
+            list(zip(steps, observed, strict=True)),
+            "s5",
+            dash=True,
+            tip=lambda x, y, group=group: f"Group {group}, {x:g} steps: {y:.2f}",
+        )
+        for fractions, color, name in (
+            (plain[("A", group)], "s2", "noise and lapse on the model (P9)"),
+            (noise[("model log odds", group)], "s1", "interval noise on the model"),
+            (noise[("nominal steps", group)], "s3", "interval noise on steps alone"),
+        ):
+            panel.line(
+                list(zip(steps, fractions, strict=True)),
+                color,
+                tip=lambda x, y, name=name: f"{name}, {x:g} steps: {y:.2f}",
+            )
+        panels.append(panel)
+    legend = [
+        ("s5", "Shepard (Fig. 3, by eye)", "dash"),
+        ("s2", "noise and lapse on the model's log odds (P9)", "line"),
+        ("s1", "interval noise on the model's log odds", "line"),
+        ("s3", "interval noise on steps alone (no model)", "line"),
+    ]
+    return figure(panels, "P11: noise on the interval, fitted to Shepard's groups", legend)
+
+
 MISTUNINGS = (0, 5, 10, 15, 20, 25, 30)
 
 
@@ -1487,6 +1541,7 @@ PLOTS = {
     "P8-by-starting-tone": shepard_octave_check_tones,
     "P9-shepard-listener-noise": shepard_listener_noise,
     "P10-earlier-experiments-hearing": earlier_experiments_hearing,
+    "P11-group-iii-interval-noise": group_iii_interval_noise,
     "R1-likelihood-slice": likelihood_slice,
     "R1-interval-coverage": interval_coverage,
     "R2-atypical-rooms": atypical_rooms,
