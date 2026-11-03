@@ -4,7 +4,8 @@ One ``pair.py --seeds`` job per file of ``results/data/P09/options/all/``
 (first tone, second tone, reading's octave, direction), each seed's rows to
 ``<out>/s<seed>/<the same name>``. Jobs run ``--jobs`` at a time, each with
 one thread (several at once with more threads each run several times
-slower). A job whose files for every seed already end in a P(up) line is
+slower). A job whose files for every seed already end in a P(up) line (or, where
+the one-seed run had no hypothesis, hold only the header) is
 skipped, so the run can be stopped and restarted.
 
     python tools/relative_pitch/run_seeds.py --seeds 0 1 2 --jobs 6 --out results/data/P09/seeds
@@ -27,13 +28,19 @@ NAME = re.compile(
 OPTIONS = ["--sparse-spectrum", "--floor", "30", "--threshold-floor", "--dominance"]
 
 
-def done(paths):
-    """Whether every seed's file is complete (or the job has no hypothesis to fit)."""
+def done(paths, source):
+    """Whether every seed's file is complete.
+
+    A job with no hypothesis to fit writes only the two header lines; that
+    counts as complete only when the one-seed run in ``source`` had no row
+    either, since a job killed before its first row looks the same.
+    """
+    empty = "P(up)" not in source.read_text(encoding="utf-8")
     for path in paths:
         if not path.exists():
             return False
         text = path.read_text(encoding="utf-8")
-        if "P(up)" not in text and text.count("\n") != 2:
+        if "P(up)" not in text and not (empty and text.count("\n") == 2):
             return False
     return True
 
@@ -52,7 +59,7 @@ def main():
         if not match:
             continue
         outputs = [args.out / f"s{seed}" / path.name for seed in args.seeds]
-        if done(outputs):
+        if done(outputs, path):
             continue
         jobs.append((match, path.name))
     env = dict(os.environ, OMP_NUM_THREADS="1", MKL_NUM_THREADS="1", CUDA_VISIBLE_DEVICES="-1")
