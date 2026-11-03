@@ -1,7 +1,8 @@
 # Relative pitch: Shepard pairs on other seeds — design
 
 Status: **started on Cho's go-ahead, 2026-11-01** ("let's start ... other
-seeds"); P27 as recommended, run in progress on Cho's PC. Every Shepard
+seeds"); P27 (A) as recommended, run done 2026-11-03, results
+[P12](../../results/P12-shepard-seeds.md). Every Shepard
 page so far ([P03](../../results/P03-shepard-pairs.md) to
 [P09](../../results/P09-shepard-listener-noise.md)) is one seed. Group III's
 rise at 9 steps is a separate design (relative-pitch-group-iii.md, P24 to
