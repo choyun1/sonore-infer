@@ -4,7 +4,7 @@
 > results. The work was done with AI assistance (Claude) and has not yet been
 > checked carefully. Numbers, methods and interpretations may change.
 
-**Status:** first pass, one seed (P09's log odds; no new fits).
+**Status:** first pass; seed 0 (cloud) above, rechecked on seeds 0 to 2 (PC) and their average below; no new fits of its own.
 **Paper target:** none in Cusimano et al.; listeners in Shepard (1964)
 Fig. 3 and §IV.
 **Code:** `tools/relative_pitch/listener_noise.py --interval-noise`.
@@ -111,11 +111,41 @@ overstate the certainty. Group I has no dip: 0.990, 0.990, 0.900, 0.750.
   independence, less in truth, and the fitted curve still falls short at 9
   steps (0.32 against 0.40). The dip and the rise together are what the
   fit rests on.
-- **Not checked:** other seeds (decision P27, under way in its own
-  thread; this fit will be rerun on its seed-averaged L); per-trial noise
+- **Not checked:** per-trial noise
   in the sensory representation (design P25 (B), not run); Group II, which
   Fig. 3 does not plot; a mixture of guessers and circle-followers within
   Group III, which needs per-listener data Shepard does not give.
+
+## On three seeds
+
+[P12](P12-shepard-seeds.md) refitted all of P09's pairs on seeds 0, 1 and
+2 on Cho's PC (decision P27) and averaged them (each hypothesis's
+evidence the log of the mean over seeds of its exponential). Group III,
+from `data/P09/seeds/fit_s0.txt`, `fit_s1.txt`, `fit_s2.txt` and
+`fit_mean.txt` [measured, `listener_noise.py --interval-noise`]:
+
+| Group III | Seed 0 (PC) | Seed 1 | Seed 2 | Seed average | Seed 0 (cloud, above) |
+|---|---|---|---|---|---|
+| Noise and lapse on L (P09), log likelihood | −745.2 | −744.3 | −747.2 | −746.1 | −745.1 |
+| held out | −749.7 | −748.5 | −751.5 | −750.4 | −749.7 |
+| Interval noise on L, log likelihood | −740.9 | −738.7 | −745.1 | −743.7 | −741.3 |
+| held out | −752.3 | −748.5 | −756.0 | −754.3 | −752.2 |
+| s (steps) | 1.05 | 1.05 | 0.70 | 1.20 | 1.10 |
+
+Interval noise on steps alone does not use the model, so it is the same on
+every seed: −736.8, held out −738.3, s = 1.95.
+
+- **The conclusion holds on every seed and on the average.** Interval
+  noise on steps alone is the best description of Group III; on the
+  model's log odds it gains 2 to 6 over P09's fit but is never better held
+  out than steps alone (by 10.2 to 17.7).
+- **β of the fit on L is not determined on the PC runs**: it reaches the
+  top of its grid (10) on all three seeds and the average, against 2.11 on
+  the cloud run. With λ at 0.35 to 0.46 the fit only needs the sign of L,
+  so this does not change the log likelihoods by much, but the β values
+  should not be read.
+- For Group I the fit on L chooses s of 0 to 0.20 on every seed, as on the
+  cloud run.
 
 ## Reproduce
 
@@ -123,4 +153,6 @@ overstate the certainty. Group I has no dip: 0.990, 0.990, 0.900, 0.750.
 python tools/relative_pitch/listener_noise.py results/data/P09/options/all/*.txt --interval-noise
 ```
 
-Takes about a minute on one CPU.
+Takes about a minute on one CPU. For the three seeds and their average,
+`results/data/P09/seeds/{s0,s1,s2,mean}/*.txt` in place of
+`results/data/P09/options/all/*.txt` (data from P12).
