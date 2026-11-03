@@ -1,0 +1,37 @@
+status: 6->9 harmonic up 110.0->135.5 seed 0: fitting (Adam, up to 15000 steps, stopping at a rise under 0.5) from start 1 of 1
+status: 6->9 harmonic up 110.0->135.5 seed 0: Laplace and importance sampling (128 samples)
+status: 6->9 harmonic up 110.0->135.5 seed 0: variational fit, step 0/2000
+status: 6->9 harmonic up 110.0->135.5 seed 0: variational fit, step 200/2000
+status: 6->9 harmonic up 110.0->135.5 seed 0: variational fit, step 400/2000
+status: 6->9 harmonic up 110.0->135.5 seed 0: variational fit, step 600/2000
+status: 6->9 harmonic up 110.0->135.5 seed 0: variational fit, step 800/2000
+status: 6->9 harmonic up 110.0->135.5 seed 0: variational fit, step 1000/2000
+status: 6->9 harmonic up 110.0->135.5 seed 0: variational fit, step 1200/2000
+status: 6->9 harmonic up 110.0->135.5 seed 0: variational fit, step 1400/2000
+status: 6->9 harmonic up 110.0->135.5 seed 0: variational fit, step 1600/2000
+status: 6->9 harmonic up 110.0->135.5 seed 0: variational fit, step 1800/2000
+status: 6->9 harmonic up 110.0->135.5 seed 0: importance sampling from the variational fit (256 samples)
+status: 6->9 harmonic up 110.0->135.5 seed 1: Laplace and importance sampling (128 samples)
+status: 6->9 harmonic up 110.0->135.5 seed 1: variational fit, step 0/2000
+status: 6->9 harmonic up 110.0->135.5 seed 1: variational fit, step 200/2000
+status: 6->9 harmonic up 110.0->135.5 seed 1: variational fit, step 400/2000
+status: 6->9 harmonic up 110.0->135.5 seed 1: variational fit, step 600/2000
+status: 6->9 harmonic up 110.0->135.5 seed 1: variational fit, step 800/2000
+status: 6->9 harmonic up 110.0->135.5 seed 1: variational fit, step 1000/2000
+status: 6->9 harmonic up 110.0->135.5 seed 1: variational fit, step 1200/2000
+status: 6->9 harmonic up 110.0->135.5 seed 1: variational fit, step 1400/2000
+status: 6->9 harmonic up 110.0->135.5 seed 1: variational fit, step 1600/2000
+status: 6->9 harmonic up 110.0->135.5 seed 1: variational fit, step 1800/2000
+status: 6->9 harmonic up 110.0->135.5 seed 1: importance sampling from the variational fit (256 samples)
+status: 6->9 harmonic up 110.0->135.5 seed 2: Laplace and importance sampling (128 samples)
+status: 6->9 harmonic up 110.0->135.5 seed 2: variational fit, step 0/2000
+status: 6->9 harmonic up 110.0->135.5 seed 2: variational fit, step 200/2000
+status: 6->9 harmonic up 110.0->135.5 seed 2: variational fit, step 400/2000
+status: 6->9 harmonic up 110.0->135.5 seed 2: variational fit, step 600/2000
+status: 6->9 harmonic up 110.0->135.5 seed 2: variational fit, step 800/2000
+status: 6->9 harmonic up 110.0->135.5 seed 2: variational fit, step 1000/2000
+status: 6->9 harmonic up 110.0->135.5 seed 2: variational fit, step 1200/2000
+status: 6->9 harmonic up 110.0->135.5 seed 2: variational fit, step 1400/2000
+status: 6->9 harmonic up 110.0->135.5 seed 2: variational fit, step 1600/2000
+status: 6->9 harmonic up 110.0->135.5 seed 2: variational fit, step 1800/2000
+status: 6->9 harmonic up 110.0->135.5 seed 2: importance sampling from the variational fit (256 samples)
