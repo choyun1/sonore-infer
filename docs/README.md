@@ -32,6 +32,8 @@ has its own design documents, tools and results.
 | | [design/relative-pitch-prior.md](design/relative-pitch-prior.md): sparse harmonic spectra and a lower f0 floor, after experiments P01 and P02 | P10-P14 | 2026-10-18 |
 | | [design/relative-pitch-listeners.md](design/relative-pitch-listeners.md): decision noise and lapse fitted to Shepard's listener groups, after experiments P03 and P08 | P15-P18 | 2026-10-28 |
 | | [design/relative-pitch-dominance.md](design/relative-pitch-dominance.md): a hearing threshold and spectral dominance in the likelihood, after experiment P09, and their check on earlier results | P19-P23 | 2026-10-28, P22-P23 2026-10-30 |
+| | [design/relative-pitch-group-iii.md](design/relative-pitch-group-iii.md): Group III's errors at small steps as noise on the heard interval, after experiment P09 | P24-P26 | 2026-11-02 |
+| | [design/relative-pitch-seeds.md](design/relative-pitch-seeds.md): Shepard pairs on other seeds, run as experiment P12 | P27 | 2026-11-01 |
 
 ## Names used across the code
 
@@ -45,7 +47,7 @@ has its own design documents, tools and results.
   B (milestone-b), R (source-reverb), C (milestone-c), O (online),
   S (online-speed), E (order-effects), L (live-input), P (relative-pitch).
 - **Experiment IDs** have two digits (A01–A08, B01–B04, C01–C03, O01–O03,
-  P01–P11, R01, R02; pages in [`results/`](../results/README.md)) and share
+  P01–P12, R01, R02; pages in [`results/`](../results/README.md)) and share
   letters with decision numbers, which have none (B1),
   so outside their own document both are written with their word: "experiment B01" is a result
   page, "decision B1" is a section of milestone-b.md. Inside a design
