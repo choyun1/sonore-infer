@@ -300,9 +300,78 @@ the one-stream fit: with 6000 steps its log posterior at 3 s rises by
 18.0, the two-stream one by 0.2. So at 4 st the usual budget (2000 steps,
 patience 50) leaves the one-stream fit short of its maximum, which favours
 two streams. The other usual-budget numbers at 4 st on this page (and the
-52.0 used in the E8 check) carry this bias; whether O01, O02 or 6 st do too
-was not checked. Wall time: 17,509 s for the first sequence and 30,272 s
+52.0 used in the E8 check) carry this bias; the next section checks O01,
+O02, 6 st and Beauvois & Meddis. Wall time: 17,509 s for the first sequence and 30,272 s
 for the 2 s gap, run at the same time on two threads each.
+
+### Checked: 6 st, Beauvois & Meddis and O02 at the same budget (2026-11-05)
+
+Cheap cases rerun with 6000 Adam steps and patience 200 on the cloud CPU
+(two runs at a time, two threads each), in `results/data/O03/check/` and
+`results/data/O02/budget/`. The usual budget on this machine reproduces
+`bm_alone.txt` within 0.3 (`bm_alone_cloud.txt`), so the cloud and PC
+numbers can be compared.
+
+**6 st, first sequence** (`cu6_first3_long.txt`: the first 3 s of the
+first sequence, then a 1 s gap and 0.5 s, hypotheses one and two). The
+windows up to 3 s are the same as the full first sequence's, since the
+fit only sees the sound so far; the usual-budget row is `cu6_s1.txt`'s.
+Leaky decision (τ 2.5 s):
+
+| s after first tone | 0.5 | 1 | 1.5 | 2 | 2.5 | 3 |
+| --- | --- | --- | --- | --- | --- | --- |
+| usual budget | 7.0 | 22.7 | 33.6 | 46.5 | 53.1 | 58.8 |
+| 6000 steps | 2.9 | 20.1 | 19.9 | 36.1 | 43.2 | 48.6 |
+
+The usual budget overstates the lean to two streams by 3 to 14 (about a
+fifth at 3 s, against a factor of two at 4 st). Again it is the one-stream
+fit: by 3 s its log posterior rises by 14.5 with 6000 steps, the two-stream
+one falls by 3.0. The sign never changes: 6 st is heard as two streams
+from 0.5 s on with either budget.
+
+**Beauvois & Meddis, test alone** (`bm_alone_long.txt`): the evidence over
+the test falls from 110.1 to 90.7 and the leaky decision at its end from
+122.1 to 103.4. So the model still hears two streams where listeners hear
+one; the budget explains about a sixth of it. A one-stream run with 20,000
+steps and patience 1000, stopped after the one-stream part
+(`bm_alone_one_20000_partial.txt`), ends 3.6 below the 6000-step one, so
+6000 steps is as far as this fit goes.
+
+**O01 and O02's ABA sequence** (App. C.11, 4 and 8 st, today's defaults:
+100 ms windows, past summarized), log odds after each triplet against the
+usual-budget run of O02 (`st{4,8}_w100_p50_lag1_e0.5_s4.txt`):
+
+| Triplets | 1 | 2 | 3 | 4 | 5 | 6 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 4 st, usual budget | −3.25 | −1.62 | 2.59 | 7.15 | 11.73 | 16.62 |
+| 4 st, 6000 steps | −3.51 | −1.83 | 1.95 | 6.45 | 11.00 | 15.91 |
+| 8 st, usual budget | 17.03 | 36.54 | 59.54 | 83.06 | 106.43 | 130.33 |
+| 8 st, 6000 steps | 15.12 | 35.08 | 57.28 | 81.27 | 104.46 | 128.31 |
+
+Within 0.7 at 4 st and 2.3 at 8 st, inside O02's S6 tolerance of 3. So O01
+and O02 do not carry the bias: on that sequence the one-stream fit gets
+as far within the usual budget as with 6000 steps. The online runs stay
+4 (4 st) and 10 (8 st) above O01's 10,000-step batch fit at 6 triplets
+with either budget, so the larger budget does not close that gap (O01 puts
+it down to the lag and the Laplace estimate's sensitivity). Why the
+stall shows on Cusack et al.'s and Beauvois & Meddis's sequences and not
+on this one is not known.
+
+**More steps is not always better.** The 6 st one-stream fit with 20,000
+steps and patience 1000 (`cu6_first3_one_20000_partial.txt`, stopped at
+1.5 s) ended 150 below the 6000-step fit at 0.5 s and 480 below by 1.5 s.
+Each window keeps its best point, so this is the online path: long fits
+of the first, partly heard windows move the events where later windows
+cannot recover them. I infer it is the drift O02 saw with L-BFGS (S3);
+not traced. So 6000 steps with patience 200 is a budget that works on
+these stimuli, not a proof of convergence.
+
+What this leaves at the usual budget: the reset-rule rows at 6 st (each
+arm at the usual budget, so the within-7 match may hide a stall in one
+arm, as it did at 4 st), the 4 st 5 s gap, and Beauvois & Meddis with
+an inducer. Each would need hours on Cho's PC. Wall time here: 395 s
+(B&M test), 955 s (6 st, 4.55 s of sound), 1023 s (4 st ABA) and 1346 s
+(8 st ABA).
 
 ## Against design §3
 
@@ -350,5 +419,11 @@ would take about a day or more [estimate].
         --only one two --steps 6000 --window-patience 200
     python tools/online/online_reset.py cusack --semitones 4 --silence 2 --test-duration 3 --restart \
         --only one_restart two_restart --steps 6000 --window-patience 200
+    python tools/online/online_reset.py bm --silence none --steps 6000 --window-patience 200
+    python tools/online/online_reset.py cusack --semitones 6 --silence 1 --first-duration 3 \
+        --test-duration 0.5 --only one two --steps 6000 --window-patience 200
+    python tools/online/online_buildup.py --semitones 4 --triplets 6 --lag 1 \
+        --steps 6000 --window-patience 200   # and --semitones 8; O02's defaults otherwise
+    # the 20,000-step runs: --steps 20000 --window-patience 1000 (bm: stopped after one; cusack: --only one)
     python tools/online/reset_summary.py results/data/O03/*.txt results/data/O03/e8/*.txt
     python tools/results_plots.py
