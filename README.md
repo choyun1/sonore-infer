@@ -27,10 +27,11 @@ runs the same commands on Linux and Windows, Python 3.11 and 3.14.
 
 ## Directions
 
-The work runs in four directions, each with its own design document in
+The work runs in five directions, each with its own design documents in
 `docs/design/`: reproducing the paper's model (BASS) and testing it on new
 stimuli (milestones (a) and (b)); our own scene grammar (milestone (c));
-online inference; and inferring a source together with its room.
+online inference; relative pitch from Shepard tones; and inferring a source
+together with its room.
 [docs/README.md](docs/README.md) lists the documents by direction.
 
 ## Where things are
@@ -40,7 +41,7 @@ online inference; and inferring a source together with its room.
 | `docs/` | [overview.md](docs/overview.md): the project in a page; [methods.md](docs/methods.md): the models and inference, defined mathematically. |
 | `docs/design/` | Design documents: each lists numbered decisions, the options, and what Cho accepted. Start with [docs/README.md](docs/README.md). |
 | `src/sonore_infer/` | The package (map below). |
-| `src/sonore_infer/stimuli/` | Stimuli from App. C of the paper (mistuned harmonic, asynchronous onsets, ABA bistability and buildup), and milestone (b)'s two notes, made with sonore. |
+| `src/sonore_infer/stimuli/` | Stimuli made with sonore: from App. C of the paper (mistuned harmonic, asynchronous onsets, ABA bistability and buildup), milestone (b)'s two notes, Shepard tones, and the reset-after-silence sequences of two listening studies. |
 | `tests/` | One test file per module, plus `tests/stimuli/`. |
 | `tools/` | Standalone scripts: experiment runners and measurements, one folder per direction. Every number in the design documents comes from one of them or is marked as an estimate. Index: [tools/README.md](tools/README.md). |
 | `website/` | Builds the project website from this Markdown ([website/README.md](website/README.md)). |
@@ -50,11 +51,13 @@ The package holds two models that share no code beyond the ERB scale
 (`erb.py`, sonore's conversions written for torch too):
 
 **Harmonic and whistle sources heard through a cochleagram** (milestones (a)
-to (c), and online inference: mistuned harmonic, two notes, ABA streaming)
+to (c), online inference and relative pitch: mistuned harmonic, two notes,
+ABA streaming, Shepard tones)
 
 | Module | Role |
 |---|---|
 | `cochleagram.py` | Differentiable cochleagram (gammatone, and BASS's FFT approximation) and the Gaussian likelihood |
+| `hearing.py` | Threshold of hearing and spectral dominance (Terhardt, Stoll & Seewann, 1982), options on the cochleagram and likelihood, off by default |
 | `sources.py` | Renderers: harmonic tone, whistle, events with inferred timing, trajectories |
 | `priors.py` | The paper's priors (App. A, Tables A.1-A.2) |
 | `scene.py` | A hypothesis as a list of sources; fitting and evidence for it |
