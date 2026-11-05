@@ -32,6 +32,8 @@ not import the package.
 | `bass/compare_mistuned_harmonic.py` | One source or two by marginal likelihood. Its flags add the model's parts one at a time (FFT cochleagram, inferred timing, trajectories), as the steps of milestone (a) were run |
 | `bass/scene_mistuned_harmonic.py` | The full model of the previous script re-run through `sonore_infer.scene`, printing the same table so the two can be compared line by line |
 | `bass/mistuning_thresholds.py` | Thresholds (Eqn 2) from the output of `compare_mistuned_harmonic.py` |
+| `bass/variational_thresholds.py` | Thresholds (Eqn 2) by all four evidence estimates, from `scene_mistuned_harmonic.py` run with `--variational-steps` |
+| `bass/sparse_options.py` | The relative-pitch-prior options (sparse spectra, a lower f0 floor) for the milestone (a) and (b) tools, scoring each start's mode separately (decision P14) |
 
 ## Milestone (b): two simultaneous notes
 
@@ -67,6 +69,20 @@ not import the package.
 | Script | What it does |
 |---|---|
 | `results_plots.py` | Draws the SVG plots in `results/plots/` from the committed outputs in `results/data/` |
+
+## Relative pitch (docs/design/relative-pitch.md)
+
+| Script | What it does |
+|---|---|
+| `relative_pitch/one_tone.py` | How the model hears one Shepard tone: one harmonic source per octave reading, or whistles (P01, P02, P05, P06) |
+| `relative_pitch/combine_starts.py` | One log posterior per tone and hypothesis from `one_tone.py` outputs fitted from several starts |
+| `relative_pitch/search_tone.py` | The scene search (`grammar/search_scene.py`) on one Shepard tone, as a check on `one_tone.py`'s hypotheses |
+| `relative_pitch/pair.py` | Whether a pair of Shepard tones is heard going up or down (P03, P08) |
+| `relative_pitch/pair_summary.py` | P(up) per pair from `pair.py` outputs, beside Shepard's listeners (Fig. 3) |
+| `relative_pitch/decompose.py` | Where a pair's up and down hypotheses differ, term by term (P09) |
+| `relative_pitch/listener_noise.py` | Decision noise and lapse on the model's log odds fitted to Shepard's groups, and interval noise (P09, P11) |
+| `relative_pitch/run_seeds.py` | Reruns P09's pairs with both options on several seeds (decision P27, P12) |
+| `relative_pitch/average_seeds.py` | Averages `pair.py` outputs over seeds (P12) |
 
 ## Online inference (docs/design/online.md)
 
