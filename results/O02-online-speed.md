@@ -258,7 +258,7 @@ patience 50) stops the one-stream fit short. The S4 runs above, rerun
 with 6000 steps and patience 200 [`data/O02/budget/`], stay within 0.7 of
 them at 4 st and 2.3 at 8 st at every triplet, inside S6's 3, so these
 stimuli are not affected. Table in
-[O03](O03-order-effects.md#checked-6-st-beauvois--meddis-and-o02-at-the-same-budget-2026-11-05).
+[O03](O03-order-effects.md), section "Checked: 6 st, Beauvois & Meddis and O02 at the same budget".
 
 ## What is open
 
