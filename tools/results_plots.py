@@ -1434,6 +1434,43 @@ def earlier_experiments_hearing():
     return figure(panels, "P07 and P10: mistuned harmonic with the relative-pitch options", legend)
 
 
+def earlier_experiments_alone():
+    panels = []
+    for f0, harmonic, y_range, y_ticks in (
+        (100, 1, (-30, 30), [-30, -15, 0, 15, 30]),
+        (200, 2, (-30, 120), [0, 40, 80, 120]),
+    ):
+        panel = Panel(340, 230, (0, 30), y_range, left=44)
+        panel.axes(
+            list(MISTUNINGS),
+            y_ticks,
+            x_label="mistuning, % of f0",
+            y_label="log odds, two sources vs one",
+            title=f"{f0} Hz, harmonic {harmonic}",
+        )
+        panel.horizontal(0)
+        name = f"f0-{f0}_h{harmonic}_p*.txt"
+        for parts, color, label, dash in (
+            (("P07", "baseline-0.8.0", name), "s5", "baseline", True),
+            (("P13", "floor30", "mistuned", name), "s1", "30 Hz floor alone", False),
+            (("P13", "threshold", "mistuned", name), "s2", "threshold of hearing alone", False),
+        ):
+            panel.line(
+                mistuned_odds(*parts),
+                color,
+                dash=dash,
+                tip=lambda x, y, label=label: f"{label}, {x:g}%: {y:+.1f}",
+            )
+        panels.append(panel)
+    legend = [
+        ("s5", "dense spectra, 87.5 Hz floor (P07 baseline; 100/1 at 25% failed)", "dash"),
+        ("s1", "30 Hz floor alone (P13)", "line"),
+        ("s2", "threshold of hearing alone (P13)", "line"),
+    ]
+    title = "P13: mistuned harmonic with the 30 Hz floor or the threshold of hearing alone"
+    return figure(panels, title, legend)
+
+
 # O03: reset of streaming after silence
 
 BM_SILENCES = (0, 0.5, 1, 2, 4, 8)
@@ -1546,6 +1583,7 @@ PLOTS = {
     "P09-shepard-listener-noise": shepard_listener_noise,
     "P10-earlier-experiments-hearing": earlier_experiments_hearing,
     "P11-group-iii-interval-noise": group_iii_interval_noise,
+    "P13-earlier-experiments-alone": earlier_experiments_alone,
     "R01-likelihood-slice": likelihood_slice,
     "R01-interval-coverage": interval_coverage,
     "R02-atypical-rooms": atypical_rooms,

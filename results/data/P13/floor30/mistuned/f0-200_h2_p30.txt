@@ -1,0 +1,4 @@
+f0 200 Hz, harmonic 2 mistuned; 15000 Adam steps at most, stopping at a rise under 0.5 over 1000, 128 samples, seed 0, fft-bass-gain cochleagram, cosine phases, whistle timing inferred, trajectories, harmonic timing inferred (through sonore_infer.scene), frequency floor 30 Hz
+log prior of structure: one source -2.05, two sources -4.54
+percent  logZ1_laplace  logZ1_is  ess1  logZ2_laplace  logZ2_is  ess2  log_odds_laplace  log_odds_is  seconds  logZ1_elbo  logZ1_vi_is  ess1_vi  logZ2_elbo  logZ2_vi_is  ess2_vi  log_odds_elbo  log_odds_vi_is
+     30       -10096.4  -10096.0     3       -10014.6  -10014.3     1              79.3         79.2    777.6    -10097.1     -10095.5        5    -10015.4     -10012.8        6           79.2            80.2

@@ -67,7 +67,7 @@ results pages.
 | Reproducing the paper's model | Do we get the paper's mistuned-harmonic thresholds (Fig. 7D)? And what does the same model hear in two simultaneous notes? | [A01–A08](../results/README.md#experiments), [B01–B04](../results/B02-two-notes-variational.md) |
 | Our own scene grammar | Sources with several events, inferred Gaussian-process kernels, a search over structures, and ABA streaming (Fig. 8D) | [C01–C03](../results/C02-aba-streaming.md) |
 | Online inference | The evidence accumulated window by window as the sound arrives, the buildup of streaming (Fig. 8F), and its reset after silence | [O01](../results/O01-online-buildup.md), [O02](../results/O02-online-speed.md), [O03](../results/O03-order-effects.md) |
-| Relative pitch | Whether the model hears the direction of a step between Shepard tones as Shepard's (1964) listeners did | [P01–P12](../results/README.md#experiments) |
+| Relative pitch | Whether the model hears the direction of a step between Shepard tones as Shepard's (1964) listeners did | [P01–P13](../results/README.md#experiments) |
 | Source and room | Whether a room's reverberation time can be told apart from the source from one sound | [R01](../results/R01-source-and-room.md), [R02](../results/R02-atypical-rooms.md) |
 
 The [results index](../results/README.md) lists every experiment with its

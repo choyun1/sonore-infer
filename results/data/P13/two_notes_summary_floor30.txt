@@ -1,0 +1,28 @@
+== laplace ==
+stimulus                                 two  whistles
+just_fifth 0 ms                        68.3       8.9*
+octave 0 ms                            -4.6           
+  just_fifth: Eqn 2 asynchrony threshold 0.0 ms over 0-0 ms
+  octave: Eqn 2 asynchrony threshold 0.0 ms over 0-0 ms
+
+== importance ==
+stimulus                                 two  whistles
+just_fifth 0 ms                        55.8   -7532.7 
+octave 0 ms                           -36.8           
+  just_fifth: Eqn 2 asynchrony threshold 0.0 ms over 0-0 ms
+  octave: Eqn 2 asynchrony threshold 0.0 ms over 0-0 ms
+
+== elbo ==
+stimulus                                 two  whistles
+just_fifth 0 ms                        53.2       1.8 
+octave 0 ms                           -40.0           
+  just_fifth: Eqn 2 asynchrony threshold 0.0 ms over 0-0 ms
+  octave: Eqn 2 asynchrony threshold 0.0 ms over 0-0 ms
+
+== variational ==
+stimulus                                 two  whistles
+just_fifth 0 ms                        54.6       1.2 
+octave 0 ms                           -28.5           
+  just_fifth: Eqn 2 asynchrony threshold 0.0 ms over 0-0 ms
+  octave: Eqn 2 asynchrony threshold 0.0 ms over 0-0 ms
+
