@@ -228,11 +228,45 @@ the decision emptied but the sources kept).
 At 6 st every gap now tracks the first sequence within 7, with no
 Gap × Time interaction, as Cusack et al.'s listeners. At 4 st the 5 s gap
 tracks it within 5, but after 1 and 2 s the curve runs 7 to 14 below at
-2 s and 14 to 24 above at 3 and 4 s; the cause is not checked (one run
-each; the restart sources' fits may differ from the first sequence's).
+2 s and 14 to 24 above at 3 and 4 s. The check below traces this to the
+optimiser, not the rule.
 The rule does nothing for Beauvois & Meddis (design E13): the inducer adds
 nothing to the decision, so the test is heard as the test alone, and
 their inducer effect stays out of reach.
+
+### Checked: the 4 st stray is the optimiser (2026-11-05)
+
+After the 1 and 2 s gaps, the one-stream restart fit stops for two
+evidence steps at a point that is not a maximum: one Hessian eigenvalue is
+below the floor (the `floored` column is 1 at 12.55 and 13.05 s in
+`cu4_s1.txt`), which raises its Laplace term by about 7 per step. In the
+next two steps the fit moves off that point and its terms fall by about 28
+and 19 below the usual. The 5 s gap and 6 st show no such pair.
+
+Rerun of the 1 s case, restart hypotheses only, second sequence cut to
+3 s, on Cho's PC (`results/data/O03/check/`): once with the usual budget
+(2000 Adam steps, patience 50), once with 6000 steps and patience 200.
+The usual budget reproduces `cu4_s1.txt` within 0.1 in every window, so
+the fresh checkout gives the same numbers. With the larger budget no
+eigenvalue is floored, the one-stream terms are smooth (−10345 to −10342
+from 1 s on), and the two-stream terms move by under 0.7. The gated
+restart decision:
+
+| s after first tone | 0.5 | 1 | 1.5 | 2 | 2.5 | 3 |
+| --- | --- | --- | --- | --- | --- | --- |
+| first sequence | 3.6 | 7.7 | | 17.9 | | 25.7 |
+| after 1 s, usual budget | −1.0 | 9.7 | 5.6 | 4.0 | 31.5 | 45.2 |
+| after 1 s, 6000 steps | −0.7 | 2.5 | 7.8 | 11.5 | 14.7 | 17.2 |
+| after 5 s, usual budget | −0.7 | 8.5 | 13.3 | 18.3 | 23.7 | 26.8 |
+
+With the larger budget the curve rises smoothly with no jump at 2.5 s,
+but it now runs 5 to 9 below the first sequence from 1 s on, where the
+usual budget ran up to 20 above. So the stray at 4 st was the one-stream
+fit stalling, not the reset rule; with a fit that converges, the 1 s gap
+is slightly slower to build up than a fresh sequence. One run each; the
+first sequence and the other gaps were not rerun with the larger budget,
+so the 5 to 9 is a comparison across budgets. Wall time: 20,425 s for the
+usual budget and 28,175 s for 6000 steps, both on two threads.
 
 ## Against design §3
 
@@ -274,5 +308,7 @@ would take about a day or more [estimate].
     python tools/online/online_reset.py cusack --semitones 6 --silence 1 --restart
     python tools/online/reset_rest_check.py --cutoff 0.75 cusack --semitones 4 --silence 5 \
         --first-duration 2 --restart
+    python tools/online/online_reset.py cusack --semitones 4 --silence 1 --test-duration 3 --restart \
+        --only one_restart two_restart [--steps 6000 --window-patience 200]
     python tools/online/reset_summary.py results/data/O03/*.txt results/data/O03/e8/*.txt
     python tools/results_plots.py
