@@ -1,0 +1,5 @@
+cusack, silence 1 s, 6 st, second sequence 0.5 s, first part cut to 3 s, gap 3.050-4.050 s, 4.550 s in all; window 100 ms, lag 1 s, at most 20000 Adam steps, patience 1000, evidence every 0.5 s, past summarized, fft-bass-gain cochleagram
+window: hypothesis  end  n_free  term  total  structure  floored  log_joint  seconds  steps
+window: one  0.500   110  -10105.58   -10105.58   -3.44   0    -9987.31   152.97  18029
+window: one  1.000   216  -10598.49   -20704.07   -5.80   0   -20464.09   265.57  19845
+window: one  1.500   220  -10441.60   -31145.68   -8.18   0   -30776.52   438.15  21649

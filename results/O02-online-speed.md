@@ -251,6 +251,15 @@ second but not the first; not tried. So the online runs stay on CPUs, and
 the PC's CPU is the faster one for long jobs [inferred from the window
 costs; no full run on the PC's CPU yet].
 
+### The 4 and 8 st runs at a larger budget (2026-11-05)
+
+O03 found that at Cusack et al.'s 4 st the usual budget (2000 steps,
+patience 50) stops the one-stream fit short. The S4 runs above, rerun
+with 6000 steps and patience 200 [`data/O02/budget/`], stay within 0.7 of
+them at 4 st and 2.3 at 8 st at every triplet, inside S6's 3, so these
+stimuli are not affected. Table in
+[O03](O03-order-effects.md), section "Checked: 6 st, Beauvois & Meddis and O02 at the same budget".
+
 ## What is open
 
 - What still grows with the sound under S4 (the prior, inferred). S3 (D)
