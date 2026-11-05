@@ -198,8 +198,12 @@ document with its decisions for Cho before any run.
   (from 46); on three seeds it is 13 to 26 behind (P12). Checked on earlier experiments as P10: no change on ABA,
   two notes or 200/2, but at 100 Hz harmonic 1 the mistuned fundamental
   is no longer heard as separate up to 30%. Next: the remaining early
-  crossover, which holds on every seed (P12), and whether the options become
-  defaults (decision P13). Group III's rise at 9 steps is the other side of
+  crossover, which holds on every seed (P12). The options stay off by
+  default (decision P13, 2026-11-05): sparse spectra turn the just fifth
+  into one tone where most listeners hear two (P07), dominance widens the
+  100/1 gap (P10), and the 30 Hz floor and the threshold of hearing have
+  not been checked alone
+  ([relative-pitch-prior.md §4](../docs/design/relative-pitch-prior.md#4-chos-answers)). Group III's rise at 9 steps is the other side of
   a dip at the smallest step, described as noise on the heard interval
   outside the scene model (P11; design
   [relative-pitch-group-iii.md](../docs/design/relative-pitch-group-iii.md),

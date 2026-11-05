@@ -24,7 +24,7 @@ AI-assisted (Claude); code as of `1264ad4`.
 | P10. Spectrum prior | (B) Each harmonic present or absent, the presence marginalized, so a missing harmonic costs a few nats instead of hundreds |
 | P11. Presence rate | (B) Inferred per source, with a Beta(1, 1) prior, so the model pays for sparsity only as much as the sound needs it |
 | P12. f0 floor | (B) Lowered from 87.5 Hz to 30 Hz, near the lower limit of pitch, for harmonic sources and whistles alike |
-| P13. Scope | (B) Options on the model, off by default; earlier results untouched until checked (P14) |
+| P13. Scope | (B) Options on the model, off by default; earlier results untouched until checked (P14). 2026-11-05: all four options stay off by default (§4) |
 | P14. Checks | P1 and P2 again first; then the mistuned harmonic and two simultaneous notes on a few conditions, before either option becomes a default |
 
 ---
@@ -189,3 +189,25 @@ high-passed sounds. Results of P14: [P05](../../results/P05-shepard-one-tone-spa
 [P06](../../results/P06-shepard-minor-third-sparse.md),
 [P07](../../results/P07-earlier-experiments-sparse.md); the options stay off
 by default.
+
+2026-11-05: decision P13 settled for now, for all four options (this
+document's sparse spectra and 30 Hz floor, and the threshold of hearing and
+spectral dominance of [relative-pitch-dominance.md](relative-pitch-dominance.md),
+P19 and P20). Cho accepted: dominance stays off; the others are decided by
+whether the just fifth's flip matters against listeners. It does:
+
+- **Sparse spectra stay off by default.** With them the just fifth at 0 ms
+  is heard as one tone by 12.7 ([P07](../../results/P07-earlier-experiments-sparse.md));
+  without them, two notes by 54.1. DeWitt & Crowder's (1987) listeners
+  called a perfect fifth "one tone" on about 6% or 19% of trials (P07, read
+  by eye), so most heard two. The flip is the wrong way for listeners.
+- **Dominance stays off by default.** At 100 Hz harmonic 1 it keeps two
+  sources from ever being preferred up to 30% ([P10](../../results/P10-earlier-experiments-hearing.md)),
+  where listeners' thresholds are about 1–5%.
+- **The 30 Hz floor and the threshold of hearing stay off by default** for
+  now. Neither has been run alone on earlier results: P07 ran the floor only
+  with sparse spectra, and P10 ran the threshold with dominance (or
+  dominance alone). Making either a default would need that check first.
+
+The relative-pitch experiments keep using the options, each page saying
+which.
