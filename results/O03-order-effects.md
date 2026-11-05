@@ -265,8 +265,44 @@ usual budget ran up to 20 above. So the stray at 4 st was the one-stream
 fit stalling, not the reset rule; with a fit that converges, the 1 s gap
 is slightly slower to build up than a fresh sequence. One run each; the
 first sequence and the other gaps were not rerun with the larger budget,
-so the 5 to 9 is a comparison across budgets. Wall time: 20,425 s for the
-usual budget and 28,175 s for 6000 steps, both on two threads.
+so the 5 to 9 is a comparison across budgets (the next section reruns
+them and the gap closes). Wall time: 20,425 s for the usual budget and
+28,175 s for 6000 steps, both on two threads.
+
+### Checked: the first sequence at the same budget (2026-11-05)
+
+The first sequence (hypotheses one and two, `cu4_s1_fresh_long.txt`) and
+the 2 s gap (restart hypotheses, `cu4_s2_long.txt`) rerun with 6000 Adam
+steps and patience 200, on Cho's PC, in `results/data/O03/check/`. No
+eigenvalue is floored in either. The first-sequence row is the leaky
+decision (τ 2.5 s) of `online_reset.py`; the reset-rule rows are the gated
+restart decision, as above.
+
+| s after first tone | 0.5 | 1 | 1.5 | 2 | 2.5 | 3 |
+| --- | --- | --- | --- | --- | --- | --- |
+| first sequence, usual budget | 3.6 | 7.7 | 12.4 | 17.9 | 22.4 | 25.7 |
+| first sequence, 6000 steps | 2.2 | 3.1 | 5.1 | 8.2 | 11.3 | 14.0 |
+| reset rule after 1 s, 6000 steps | −0.7 | 2.5 | 7.8 | 11.5 | 14.7 | 17.2 |
+| reset rule after 2 s, 6000 steps | −0.1 | 2.3 | 7.7 | 11.1 | 14.3 | 17.1 |
+
+With both at the same budget, the reset rule after 1 s and after 2 s
+tracks the first sequence within 3.5 everywhere: up to 2.9 below at 0.5 s
+and 1 s, and 2.6 to 3.4 above from 1.5 s on. The 1 s and 2 s gaps agree
+with each other within 0.6. So at 4 st, as at 6 st, the reset rule makes
+a 1 or 2 s gap build up like a fresh sequence, as Cusack et al.'s
+listeners did; the earlier 5 to 9 below was the budget, not the gap. One
+run each; the 5 s gap and 6 st were not rerun.
+
+The usual budget overstates the first sequence's lean to two streams by
+about a factor of two through 3 s (14.0 against 25.7 at 3 s; 29.8
+against 52.0 for the evidence over the first 4 s). Nearly all of it is
+the one-stream fit: with 6000 steps its log posterior at 3 s rises by
+18.0, the two-stream one by 0.2. So at 4 st the usual budget (2000 steps,
+patience 50) leaves the one-stream fit short of its maximum, which favours
+two streams. The other usual-budget numbers at 4 st on this page (and the
+52.0 used in the E8 check) carry this bias; whether O01, O02 or 6 st do too
+was not checked. Wall time: 17,509 s for the first sequence and 30,272 s
+for the 2 s gap, run at the same time on two threads each.
 
 ## Against design §3
 
@@ -310,5 +346,9 @@ would take about a day or more [estimate].
         --first-duration 2 --restart
     python tools/online/online_reset.py cusack --semitones 4 --silence 1 --test-duration 3 --restart \
         --only one_restart two_restart [--steps 6000 --window-patience 200]
+    python tools/online/online_reset.py cusack --semitones 4 --silence 1 --test-duration 3 \
+        --only one two --steps 6000 --window-patience 200
+    python tools/online/online_reset.py cusack --semitones 4 --silence 2 --test-duration 3 --restart \
+        --only one_restart two_restart --steps 6000 --window-patience 200
     python tools/online/reset_summary.py results/data/O03/*.txt results/data/O03/e8/*.txt
     python tools/results_plots.py
