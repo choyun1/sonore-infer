@@ -27,11 +27,13 @@ Then each is a latent too, named e.g. ``"h0.f0_sigma_free"``: the value
 mapped to the whole real line, under the paper's truncated normal prior
 (see :class:`~sonore_infer.priors.KernelParameterPrior`).
 
-Two options depart from the paper, both off by default (design
-relative-pitch-prior P10 to P13): ``frequency_floor_hz`` lowers the floor of
-the uniform prior on the mean f0 (or whistle frequency) from Table A.2's
-3 ERB number (87.5 Hz), and a harmonic source's ``sparse_spectrum`` lets each
-harmonic be absent (see :class:`Harmonic`).
+Two departures from the paper (design relative-pitch-prior P10 to P13).
+By default since 2026-11-06 (decision P13, experiment P13), the uniform prior
+on the mean f0 (or whistle frequency) starts at ``frequency_floor_hz`` =
+:data:`FREQUENCY_FLOOR_HZ` (30 Hz, near the lower limit of pitch) instead of
+Table A.2's 3 ERB number (87.5 Hz); ``frequency_floor_hz=None`` gives the
+paper's floor. As an option, off by default, a harmonic source's
+``sparse_spectrum`` lets each harmonic be absent (see :class:`Harmonic`).
 """
 
 from __future__ import annotations
@@ -73,6 +75,10 @@ from sonore_infer.priors import (
     spectrum_distribution,
 )
 from sonore_infer.sources import _gate, trajectory_event
+
+# Lowest mean f0 and whistle frequency [Hz] (design relative-pitch-prior P12), the default since
+# 2026-11-06 (decision P13). None means Table A.2's 3 ERB number (87.5 Hz).
+FREQUENCY_FLOOR_HZ = 30.0
 
 Params = dict[str, torch.Tensor]
 
@@ -392,7 +398,7 @@ class Harmonic(_Source):
     n_events: int = 1
     infer_kernel: bool = False
     sparse_spectrum: bool = False
-    frequency_floor_hz: float | None = None
+    frequency_floor_hz: float | None = FREQUENCY_FLOOR_HZ
     kind: ClassVar[str] = "harmonic"
     TRAJECTORIES: ClassVar = {"f0": F0_TRAJECTORY, "level": HARMONIC_LEVEL_TRAJECTORY}
     KERNELS: ClassVar = {
@@ -523,7 +529,7 @@ class Whistle(_Source):
     name: str
     n_events: int = 1
     infer_kernel: bool = False
-    frequency_floor_hz: float | None = None
+    frequency_floor_hz: float | None = FREQUENCY_FLOOR_HZ
     kind: ClassVar[str] = "whistle"
     TRAJECTORIES: ClassVar = {"freq": F0_TRAJECTORY, "level": WHISTLE_LEVEL_TRAJECTORY}
     KERNELS: ClassVar = {

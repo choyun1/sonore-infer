@@ -7,7 +7,7 @@ the same table, so the two outputs can be compared line by line.
 
     python tools/bass/scene_mistuned_harmonic.py --f0 200 --harmonic 3
 
-With ``--sparse-spectrum`` (and ``--floor``), the options of design
+With ``--sparse-spectrum``, the option of design
 relative-pitch-prior: each start with the mistuned harmonic 30 dB down gets a
 twin with it marked absent, the one-source hypothesis gets such a start too,
 and each start is scored on its own (``sparse_options.py``).

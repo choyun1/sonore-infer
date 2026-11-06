@@ -162,9 +162,14 @@ are as in BASS's configuration.
 - **Departure.** With several events the within-event term uses the gates
   $\gamma_j$, which lie between 0 and 1, instead of a hard 0 or 1, so the
   prior moves smoothly with the timing (design C4).
-- **Option, off by default.** `frequency_floor_hz` lowers the floor of
-  $\bar\phi$ from 3 Cams (87.5 Hz) to $E(f_{\text{floor}})$; experiments
-  P03 and P05 to P07 use 30 Hz (design P12).
+- **Departure, the default since 2026-11-06.** The floor of $\bar\phi$ is
+  $E(30\ \text{Hz})$, not 3 Cams (87.5 Hz), near the lower limit of pitch
+  (`scene.FREQUENCY_FLOOR_HZ`, design P12, decision P13). It changed no mode
+  on the earlier experiments checked
+  ([P13](../results/P13-earlier-experiments-alone.md)); it only widens the
+  uniform, which costs each source 0.06 nats. `frequency_floor_hz=None`
+  (`--paper-floor` on the tools) gives the paper's floor; runs before that
+  date used it.
 
 ### 1.4 Harmonic spectrum
 

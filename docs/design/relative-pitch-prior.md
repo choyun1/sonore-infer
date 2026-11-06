@@ -24,7 +24,7 @@ AI-assisted (Claude); code as of `1264ad4`.
 | P10. Spectrum prior | (B) Each harmonic present or absent, the presence marginalized, so a missing harmonic costs a few nats instead of hundreds |
 | P11. Presence rate | (B) Inferred per source, with a Beta(1, 1) prior, so the model pays for sparsity only as much as the sound needs it |
 | P12. f0 floor | (B) Lowered from 87.5 Hz to 30 Hz, near the lower limit of pitch, for harmonic sources and whistles alike |
-| P13. Scope | (B) Options on the model, off by default; earlier results untouched until checked (P14). 2026-11-05: all four options stay off by default (§4) |
+| P13. Scope | (B) Options on the model, off by default; earlier results untouched until checked (P14). 2026-11-05: sparse spectra, the threshold of hearing and dominance stay off; 2026-11-06: the 30 Hz floor is the default (§4) |
 | P14. Checks | P1 and P2 again first; then the mistuned harmonic and two simultaneous notes on a few conditions, before either option becomes a default |
 
 ---
@@ -213,6 +213,14 @@ whether the just fifth's flip matters against listeners. It does:
   so it could become a default; the threshold alone keeps two sources from
   being preferred at 100 Hz harmonic 1 up to 30%, as dominance does, so it
   stays off. Making the floor a default is Cho's call.
+
+2026-11-06: Cho chose to make the 30 Hz floor the default (decision card,
+after P13). `scene.FREQUENCY_FLOOR_HZ` = 30 is now every `Harmonic` and
+`Whistle`'s `frequency_floor_hz`; `None` gives Table A.2's floor, and the
+tools that take `--floor` have `--paper-floor` for it. Results from before
+this date used Table A.2's floor and are not rerun; P13 found the same modes
+with either floor on the cases it checked, the only change being 0.06 nats
+per source.
 
 The relative-pitch experiments keep using the options, each page saying
 which.

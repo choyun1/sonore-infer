@@ -118,7 +118,8 @@ structure prior, as P10 (`data/P13/threshold/aba/`):
   100 Hz does the two-source fit of the lowest component reach those
   channels.
 - **For decision P13:** the 30 Hz floor could become a default without
-  changing any result checked here. It lets f0 go down to the lower limit
+  changing any result checked here. Cho made it the default on 2026-11-06,
+  so the threshold runs below now need `--paper-floor` to reproduce exactly. It lets f0 go down to the lower limit
   of pitch (P12). The threshold of hearing widens the 100/1 gap with
   listeners, as dominance does, so it should not become a default as it
   stands.
@@ -129,7 +130,7 @@ structure prior, as P10 (`data/P13/threshold/aba/`):
 
 ```
 V="--steps 15000 --tolerance 0.5 --variational-steps 2000"
-for opt in "--floor 30" "--threshold-floor"; do
+for opt in "--floor 30" "--threshold-floor --paper-floor"; do
   for p in 0 5 10 15 20 25 30; do
     python tools/bass/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --percents $p $V $opt
     python tools/bass/scene_mistuned_harmonic.py --f0 200 --harmonic 2 --percents $p $V $opt
@@ -138,6 +139,7 @@ for opt in "--floor 30" "--threshold-floor"; do
   # likewise one@100, one@200, one@400 for the octave; two, one@100, one@200, one@300, whistles for just_fifth
 done
 for st in 1 3 6; do
+  # compare_aba.py has no --paper-floor; since 2026-11-06 its whistles get the 30 Hz floor
   python tools/grammar/compare_aba.py --semitones $st --intervals 0.1 --hypotheses one --steps 15000 --tolerance 0.5 --infer-kernel --variational-steps 2000 --threshold-floor
   python tools/grammar/compare_aba.py --semitones $st --intervals 0.1 --hypotheses two --steps 300 --infer-kernel --variational-steps 2000 --threshold-floor
 done

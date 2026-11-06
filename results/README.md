@@ -26,6 +26,12 @@ Conventions on every page:
   fits over five seeds).
 - Every number comes from a committed output under [`data/`](data/) and a
   script under `tools/`, or is marked as an estimate.
+- **f0 floor.** Runs before 2026-11-06 used Table A.2's floor of the f0
+  and whistle-frequency prior (87.5 Hz) unless a page says 30 Hz; since
+  then 30 Hz is the default ([P13](P13-earlier-experiments-alone.md),
+  decision P13). P13 found the same modes with either floor, the only
+  change being 0.06 nats per source, so earlier pages are not rerun. Their
+  Reproduce commands need `--paper-floor` where a tool has it.
 - **Plots** in [`plots/`](plots/) are drawn from those outputs by
   `tools/results_plots.py`; rerun it after changing any output.
 
@@ -203,7 +209,7 @@ document with its decisions for Cho before any run.
   default (decision P13, 2026-11-05): sparse spectra turn the just fifth
   into one tone where most listeners hear two (P07), and dominance and the
   threshold of hearing each widen the 100/1 gap (P10, P13). The 30 Hz floor
-  alone changes nothing checked (P13), so it could become a default
+  alone changes nothing checked (P13), and is the default since 2026-11-06
   ([relative-pitch-prior.md §4](../docs/design/relative-pitch-prior.md#4-chos-answers)). Group III's rise at 9 steps is the other side of
   a dip at the smallest step, described as noise on the heard interval
   outside the scene model (P11; design

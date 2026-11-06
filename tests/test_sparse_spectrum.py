@@ -15,7 +15,7 @@ from sonore_infer.priors import (
     StandardLogistic,
     presence_offset_distribution,
 )
-from sonore_infer.scene import Harmonic, Scene, SceneTiming, Whistle, _Recorder
+from sonore_infer.scene import FREQUENCY_FLOOR_HZ, Harmonic, Scene, SceneTiming, Whistle, _Recorder
 
 TIMING = SceneTiming(fs=20_000, total_duration=0.3, ramp=0.01)
 EVENT = dict(onset=0.05, duration=0.2)
@@ -25,8 +25,19 @@ def normal_log_pdf(x, mean, sd):
     return -0.5 * ((x - mean) / sd) ** 2 - math.log(sd * math.sqrt(2 * math.pi))
 
 
+def test_the_default_floor_is_30_hz_and_none_is_table_a2():
+    assert FREQUENCY_FLOOR_HZ == 30.0
+    assert Harmonic("h0", 6).frequency_floor_hz == Whistle("w0").frequency_floor_hz == 30.0
+    paper = Harmonic("h0", 6, frequency_floor_hz=None)
+    params = paper.initial(TIMING, f0=200.0, level_db=60.0, **EVENT)
+    high, low = F0_TRAJECTORY.mean_range[1], F0_TRAJECTORY.mean_range[0]
+    expected = math.log((high - low) / (high - freq_to_erb_float(30.0)))
+    widened = Harmonic("h0", 6).log_prior_terms(params, TIMING)[0].item()
+    assert widened - paper.log_prior_terms(params, TIMING)[0].item() == pytest.approx(expected)
+
+
 def test_off_by_default_the_sources_are_unchanged():
-    plain, options_off = Harmonic("h0", 6), Harmonic("h0", 6, sparse_spectrum=False, frequency_floor_hz=None)
+    plain, options_off = Harmonic("h0", 6), Harmonic("h0", 6, sparse_spectrum=False)
     params = plain.initial(TIMING, f0=200.0, level_db=60.0, **EVENT)
     assert set(params) == set(options_off.initial(TIMING, f0=200.0, level_db=60.0, **EVENT))
     assert "h0.presence_logit" not in plain.learning_rates()
@@ -43,11 +54,13 @@ def test_the_floor_admits_lower_frequencies_and_widens_the_uniform(source):
     kwargs = dict(f0=50.0) if isinstance(source, Harmonic) else dict(freq=50.0)
     params = source.initial(TIMING, level_db=60.0, **EVENT, **kwargs)
     first = source.log_prior_terms(params, TIMING)[0].item()
-    default = type(source)("s", **({"n_harmonics": 4} if isinstance(source, Harmonic) else {}))
-    assert default.log_prior_terms(params, TIMING)[0].item() == -math.inf
+    paper = type(source)(
+        "s", **({"n_harmonics": 4} if isinstance(source, Harmonic) else {}), frequency_floor_hz=None
+    )
+    assert paper.log_prior_terms(params, TIMING)[0].item() == -math.inf
     params_100 = source.initial(TIMING, level_db=60.0, **EVENT, **{k: 100.0 for k in kwargs})
     widened = source.log_prior_terms(params_100, TIMING)[0].item()
-    original = default.log_prior_terms(params_100, TIMING)[0].item()
+    original = paper.log_prior_terms(params_100, TIMING)[0].item()
     high = F0_TRAJECTORY.mean_range[1]
     expected = math.log((high - F0_TRAJECTORY.mean_range[0]) / (high - freq_to_erb_float(30.0)))
     assert widened - original == pytest.approx(expected)
