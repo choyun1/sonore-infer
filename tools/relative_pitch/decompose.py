@@ -25,6 +25,7 @@ from pair import DTYPE, ONSETS, TOTAL, hypotheses
 from sonore_infer.cochleagram import FFTCochleagram
 from sonore_infer.fit import fit
 from sonore_infer.hearing import dominance_sigma
+from sonore_infer.scene import FREQUENCY_FLOOR_HZ
 from sonore_infer.stimuli import shepard as sh
 
 PARTS = [
@@ -75,7 +76,12 @@ def main():
     parser.add_argument("--first", type=int, default=1)
     parser.add_argument("--seconds", type=int, nargs="+", required=True)
     parser.add_argument("--sparse-spectrum", action="store_true")
-    parser.add_argument("--floor", type=float)
+    parser.add_argument("--floor", type=float, default=FREQUENCY_FLOOR_HZ)
+    parser.add_argument(
+        "--paper-floor",
+        action="store_true",
+        help="Table A.2's floor (3 ERB number, 87.5 Hz) instead of --floor, as runs before 2026-11-06",
+    )
     parser.add_argument("--whistle-floor", type=float, default=30.0)
     parser.add_argument("--max-steps", type=int, default=15000)
     parser.add_argument("--tolerance", type=float, default=0.5)
@@ -89,6 +95,8 @@ def main():
     parser.add_argument("--channels", action="store_true", help="print the second tone channel by channel")
     parser.add_argument("--only", choices=["up", "down"], help="fit only this direction")
     args = parser.parse_args()
+    if args.paper_floor:
+        args.floor = None
     cochleagram = FFTCochleagram(threshold_floor=args.threshold_floor)
     sigma = dominance_sigma(cochleagram.cfs, args.sigma) if args.dominance else args.sigma
     print(f"threshold floor {args.threshold_floor}, dominance {args.dominance}, sigma {args.sigma:g} dB")

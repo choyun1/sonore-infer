@@ -18,12 +18,14 @@ from the stimulus and scored by its variational evidence:
   one octave-spaced series of components. With minor-third spacing, four
   Shepard-like tones a minor third apart: the chord listeners hear [Shepard §V].
 
-The f0 and whistle-frequency prior is uniform on 3 to 33.19 ERB number, from
-87.5 Hz, so no hypothesis can explain components below 87.5 Hz (Shepard's
-tones have components down to 4.9 Hz; those from 20 Hz reach the
-cochleagram). By default readings start at the lowest component above the
-floor. ``--floor`` lowers it, and ``--sparse-spectrum`` lets each harmonic be
-absent (design relative-pitch-prior P10 to P12). With a sparse spectrum the
+In Table A.2 the f0 and whistle-frequency prior is uniform on 3 to 33.19 ERB
+number, from 87.5 Hz, so no hypothesis can explain components below 87.5 Hz
+(Shepard's tones have components down to 4.9 Hz; those from 20 Hz reach the
+cochleagram). Readings start at the lowest component above the floor.
+``--floor`` sets it (30 Hz by default since 2026-11-06, decision P13;
+``--paper-floor`` for Table A.2's, as P01 and P02 ran), and
+``--sparse-spectrum`` lets each harmonic be absent (design relative-pitch-prior
+P10 to P12). With a sparse spectrum the
 start puts the Gaussian-process spectrum through the stimulus's levels,
 interpolated in ERB number between components (held flat beyond them), and
 starts the offsets at 0 dB for harmonics the stimulus has and at
@@ -55,7 +57,7 @@ import torch
 from sonore_infer.cochleagram import FFTCochleagram
 from sonore_infer.erb import erb_to_freq, freq_to_erb_float
 from sonore_infer.priors import ABSENT_OFFSET_DB, F0_TRAJECTORY
-from sonore_infer.scene import Harmonic, Scene, SceneTiming, Whistle, evaluate
+from sonore_infer.scene import FREQUENCY_FLOOR_HZ, Harmonic, Scene, SceneTiming, Whistle, evaluate
 from sonore_infer.stimuli import shepard as sh
 
 TOTAL = sh.DURATION + 2 * sh.PADDING
@@ -177,8 +179,14 @@ def main():
     parser.add_argument(
         "--floor",
         type=float,
+        default=FREQUENCY_FLOOR_HZ,
         help="floor of the f0 and whistle-frequency prior [Hz] (design relative-pitch-prior P12); "
-        "default Table A.2's 87.5 Hz",
+        "default %(default)g",
+    )
+    parser.add_argument(
+        "--paper-floor",
+        action="store_true",
+        help="Table A.2's floor (3 ERB number, 87.5 Hz) instead of --floor, as runs before 2026-11-06",
     )
     parser.add_argument(
         "--sparse-spectrum",
@@ -211,6 +219,8 @@ def main():
     parser.add_argument("--samples", type=int, default=128)
     parser.add_argument("--seed", type=int, default=0)
     args = parser.parse_args()
+    if args.paper_floor:
+        args.floor = None
     per_octave = 4 if args.minor_third else 1
     lowest = args.lowest if args.lowest is not None else (args.floor or PRIOR_LOW_HZ)
     cochleagram = FFTCochleagram()

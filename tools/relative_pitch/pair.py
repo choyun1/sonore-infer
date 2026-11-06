@@ -50,7 +50,7 @@ from sonore_infer.erb import freq_to_erb_float
 from sonore_infer.evidence import log_evidence, variational_evidence
 from sonore_infer.hearing import dominance_sigma
 from sonore_infer.priors import ABSENT_OFFSET_DB
-from sonore_infer.scene import GRID_STEP, Harmonic, Scene, SceneTiming, Whistle, evaluate
+from sonore_infer.scene import FREQUENCY_FLOOR_HZ, GRID_STEP, Harmonic, Scene, SceneTiming, Whistle, evaluate
 from sonore_infer.stimuli import shepard as sh
 
 TOTAL = 2 * sh.DURATION + sh.GAP + 2 * sh.PADDING
@@ -191,7 +191,14 @@ def main():
         help="start the first tone's f0 this many octaves from the reading; whistles are then not fitted",
     )
     parser.add_argument("--sparse-spectrum", action="store_true", help="design relative-pitch-prior P10")
-    parser.add_argument("--floor", type=float, help="lowest f0 and whistle frequency [Hz] (P12)")
+    parser.add_argument(
+        "--floor", type=float, default=FREQUENCY_FLOOR_HZ, help="lowest f0 and whistle frequency [Hz] (P12)"
+    )
+    parser.add_argument(
+        "--paper-floor",
+        action="store_true",
+        help="Table A.2's floor (3 ERB number, 87.5 Hz) instead of --floor, as runs before 2026-11-06",
+    )
     parser.add_argument(
         "--whistle-floor", type=float, default=30.0, help="components below this [dB] get none"
     )
@@ -222,6 +229,8 @@ def main():
     )
     parser.add_argument("--output", help="with --seeds, a path with {seed} for each seed's rows")
     args = parser.parse_args()
+    if args.paper_floor:
+        args.floor = None
     if args.seeds and (not args.output or "{seed}" not in args.output):
         parser.error("--seeds needs --output with {seed} in it")
     seeds = args.seeds or [args.seed]

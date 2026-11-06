@@ -24,7 +24,7 @@ alternative), by the Laplace and the importance-sampling estimates.
     python tools/bass/compare_two_notes.py --interval octave --asynchronies 0 0.02
     python tools/bass/compare_two_notes.py --controls
 
-With ``--sparse-spectrum`` (and ``--floor``), the options of design
+With ``--sparse-spectrum``, the option of design
 relative-pitch-prior: each start with harmonics 30 dB down gets a twin with
 them marked absent, and each start is scored on its own
 (``sparse_options.py``).

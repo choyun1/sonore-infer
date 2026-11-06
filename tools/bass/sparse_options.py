@@ -16,7 +16,7 @@ import numpy as np
 import torch
 
 from sonore_infer.priors import ABSENT_OFFSET_DB
-from sonore_infer.scene import Harmonic, evaluate
+from sonore_infer.scene import FREQUENCY_FLOOR_HZ, Harmonic, evaluate
 
 # a harmonic whose start is more than this far below the source's level is marked absent
 ABSENT_BELOW_DB = 20.0
@@ -30,23 +30,37 @@ def add_arguments(parser):
         help="harmonics may be absent; each start is scored separately (design relative-pitch-prior P10)",
     )
     parser.add_argument(
-        "--floor", type=float, help="lowest f0 and whistle frequency [Hz] (design relative-pitch-prior P12)"
+        "--floor",
+        type=float,
+        default=FREQUENCY_FLOOR_HZ,
+        help="lowest f0 and whistle frequency [Hz] (design relative-pitch-prior P12; default %(default)g)",
+    )
+    parser.add_argument(
+        "--paper-floor",
+        action="store_true",
+        help="Table A.2's floor (3 ERB number, 87.5 Hz) instead of --floor, as runs before 2026-11-06",
     )
 
 
 def harmonic_options(args):
-    return dict(sparse_spectrum=args.sparse_spectrum, frequency_floor_hz=args.floor)
+    return dict(sparse_spectrum=args.sparse_spectrum, frequency_floor_hz=floor(args))
 
 
 def whistle_options(args):
-    return dict(frequency_floor_hz=args.floor)
+    return dict(frequency_floor_hz=floor(args))
+
+
+def floor(args):
+    """The sources' ``frequency_floor_hz``: None (Table A.2's) with ``--paper-floor``."""
+    return None if args.paper_floor else args.floor
 
 
 def describe(args):
     """The options for a run's header line."""
-    return (", sparse spectra" if args.sparse_spectrum else "") + (
-        f", frequency floor {args.floor:g} Hz" if args.floor else ""
-    )
+    spectrum = ", sparse spectra" if args.sparse_spectrum else ""
+    if args.paper_floor:
+        return spectrum + ", frequency floor 87.5 Hz (Table A.2)"
+    return spectrum + f", frequency floor {args.floor:g} Hz"
 
 
 def with_sparse_starts(scene, starts):

@@ -145,7 +145,8 @@ setup record; the commands themselves were not recorded at the time and
 have not been rerun. One job per mistuning level and per two-note hypothesis, as on
 [P10](P10-earlier-experiments-hearing.md), which used the same commands
 plus its two options. The baseline (`data/P07/baseline-0.8.0/`) is the same
-commands without `--sparse-spectrum --floor 30`.
+commands with `--paper-floor` in place of `--sparse-spectrum --floor 30`
+(before 2026-11-06 the paper's floor was the default).
 
 ```
 O="--steps 15000 --tolerance 0.5 --variational-steps 2000 --sparse-spectrum --floor 30"
