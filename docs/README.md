@@ -21,6 +21,7 @@ has its own design documents, tools and results.
 | **Reproducing the paper's model (BASS)** and testing it on new stimuli | [design/design-v1.md](design/design-v1.md): the project as a whole, and milestone (a), the mistuned harmonic | D1-D8 | 2026-10-05 |
 | | [design/bass-code-check.md](design/bass-code-check.md): three items from design-v1 §1.1 checked against BASS's code at 48e3755 | none | n/a |
 | | [design/milestone-b.md](design/milestone-b.md): milestone (b), two simultaneous notes | B1-B6 | 2026-10-07 |
+| | [design/timing-likelihood.md](design/timing-likelihood.md): a likelihood that keeps timing (a correlogram), tested on the mistuned harmonic and the minor-third complex | T1-T7 | draft, not yet accepted |
 | **Our own scene grammar** | [design/milestone-c.md](design/milestone-c.md): milestone (c), several events per source, inferred GP kernels, search over structures, ABA streaming | C1-C11 | 2026-10-11 |
 | **Online inference** | [design/online.md](design/online.md): evidence accumulated window by window, and a phone-app roadmap | O1-O10 | 2026-10-13, O10 2026-10-14 |
 | | [design/online-realtime.md](design/online-realtime.md): what real time would take, measured on the buildup runs | none | n/a |
@@ -45,7 +46,8 @@ has its own design documents, tools and results.
   not milestones (a) and (b).
 - **Decision numbers** carry the letter of their document: D (design-v1),
   B (milestone-b), R (source-reverb), C (milestone-c), O (online),
-  S (online-speed), E (order-effects), L (live-input), P (relative-pitch).
+  S (online-speed), E (order-effects), L (live-input), P (relative-pitch),
+  T (timing-likelihood).
 - **Experiment IDs** have two digits (A01–A08, B01–B04, C01–C03, O01–O03,
   P01–P12, R01, R02; pages in [`results/`](../results/README.md)) and share
   letters with decision numbers, which have none (B1),
