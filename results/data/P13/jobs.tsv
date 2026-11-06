@@ -1,0 +1,52 @@
+threshold/aba/aba_st1_one.txt	tools/grammar/compare_aba.py --semitones 1 --intervals 0.1 --hypotheses one --steps 15000 --tolerance 0.5 --infer-kernel --variational-steps 2000 --threshold-floor
+threshold/aba/aba_st3_one.txt	tools/grammar/compare_aba.py --semitones 3 --intervals 0.1 --hypotheses one --steps 15000 --tolerance 0.5 --infer-kernel --variational-steps 2000 --threshold-floor
+threshold/aba/aba_st6_one.txt	tools/grammar/compare_aba.py --semitones 6 --intervals 0.1 --hypotheses one --steps 15000 --tolerance 0.5 --infer-kernel --variational-steps 2000 --threshold-floor
+floor30/mistuned/f0-100_h1_p0.txt	tools/bass/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --percents 0 --steps 15000 --tolerance 0.5 --variational-steps 2000 --floor 30
+floor30/mistuned/f0-100_h1_p5.txt	tools/bass/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --percents 5 --steps 15000 --tolerance 0.5 --variational-steps 2000 --floor 30
+floor30/mistuned/f0-100_h1_p10.txt	tools/bass/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --percents 10 --steps 15000 --tolerance 0.5 --variational-steps 2000 --floor 30
+floor30/mistuned/f0-100_h1_p15.txt	tools/bass/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --percents 15 --steps 15000 --tolerance 0.5 --variational-steps 2000 --floor 30
+floor30/mistuned/f0-100_h1_p20.txt	tools/bass/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --percents 20 --steps 15000 --tolerance 0.5 --variational-steps 2000 --floor 30
+floor30/mistuned/f0-100_h1_p25.txt	tools/bass/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --percents 25 --steps 15000 --tolerance 0.5 --variational-steps 2000 --floor 30
+floor30/mistuned/f0-100_h1_p30.txt	tools/bass/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --percents 30 --steps 15000 --tolerance 0.5 --variational-steps 2000 --floor 30
+floor30/mistuned/f0-200_h2_p0.txt	tools/bass/scene_mistuned_harmonic.py --f0 200 --harmonic 2 --percents 0 --steps 15000 --tolerance 0.5 --variational-steps 2000 --floor 30
+floor30/mistuned/f0-200_h2_p5.txt	tools/bass/scene_mistuned_harmonic.py --f0 200 --harmonic 2 --percents 5 --steps 15000 --tolerance 0.5 --variational-steps 2000 --floor 30
+floor30/mistuned/f0-200_h2_p10.txt	tools/bass/scene_mistuned_harmonic.py --f0 200 --harmonic 2 --percents 10 --steps 15000 --tolerance 0.5 --variational-steps 2000 --floor 30
+floor30/mistuned/f0-200_h2_p15.txt	tools/bass/scene_mistuned_harmonic.py --f0 200 --harmonic 2 --percents 15 --steps 15000 --tolerance 0.5 --variational-steps 2000 --floor 30
+floor30/mistuned/f0-200_h2_p20.txt	tools/bass/scene_mistuned_harmonic.py --f0 200 --harmonic 2 --percents 20 --steps 15000 --tolerance 0.5 --variational-steps 2000 --floor 30
+floor30/mistuned/f0-200_h2_p25.txt	tools/bass/scene_mistuned_harmonic.py --f0 200 --harmonic 2 --percents 25 --steps 15000 --tolerance 0.5 --variational-steps 2000 --floor 30
+floor30/mistuned/f0-200_h2_p30.txt	tools/bass/scene_mistuned_harmonic.py --f0 200 --harmonic 2 --percents 30 --steps 15000 --tolerance 0.5 --variational-steps 2000 --floor 30
+threshold/mistuned/f0-100_h1_p0.txt	tools/bass/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --percents 0 --steps 15000 --tolerance 0.5 --variational-steps 2000 --threshold-floor
+threshold/mistuned/f0-100_h1_p5.txt	tools/bass/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --percents 5 --steps 15000 --tolerance 0.5 --variational-steps 2000 --threshold-floor
+threshold/mistuned/f0-100_h1_p10.txt	tools/bass/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --percents 10 --steps 15000 --tolerance 0.5 --variational-steps 2000 --threshold-floor
+threshold/mistuned/f0-100_h1_p15.txt	tools/bass/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --percents 15 --steps 15000 --tolerance 0.5 --variational-steps 2000 --threshold-floor
+threshold/mistuned/f0-100_h1_p20.txt	tools/bass/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --percents 20 --steps 15000 --tolerance 0.5 --variational-steps 2000 --threshold-floor
+threshold/mistuned/f0-100_h1_p25.txt	tools/bass/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --percents 25 --steps 15000 --tolerance 0.5 --variational-steps 2000 --threshold-floor
+threshold/mistuned/f0-100_h1_p30.txt	tools/bass/scene_mistuned_harmonic.py --f0 100 --harmonic 1 --percents 30 --steps 15000 --tolerance 0.5 --variational-steps 2000 --threshold-floor
+threshold/mistuned/f0-200_h2_p0.txt	tools/bass/scene_mistuned_harmonic.py --f0 200 --harmonic 2 --percents 0 --steps 15000 --tolerance 0.5 --variational-steps 2000 --threshold-floor
+threshold/mistuned/f0-200_h2_p5.txt	tools/bass/scene_mistuned_harmonic.py --f0 200 --harmonic 2 --percents 5 --steps 15000 --tolerance 0.5 --variational-steps 2000 --threshold-floor
+threshold/mistuned/f0-200_h2_p10.txt	tools/bass/scene_mistuned_harmonic.py --f0 200 --harmonic 2 --percents 10 --steps 15000 --tolerance 0.5 --variational-steps 2000 --threshold-floor
+threshold/mistuned/f0-200_h2_p15.txt	tools/bass/scene_mistuned_harmonic.py --f0 200 --harmonic 2 --percents 15 --steps 15000 --tolerance 0.5 --variational-steps 2000 --threshold-floor
+threshold/mistuned/f0-200_h2_p20.txt	tools/bass/scene_mistuned_harmonic.py --f0 200 --harmonic 2 --percents 20 --steps 15000 --tolerance 0.5 --variational-steps 2000 --threshold-floor
+threshold/mistuned/f0-200_h2_p25.txt	tools/bass/scene_mistuned_harmonic.py --f0 200 --harmonic 2 --percents 25 --steps 15000 --tolerance 0.5 --variational-steps 2000 --threshold-floor
+threshold/mistuned/f0-200_h2_p30.txt	tools/bass/scene_mistuned_harmonic.py --f0 200 --harmonic 2 --percents 30 --steps 15000 --tolerance 0.5 --variational-steps 2000 --threshold-floor
+floor30/two_notes/octave_0ms_two.txt	tools/bass/compare_two_notes.py --interval octave --asynchronies 0 --only two --steps 15000 --tolerance 0.5 --variational-steps 2000 --floor 30
+floor30/two_notes/octave_0ms_one@100.txt	tools/bass/compare_two_notes.py --interval octave --asynchronies 0 --only one@100 --steps 15000 --tolerance 0.5 --variational-steps 2000 --floor 30
+floor30/two_notes/octave_0ms_one@200.txt	tools/bass/compare_two_notes.py --interval octave --asynchronies 0 --only one@200 --steps 15000 --tolerance 0.5 --variational-steps 2000 --floor 30
+floor30/two_notes/octave_0ms_one@400.txt	tools/bass/compare_two_notes.py --interval octave --asynchronies 0 --only one@400 --steps 15000 --tolerance 0.5 --variational-steps 2000 --floor 30
+floor30/two_notes/just_fifth_0ms_two.txt	tools/bass/compare_two_notes.py --interval just_fifth --asynchronies 0 --only two --steps 15000 --tolerance 0.5 --variational-steps 2000 --floor 30
+floor30/two_notes/just_fifth_0ms_one@100.txt	tools/bass/compare_two_notes.py --interval just_fifth --asynchronies 0 --only one@100 --steps 15000 --tolerance 0.5 --variational-steps 2000 --floor 30
+floor30/two_notes/just_fifth_0ms_one@200.txt	tools/bass/compare_two_notes.py --interval just_fifth --asynchronies 0 --only one@200 --steps 15000 --tolerance 0.5 --variational-steps 2000 --floor 30
+floor30/two_notes/just_fifth_0ms_one@300.txt	tools/bass/compare_two_notes.py --interval just_fifth --asynchronies 0 --only one@300 --steps 15000 --tolerance 0.5 --variational-steps 2000 --floor 30
+floor30/two_notes/just_fifth_0ms_whistles.txt	tools/bass/compare_two_notes.py --interval just_fifth --asynchronies 0 --only whistles --steps 15000 --tolerance 0.5 --variational-steps 2000 --floor 30
+threshold/two_notes/octave_0ms_two.txt	tools/bass/compare_two_notes.py --interval octave --asynchronies 0 --only two --steps 15000 --tolerance 0.5 --variational-steps 2000 --threshold-floor
+threshold/two_notes/octave_0ms_one@100.txt	tools/bass/compare_two_notes.py --interval octave --asynchronies 0 --only one@100 --steps 15000 --tolerance 0.5 --variational-steps 2000 --threshold-floor
+threshold/two_notes/octave_0ms_one@200.txt	tools/bass/compare_two_notes.py --interval octave --asynchronies 0 --only one@200 --steps 15000 --tolerance 0.5 --variational-steps 2000 --threshold-floor
+threshold/two_notes/octave_0ms_one@400.txt	tools/bass/compare_two_notes.py --interval octave --asynchronies 0 --only one@400 --steps 15000 --tolerance 0.5 --variational-steps 2000 --threshold-floor
+threshold/two_notes/just_fifth_0ms_two.txt	tools/bass/compare_two_notes.py --interval just_fifth --asynchronies 0 --only two --steps 15000 --tolerance 0.5 --variational-steps 2000 --threshold-floor
+threshold/two_notes/just_fifth_0ms_one@100.txt	tools/bass/compare_two_notes.py --interval just_fifth --asynchronies 0 --only one@100 --steps 15000 --tolerance 0.5 --variational-steps 2000 --threshold-floor
+threshold/two_notes/just_fifth_0ms_one@200.txt	tools/bass/compare_two_notes.py --interval just_fifth --asynchronies 0 --only one@200 --steps 15000 --tolerance 0.5 --variational-steps 2000 --threshold-floor
+threshold/two_notes/just_fifth_0ms_one@300.txt	tools/bass/compare_two_notes.py --interval just_fifth --asynchronies 0 --only one@300 --steps 15000 --tolerance 0.5 --variational-steps 2000 --threshold-floor
+threshold/two_notes/just_fifth_0ms_whistles.txt	tools/bass/compare_two_notes.py --interval just_fifth --asynchronies 0 --only whistles --steps 15000 --tolerance 0.5 --variational-steps 2000 --threshold-floor
+threshold/aba/aba_st1_two.txt	tools/grammar/compare_aba.py --semitones 1 --intervals 0.1 --hypotheses two --steps 300 --infer-kernel --variational-steps 2000 --threshold-floor
+threshold/aba/aba_st3_two.txt	tools/grammar/compare_aba.py --semitones 3 --intervals 0.1 --hypotheses two --steps 300 --infer-kernel --variational-steps 2000 --threshold-floor
+threshold/aba/aba_st6_two.txt	tools/grammar/compare_aba.py --semitones 6 --intervals 0.1 --hypotheses two --steps 300 --infer-kernel --variational-steps 2000 --threshold-floor

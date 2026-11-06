@@ -131,7 +131,10 @@ Log odds of two streams over one, variational importance estimate
   and above, and the mistuned component is at 100 to 130 Hz, where dominance
   is about 0.5. Why the halved weight costs the whistle its win is
   inferred, not checked: its gain in fit is counted at about half, and no
-  longer pays for its parameters.
+  longer pays for its parameters. (2026-11-05: the threshold floor alone,
+  run later as [P13](P13-earlier-experiments-alone.md), also keeps two
+  sources from being preferred at 100/1 up to 30% (log odds −2 to −27), so
+  dominance is not the only cause.)
 - **For decision P13:** the two options help on Shepard pairs and change
   nothing measurable on two notes, streaming or 200/2, but they widen the
   existing gap with listeners at 100/1. Dominance as a fixed per-channel

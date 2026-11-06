@@ -208,6 +208,11 @@ whether the just fifth's flip matters against listeners. It does:
   now. Neither has been run alone on earlier results: P07 ran the floor only
   with sparse spectra, and P10 ran the threshold with dominance (or
   dominance alone). Making either a default would need that check first.
+  Checked later the same day as [P13](../../results/P13-earlier-experiments-alone.md):
+  the floor alone changes nothing checked (same modes, Laplace within 0.1),
+  so it could become a default; the threshold alone keeps two sources from
+  being preferred at 100 Hz harmonic 1 up to 30%, as dominance does, so it
+  stays off. Making the floor a default is Cho's call.
 
 The relative-pitch experiments keep using the options, each page saying
 which.

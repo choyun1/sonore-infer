@@ -129,7 +129,7 @@ What every experiment here shares unless its page says otherwise:
   components are an octave apart: what one tone is heard as (P01, P05, P02,
   P06), and whether the step between two is heard as up or down (P03, P08),
   compared with Shepard's listeners (P09). The options these needed are
-  rechecked on earlier experiments (P07, P10).
+  rechecked on earlier experiments (P07, P10, P13).
 
 ## Experiments
 
@@ -164,6 +164,7 @@ What every experiment here shares unless its page says otherwise:
 | [P10](P10-earlier-experiments-hearing.md) | P07's mistuned harmonic and two notes, and ABA at 1, 3 and 6 semitones, with a hearing threshold and spectral dominance | Fig. 7D, Fig. 8D; none for two notes | first pass, one seed | ABA, two notes and 200/2 unchanged (within 5.4); at 100/1 two sources are never preferred up to 30% (P07: 22.4%), further from listeners; dominance alone does the same |
 | [P11](P11-group-iii-interval-noise.md) | Group III's errors at small steps (and its rise at 9 steps) as noise on the heard interval, after the scene model | none (Shepard 1964 Fig. 3, §IV) | first pass, seed 0, rechecked on seeds 0 to 2 (P12) | Interval noise of SD 1.95 steps (about 2.3 semitones), with no model, describes Group III best (−736.8, held out −738.3, against P09's −745.1 and −749.7) and gives the dip at 1 step and a rise at 9 (0.32 vs 0.40); on the model's log odds it overfits; Group I has no such noise |
 | [P12](P12-shepard-seeds.md) | P09's 90 pairs with both options, on seeds 0 to 2 (PC), and P09's and P11's fits again | none (Shepard 1964 Fig. 3, §IV) | done, three seeds | Log odds vary by about 3 per pair across seeds (up to 9.6); Group I's model fit is 13 to 26 behind the curve in steps (P09's seed: 12), crossover early on every seed (0.40 to 0.43 at 5 steps); Group III and P11's finding unchanged |
+| [P13](P13-earlier-experiments-alone.md) | P07's mistuned harmonic and two notes, and ABA at 1, 3 and 6 semitones, with the 30 Hz floor or the threshold of hearing alone | Fig. 7D, Fig. 8D; none for two notes | first pass, one seed | The 30 Hz floor changes nothing (same modes; Laplace within 0.1); the threshold of hearing changes only 100/1, where two sources are never preferred up to 30%, as with dominance |
 | [R01](R01-source-and-room.md) | Source and room (RT60) from one sound | none in this paper | done | RT60 within 3%; 90% intervals cover 66% (overconfident) |
 | [R02](R02-atypical-rooms.md) | Atypical rooms, exponential room model | none in this paper | done | Biased like T20 × 3; time-reversed rooms do not fit |
 
@@ -200,9 +201,9 @@ document with its decisions for Cho before any run.
   is no longer heard as separate up to 30%. Next: the remaining early
   crossover, which holds on every seed (P12). The options stay off by
   default (decision P13, 2026-11-05): sparse spectra turn the just fifth
-  into one tone where most listeners hear two (P07), dominance widens the
-  100/1 gap (P10), and the 30 Hz floor and the threshold of hearing have
-  not been checked alone
+  into one tone where most listeners hear two (P07), and dominance and the
+  threshold of hearing each widen the 100/1 gap (P10, P13). The 30 Hz floor
+  alone changes nothing checked (P13), so it could become a default
   ([relative-pitch-prior.md §4](../docs/design/relative-pitch-prior.md#4-chos-answers)). Group III's rise at 9 steps is the other side of
   a dip at the smallest step, described as noise on the heard interval
   outside the scene model (P11; design
@@ -243,7 +244,7 @@ or changes how the model compares with listeners.
 | Comparison | Paper | Ours | Status |
 | --- | --- | --- | --- |
 | Mistuned harmonic thresholds, 8 of 9 conditions (Fig. 7D) | by eye | within one grid step ([A05](A05-full-model.md)–[A08](A08-ten-seeds.md)) | **matches** |
-| Mistuned harmonic, 100 Hz harmonic 1 | about 45% (BASS's code, one seed: 40%) | 25% Eqn 2, 30% BASS's rule ([A08](A08-ten-seeds.md), [C01](C01-kernel-inferred.md)) | **differs, not chased**: listeners are about 1–5%, closer to ours; the cause is in BASS's code, which we cannot copy. With spectral dominance (P19/P20 options, off by default) two sources are never preferred up to 30% ([P10](P10-earlier-experiments-hearing.md)), further from listeners |
+| Mistuned harmonic, 100 Hz harmonic 1 | about 45% (BASS's code, one seed: 40%) | 25% Eqn 2, 30% BASS's rule ([A08](A08-ten-seeds.md), [C01](C01-kernel-inferred.md)) | **differs, not chased**: listeners are about 1–5%, closer to ours; the cause is in BASS's code, which we cannot copy. With spectral dominance or the threshold of hearing (P19/P20 options, off by default), each alone, two sources are never preferred up to 30% ([P10](P10-earlier-experiments-hearing.md), [P13](P13-earlier-experiments-alone.md)), further from listeners |
 | Threshold rule (Eqn 2) | Eqn 2 as printed; BASS's analysis code uses another rule ([A06](A06-bass-own-code.md)) | both reported | **differs by method**; both kept on every page |
 | Evidence method | variational, 250 steps per hypothesis then full fits for the top 5 | Laplace and variational importance ([A07](A07-variational-evidence.md)) | **differs by method**; A07 found the same thresholds by both |
 | Gaussian-process sigma and lengthscale inferred (Table A.2) | inferred per sound | inferred in C01 and C02, fixed at Table A.2's medians elsewhere | **matches where inferred**; Table A.2's quartiles imply an f0 lengthscale bound of 0.01 s, not the 0.1 s printed ([C01](C01-kernel-inferred.md)) |
