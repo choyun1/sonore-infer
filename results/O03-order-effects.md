@@ -368,10 +368,43 @@ these stimuli, not a proof of convergence.
 
 What this leaves at the usual budget: the reset-rule rows at 6 st (each
 arm at the usual budget, so the within-7 match may hide a stall in one
-arm, as it did at 4 st), the 4 st 5 s gap, and Beauvois & Meddis with
+arm, as it did at 4 st; checked in the next section), the 4 st 5 s gap, and Beauvois & Meddis with
 an inducer. Each would need hours on Cho's PC. Wall time here: 395 s
 (B&M test), 955 s (6 st, 4.55 s of sound), 1023 s (4 st ABA) and 1346 s
 (8 st ABA).
+
+### Checked: the 6 st reset rule at the same budget (2026-11-11)
+
+The 1 s and 2 s gaps at 6 st (restart hypotheses, 3 s of the second
+sequence) rerun with 6000 Adam steps and patience 200 on Cho's PC
+(`cu6_s1_long.txt`, `cu6_s2_long.txt` in `results/data/O03/check/`). Their
+first-part windows match the cloud's fresh run (`cu6_first3_long.txt`,
+previous section) exactly. The gated restart decision, against the fresh
+first sequence's leaky decision (τ 2.5 s), as for 4 st above:
+
+| s after first tone | 0.5 | 1 | 1.5 | 2 | 2.5 | 3 |
+| --- | --- | --- | --- | --- | --- | --- |
+| first sequence, 6000 steps | 2.9 | 20.1 | 19.9 | 36.1 | 43.2 | 48.6 |
+| reset rule after 1 s, 6000 steps | 7.6 | 20.1 | 30.1 | 38.3 | 45.3 | 50.4 |
+| reset rule after 2 s, 6000 steps | 7.4 | 19.1 | 30.4 | 38.0 | 45.9 | 51.2 |
+| reset rule after 1 s, usual budget | 8.8 | 21.1 | 32.5 | 44.8 | 52.4 | 57.8 |
+
+At the same budget both gaps track the first sequence within 3 from 1 s
+on, except at 1.5 s. There the first sequence's one-stream window has a
+floored Hessian direction (term −10345.8 against −10364 to −10352 in the
+windows around it), which the next window undoes, as O01 found; the
+restart runs' window at 1.5 s after the gap has none. At 0.5 s the gaps
+are 4.5 above. The 1 s and 2 s gaps agree within 1.0 everywhere. So the
+section above's conclusion holds at 6 st too: with the reset rule a 1 or
+2 s gap builds up like a fresh sequence, with no Gap × Time interaction,
+as Cusack et al.'s listeners showed. The usual budget puts the reset rule
+6 to 7 higher from 2 s on, about as much as it does the first sequence
+(previous section), which is why the usual-budget comparison also matched.
+One run each. Wall time on Cho's PC, two runs at once on three threads
+each: 30,344 s (1 s gap) and 35,076 s (2 s gap). Two earlier attempts,
+started from a remote session, were stopped by the machine after 4
+minutes and 2 hours, with no error; these were started from Cho's own
+terminal.
 
 ## Against design §3
 
@@ -424,6 +457,8 @@ would take about a day or more [estimate].
         --test-duration 0.5 --only one two --steps 6000 --window-patience 200
     python tools/online/online_buildup.py --semitones 4 --triplets 6 --lag 1 \
         --steps 6000 --window-patience 200   # and --semitones 8; O02's defaults otherwise
+    python tools/online/online_reset.py cusack --semitones 6 --silence 1 --test-duration 3 --restart \
+        --only one_restart two_restart --steps 6000 --window-patience 200   # and --silence 2
     # the 20,000-step runs: --steps 20000 --window-patience 1000 (bm: stopped after one; cusack: --only one)
     python tools/online/reset_summary.py results/data/O03/*.txt results/data/O03/e8/*.txt
     python tools/results_plots.py
