@@ -219,7 +219,9 @@ document with its decisions for Cho before any run.
   larger than the paper's (up to +217); whether that matters is deferred
   until graded listener data are compared (the "Against the paper"
   section below).
-- **Timing in the likelihood** (Cho, 2026-10-18). The likelihood compares
+- **Timing in the likelihood** (Cho, 2026-10-18; design drafted
+  2026-11-05, decisions T1 to T7, not yet accepted:
+  [timing-likelihood.md](../docs/design/timing-likelihood.md)). The likelihood compares
   BASS's cochleagram: 64 half-ERB channels from a magnitude spectrum,
   25 ms windows every 10 ms. It keeps no phase, so no phase locking,
   temporal fine structure or interaural time differences, and it smooths
